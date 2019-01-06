@@ -9,7 +9,7 @@ ROS2 Grasp Library keep enabling various grasp detection algorithms in the back-
 - [Grasp Pose Detection](https://github.com/atenpas/gpd) detects 6-DOF grasp poses for a 2-finger grasp (e.g. a parallel jaw gripper) in 3D point clouds. The grasp detection workloads are accelerated with Intel [OpenVINO™](https://software.intel.com/en-us/openvino-toolkit) toolkit
 for deployment across various Intel vision devices CPU, GPU, Movidius VPU, and FPGA.
 
-<img src="https://github.intel.com/otc-rse/ros2_grasp_library/blob/master/docs/img/ros2_grasp_library.png" width = "596" height = "436" alt="ROS2 Grasp Library" align=center />
+<img src="https://github.com/intel/ros2_grasp_library/blob/master/docs/img/ros2_grasp_library.png" width = "596" height = "436" alt="ROS2 Grasp Library" align=center />
 
 ## System Requirements
 Ubuntu Linux 16.04 on 64-bit
