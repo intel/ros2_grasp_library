@@ -1,27 +1,17 @@
 # ros2_grasp_library
 ROS2 Grasp Library enables grasp detection algorithms on ROS2 for visual based industrial robot manipulation. This package provides two levels of interface. Application can decide which level to use, depending on whether MoveIt! framework is adopted.
-* ROS2 service compliant with MoveIt interface, used by MoveIt manipulation applications
+* ROS2 grasp planning service compliant with MoveIt interface, used by MoveIt manipulation applications
 * ROS2 topic conveys grasp detection results, used by other ROS/ROS2 manipulation applications
 
 The above interfaces can be bridged back to ROS via [ros1_bridge](https://github.com/ros2/ros1_bridge/blob/master/README.md)
 
 ROS2 Grasp Library keep enabling various grasp detection algorithms in the back-end.
-- [Grasp Pose Detection](https://github.com/atenpas/gpd) detects 6-DOF grasp poses for a 2-finger grasp (e.g. a parallel jaw gripper) in 3D point clouds. The grasp detection workloads are accelerated with Intel [OpenVINO™](https://software.intel.com/en-us/openvino-toolkit) toolkit
-for deployment across various Intel vision devices CPU, GPU, Movidius VPU, and FPGA.
+- [Grasp Pose Detection](https://github.com/atenpas/gpd) detects 6-DOF grasp poses for a 2-finger grasp (e.g. a parallel jaw gripper) in 3D point clouds from RGBD sensor or PCD file. The grasp detection workloads are accelerated with Intel [OpenVINO™](https://software.intel.com/en-us/openvino-toolkit) toolkit for deployment across various Intel vision devices CPU, GPU, Movidius VPU, and FPGA.
 
 <img src="https://github.com/intel/ros2_grasp_library/blob/master/docs/img/ros2_grasp_library.png" width = "596" height = "436" alt="ROS2 Grasp Library" align=center />
 
-## System Requirements
-Ubuntu Linux 16.04 on 64-bit
-
 ## Dependencies
-### Install ROS2 packages [ros-bouncy-desktop](https://github.com/ros2/ros2/wiki/Linux-Install-Debians)
-  * ament_cmake
-  * ament_lint_auto, ament_lint_common
-  * rclcpp, ros2run
-  * rosidl_default_generators, rosidl_default_runtime, rosidl_interface_packages
-  * std_msgs, sensor_msgs, geometry_msgs, shape_msgs, trajectory_msgs
-  * pcl_conversions
+### Install ROS2 packages [ros-crystal-desktop](https://index.ros.org/doc/ros2/Installation/Linux-Install-Debians)
 
 ### Install non ROS packages
   * PCL 1.7 or later (debian package "libpcl-dev")
@@ -32,9 +22,22 @@ Ubuntu Linux 16.04 on 64-bit
   ```
 
 ### Install [Intel OpenVINO Toolkit](https://github.com/opencv/dldt)
-1. Build and install Inference Engine for [Linux](https://github.com/opencv/dldt/blob/2018/inference-engine/README.md#build-on-linux-systems). CMake options for your ref
+1. Build and install Inference Engine for [Linux](https://github.com/opencv/dldt/blob/2018/inference-engine/README.md#build-on-linux-systems). Detailed steps for your ref
    ```bash
+   git clone https://github.com/opencv/dldt.git
    cd dldt/inference-engine
+   git submodule init
+   git submodule update --recursive
+   # install common dependencies
+   source ./install_dependencies.sh
+   # install mkl for cpu acceleration
+   wget https://github.com/intel/mkl-dnn/releases/download/v0.17/mklml_lnx_2019.0.1.20180928.tgz
+   tar -zxvf mklml_lnx_2019.0.1.20180928.tgz
+   sudo ln -s `pwd`/mklml_lnx_2019.0.1.20180928 /usr/local/lib/mklml
+   # install opencl for gpu acceleration
+   wget https://github.com/intel/compute-runtime/releases/download/18.28.11080/intel-opencl_18.28.11080_amd64.deb
+   sudo dpkg -i intel-opencl_18.28.11080_amd64.deb
+   # build
    mkdir build && cd build
    cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local -DGEMM=MKL -DMKLROOT=/usr/local/lib/mklml -DENABLE_MKL_DNN=ON -DENABLE_CLDNN=ON ..
    make -j8
@@ -49,11 +52,9 @@ Ubuntu Linux 16.04 on 64-bit
    Then Inference Engine will be found when adding "find_package(InferenceEngine)" into the CMakeLists.txt
 3. Configure library path for dynamic loading
    ```bash
-   echo `pwd`/bin/intel64/Release/lib > /etc/ld.so.conf.d/openvino.conf
+   echo `pwd`/../bin/intel64/Release/lib | sudo tee -a /etc/ld.so.conf.d/openvino.conf
    sudo ldconfig
    ```
-4. Optionally, install additional plug-ins for execution at GPU or Movidius NCS,
-following [optional steps](https://software.intel.com/en-us/articles/OpenVINO-Install-Linux#inpage-nav-4)
 
 ### Install [GPG](https://github.com/atenpas/gpg)
 1. Get the code
@@ -118,5 +119,8 @@ ros2 run grasp_library grasp_library
 
 ## Delivered Services
   * plan_grasps ([moveit_msgs::srv::GraspPlanning](https://github.com/intel/ros2_grasp_library/blob/master/moveit_msgs_light/srv/GraspPlanning.srv)), MoveIt! grasp planning service
+
+## Known Issues
+  * Cloud camera failed at "Invalid sizes when resizing a matrix or array" when dealing with XYZRGBA pointcloud from ROS2 Realsenes, tracked as [#6](https://github.com/atenpas/gpg/issues/6) of gpg, [patch](https://github.com/atenpas/gpg/pull/7) under review
 
 ###### *Any security issue should be reported using process at https://01.org/security*
