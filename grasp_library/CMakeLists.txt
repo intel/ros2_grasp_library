@@ -36,6 +36,7 @@ find_package(rclcpp REQUIRED)
 find_package(grasp_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(moveit_msgs)
+find_package(visualization_msgs)
 find_package(pcl_conversions REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(Eigen3 REQUIRED)
@@ -61,6 +62,7 @@ include_directories(
   ${grasp_msgs_INCLUDE_DIRS}
   ${sensor_msgs_INCLUDE_DIRS}
   ${moveit_msgs_INCLUDE_DIRS}
+  ${visualization_msgs_INCLUDE_DIRS}
   ${pcl_conversions_INCLUDE_DIRS}
   ${tf2_INCLUDE_DIRS}
   ${gpg_INCLUDE_DIRS}
@@ -79,6 +81,7 @@ ament_target_dependencies(${PROJECT_NAME}
   "grasp_msgs"
   "sensor_msgs"
   "moveit_msgs"
+  "visualization_msgs"
   "tf2"
   "pcl_conversions"
 )

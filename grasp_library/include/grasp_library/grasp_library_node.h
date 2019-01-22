@@ -21,6 +21,7 @@
 #include <rclcpp/logger.hpp>
 #include <rclcpp/rclcpp.hpp>
 #include <sensor_msgs/msg/point_cloud2.hpp>
+#include <visualization_msgs/msg/marker_array.hpp>
 
 // PCL
 #include <pcl/common/common.h>
@@ -79,30 +80,54 @@ public:
 
   /**
    * \brief Run the ROS node. Loops while waiting for incoming ROS messages.
-  */
+   */
   virtual void onInit();
 
   /**
    * \brief Detect grasp poses in a point cloud received from a ROS topic.
    * \return the list of grasp poses
-  */
+   */
   std::vector<Grasp> detectGraspPosesInTopic();
 
 private:
   /**
    * \brief Callback function for the ROS topic that contains the input point cloud.
    * \param msg the incoming ROS message
-  */
+   */
   void cloud_callback(const sensor_msgs::msg::PointCloud2::SharedPtr msg);
 
   /**
    * \brief Create a ROS message that contains a list of grasp poses from a list of handles.
    * \param hands the list of grasps
    * \return the ROS message that contains the grasp poses
-  */
+   */
   grasp_msgs::msg::GraspConfigList createGraspListMsg(const std::vector<Grasp> & hands);
 
+  /**
+   * \brief Convert GPD Grasp into grasp message.
+   * \param hand A GPD grasp
+   * \return The Grasp message converted
+   */
   grasp_msgs::msg::GraspConfig convertToGraspMsg(const Grasp & hand);
+
+  /**
+   * \brief Convert GPD Grasps into visual grasp messages.
+   */
+  visualization_msgs::msg::MarkerArray convertToVisualGraspMsg(const std::vector<Grasp>& hands,
+  double outer_diameter, double hand_depth, double finger_width, double hand_height, const std::string& frame_id);
+
+  /**
+   * \brief Create finger marker for visual grasp messages
+   */
+  visualization_msgs::msg::Marker createFingerMarker(const Eigen::Vector3d& center,
+  const Eigen::Matrix3d& frame, double length, double width, double height, int id, const std::string& frame_id);
+
+  /**
+   * \brief Create hand base marker for visual grasp messages
+   */
+  visualization_msgs::msg::Marker createHandBaseMarker(const Eigen::Vector3d& start,
+  const Eigen::Vector3d& end, const Eigen::Matrix3d& frame, double length, double height, int id,
+  const std::string& frame_id);
 
   /** Converts an Eigen Vector into a Point message // Todo ROS2 eigen_conversions*/
   void pointEigenToMsg(const Eigen::Vector3d & e, geometry_msgs::msg::Point & m)
@@ -134,25 +159,22 @@ private:
   rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr cloud_sub_;
   /** ROS publisher for grasp list messages*/
   rclcpp::Publisher<grasp_msgs::msg::GraspConfigList>::SharedPtr grasps_pub_;
+  /** ROS publisher for tabletop point clouds*/
+  rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr tabletop_pub_;
+  /** ROS publisher for grasps in rviz (visualization)*/
+  rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr grasps_rviz_pub_;
 
-  bool use_importance_sampling_; /**< if importance sampling is used*/
   bool filter_grasps_; /**< if grasps are filtered on workspace and gripper aperture*/
   bool filter_half_antipodal_; /**< if half-antipodal grasps are filtered*/
   bool plot_filtered_grasps_; /**< if filtered grasps are plotted*/
   bool plot_selected_grasps_; /**< if selected grasps are plotted*/
   bool plot_normals_; /**< if normals are plotted*/
   bool plot_samples_; /**< if samples/indices are plotted*/
-  bool use_rviz_; /**< if rviz is used for visualization instead of PCL*/
   std::vector<double> workspace_; /**< workspace limits*/
 
   GraspDetector * grasp_detector_; /**< used to run the grasp pose detection*/
   GraspPlanner * grasp_planner_; /**< grasp planning service*/
   rclcpp::Logger logger_ = rclcpp::get_logger("GraspLibraryNode");
-
-  /** constants for input point cloud types */
-  static const int POINT_CLOUD_2; /**< sensor_msgs/PointCloud2*/
-  static const int CLOUD_INDEXED; /**< gpd/CloudIndexed*/
-  static const int CLOUD_SAMPLES; /**< gpd/CloudSamples*/
 };
 
 #endif /* GRASP_DETECTION_NODE_H_ */
