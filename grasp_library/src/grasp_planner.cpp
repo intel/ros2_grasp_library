@@ -19,8 +19,8 @@
 #include <mutex>
 #include <string>
 #include <utility>
-#include "grasp_library/grasp_planner.h"
-#include "grasp_library/ros_params.h"
+#include "grasp_library/grasp_planner.hpp"
+#include "grasp_library/ros_params.hpp"
 
 GraspPlanner::GraspPlanner(rclcpp::Node * node, GraspPlanningParameters & param)
 {
@@ -123,7 +123,7 @@ void GraspPlanner::grasp_service(
       // after the first grasp older than the set amount of seconds is found, break the loop
       builtin_interfaces::msg::Time ros_now = rclcpp::Clock(RCL_ROS_TIME).now();
       if (grasp_candidate.second.sec < ros_now.sec - param_.grasp_cache_time_threshold_) {
-        break;
+        // break;
       }
       res->grasps.push_back(grasp_candidate.first);
     }

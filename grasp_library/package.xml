@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format2.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
-<package format="3">
+<package format="2">
   <name>grasp_library</name>
   <version>0.3.0</version>
   <description>ROS2 grasp library as MoveIt plug-in</description>
@@ -15,6 +15,7 @@
   <build_depend>sensor_msgs</build_depend>
   <build_depend>grasp_msgs</build_depend>
   <build_depend>moveit_msgs</build_depend>
+  <build_depend>visualization_msgs</build_depend>
   <build_depend>pcl_conversions</build_depend>
 
   <exec_depend>rosidl_default_runtime</exec_depend>
@@ -24,6 +25,7 @@
   <exec_depend>sensor_msgs</exec_depend>
   <exec_depend>grasp_msgs</exec_depend>
   <exec_depend>moveit_msgs</exec_depend>
+  <exec_depend>visualization_msgs</exec_depend>
   <exec_depend>pcl_conversions</exec_depend>
 
   <test_depend>ament_lint_auto</test_depend>
