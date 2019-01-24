@@ -13,7 +13,7 @@
 // limitations under the License.
 
 #include <string>
-#include "grasp_library/ros_params.h"
+#include "grasp_library/ros_params.hpp"
 
 void ROSParameters::getDetectionParams(
   rclcpp::Node * node,

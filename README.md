@@ -102,13 +102,22 @@ colcon build --symlink-install --packages-select grasp_msgs moveit_msgs grasp_li
 ```
 
 ## Launch Grasp Library
-Launch RGBD camera, e.g. [ROS2 Realsenes](https://github.com/intel/ros2_intel_realsense)
 ```bash
+# Terminal 1, launch RGBD camera, e.g. [ROS2 Realsenes](https://github.com/intel/ros2_intel_realsense)
 ros2 run realsense_ros2_camera realsense_ros2_camera
-```
-Launch Grasp Library
-```bash
+# Terminal 2, launch Grasp Library
 ros2 run grasp_library grasp_library
+# Terminal 3, Optionally, launch Rviz2 to illustrate detection results
+ros2 run rviz2 rviz2 -d ~/ros2_ws/src/ros2_grasp_library/grasp_library/rviz2/grasp.rviz 
+```
+
+## Test Grasp Library
+Sanity test cases are very basic tests cover ROS2 topic and ROS2 service for Grasp Library. The tests take inputs from a pre-stored PointCloud file (.pcd). Thus it's unnecessary to launch an RGBD camera.
+```bash
+# Terminal 1, launch Grasp Library
+ros2 run grasp_library grasp_library
+# Terminal 2, run tests
+colcon test --packages-select grasp_msgs grasp_library
 ```
 
 ## Subscribed Topics
@@ -121,6 +130,18 @@ ros2 run grasp_library grasp_library
   * plan_grasps ([moveit_msgs::srv::GraspPlanning](https://github.com/intel/ros2_grasp_library/blob/master/moveit_msgs_light/srv/GraspPlanning.srv)), MoveIt! grasp planning service
 
 ## Known Issues
-  * Cloud camera failed at "Invalid sizes when resizing a matrix or array" when dealing with XYZRGBA pointcloud from ROS2 Realsenes, tracked as [#6](https://github.com/atenpas/gpg/issues/6) of gpg, [patch](https://github.com/atenpas/gpg/pull/7) under review
+  * Cloud camera failed at "Invalid sizes when resizing a matrix or array" when dealing with XYZRGBA pointcloud from ROS2 Realsenes, tracked as [#6](https://github.com/atenpas/gpg/issues/6) of gpg, [patch](https://github.com/atenpas/gpg/pull/7) under review.
+
+## Contribute to This Project
+  It's welcomed to contribute patches. Here're some recommended practices:
+  * When adding a new feature it's expected to add tests covering the new functionalities.
+  * Before submitting the patch, it's recommended to pass all existing tests to avoid regression.
+    ```bash
+    # terminal 1
+    ros2 run grasp_library grasp_library
+    # terminal 2
+    colcon test --packages-select grasp_msgs grasp_library
+    ```
+    For failed cases check detailed logs at "ros2_ws/log/latest_test/<package_name>/stdout.log".
 
 ###### *Any security issue should be reported using process at https://01.org/security*
