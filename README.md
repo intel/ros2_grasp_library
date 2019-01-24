@@ -108,7 +108,7 @@ ros2 run realsense_ros2_camera realsense_ros2_camera
 # Terminal 2, launch Grasp Library
 ros2 run grasp_library grasp_library
 # Terminal 3, Optionally, launch Rviz2 to illustrate detection results
-ros2 run rviz2 rviz2 -d ~/ros2_ws/src/ros2_grasp_library/grasp_library/rviz2/grasp.rviz 
+ros2 run rviz2 rviz2 -d ~/ros2_ws/src/ros2_grasp_library/grasp_library/rviz2/grasp.rviz
 ```
 
 ## Test Grasp Library
