@@ -1,6 +1,6 @@
 # ros2_grasp_library
 ROS2 Grasp Library enables grasp detection algorithms on ROS2 for visual based industrial robot manipulation. This package provides two levels of interface. Application can decide which level to use, depending on whether MoveIt! framework is adopted.
-* ROS2 grasp planning service compliant with MoveIt interface, used by MoveIt manipulation applications
+* ROS2 grasp planning service as MoveIt plugin, used by MoveIt manipulation applications
 * ROS2 topic conveys grasp detection results, used by other ROS/ROS2 manipulation applications
 
 The above interfaces can be bridged back to ROS via [ros1_bridge](https://github.com/ros2/ros1_bridge/blob/master/README.md)
@@ -10,13 +10,13 @@ ROS2 Grasp Library keep enabling various grasp detection algorithms in the back-
 
 <img src="https://github.com/intel/ros2_grasp_library/blob/master/docs/img/ros2_grasp_library.png" width = "596" height = "436" alt="ROS2 Grasp Library" align=center />
 
+
 ## Dependencies
-### Install ROS2 packages [ros-crystal-desktop](https://index.ros.org/doc/ros2/Installation/Linux-Install-Debians)
+We verified the software with Ubuntu 18.04 Bionic and ROS2 Crystal Clemmys release.
+### Install ROS2 packages
+  [ros-crystal-desktop](https://index.ros.org/doc/ros2/Installation/Linux-Install-Debians)
 
 ### Install non ROS packages
-  * PCL 1.7 or later (debian package "libpcl-dev")
-  * Eigen 3.0 or later (debian package "libeigen3-dev")
-  An example to install the above packages with command line:
   ```bash
   sudo apt-get install libpcl-dev libeigen3-dev
   ```
@@ -84,14 +84,15 @@ mkdir build && cd build
 cmake -DUSE_OPENVINO=ON ..
 make
 sudo make install
-# by default, "libgrasp_pose_detection.so" shall be installed to "/usr/local/lib", and header files installed to "/usr/local/include/gpd"
+# by default, "libgrasp_pose_detection.so" shall be installed to "/usr/local/lib"
+# and header files installed to "/usr/local/include/gpd"
 ```
 
 ## Get source codes of Grasp Library
 ```bash
 mkdir ~/ros2_ws/src -p
 cd ~/ros2_ws/src
-git clone https://github.intel.com/otc-rse/ros2_grasp_library.git
+git clone https://github.com/intel/ros2_grasp_library.git
 # copy GPD models
 cp -a <path-to-gpd-repo>/models ros2_grasp_library/gpd
 ```
