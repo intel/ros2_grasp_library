@@ -1,4 +1,4 @@
-# ros2_grasp_library
+# ROS2 OpenVINO Grasp Library
 ROS2 Grasp Library enables grasp detection algorithms on ROS2 for visual based industrial robot manipulation. This package provides two levels of interface. Application can decide which level to use, depending on whether MoveIt! framework is adopted.
 * ROS2 grasp planning service as MoveIt plugin, used by MoveIt manipulation applications
 * ROS2 topic conveys grasp detection results, used by other ROS/ROS2 manipulation applications
@@ -107,19 +107,23 @@ colcon build --symlink-install --packages-select grasp_msgs moveit_msgs grasp_li
 # Terminal 1, launch RGBD camera, e.g. [ROS2 Realsenes](https://github.com/intel/ros2_intel_realsense)
 ros2 run realsense_ros2_camera realsense_ros2_camera
 # Terminal 2, launch Grasp Library
-ros2 run grasp_library grasp_library
+ros2 launch grasp_library grasp_library.launch.py cloud_topic:=<name of point cloud topic>
 # Terminal 3, Optionally, launch Rviz2 to illustrate detection results
 ros2 run rviz2 rviz2 -d ~/ros2_ws/src/ros2_grasp_library/grasp_library/rviz2/grasp.rviz
 ```
+
+## Launch Options
+* cloud_topic: name of point cloud topic
 
 ## Test Grasp Library
 Sanity test cases are very basic tests cover ROS2 topic and ROS2 service for Grasp Library. The tests take inputs from a pre-stored PointCloud file (.pcd). Thus it's unnecessary to launch an RGBD camera.
 ```bash
 # Terminal 1, launch Grasp Library
-ros2 run grasp_library grasp_library
+ros2 launch grasp_library grasp_library.launch.py cloud_topic:=/camera/depth_registered/points
 # Terminal 2, run tests
 colcon test --packages-select grasp_msgs grasp_library
 ```
+For failed cases check detailed logs at "ros2_ws/log/latest_test/<package_name>/stdout.log".
 
 ## Subscribed Topics
   * /camera/depth_registered/points ([sensor_msgs::msg::PointCloud2](https://github.com/ros2/common_interfaces/blob/master/sensor_msgs/msg/PointCloud2.msg)), PointCloud2 messages from RGBD camera
@@ -134,15 +138,8 @@ colcon test --packages-select grasp_msgs grasp_library
   * Cloud camera failed at "Invalid sizes when resizing a matrix or array" when dealing with XYZRGBA pointcloud from ROS2 Realsenes, tracked as [#6](https://github.com/atenpas/gpg/issues/6) of gpg, [patch](https://github.com/atenpas/gpg/pull/7) under review.
 
 ## Contribute to This Project
-  It's welcomed to contribute patches. Here're some recommended practices:
+  It's welcomed to contribute to this project. Here're some recommended practices:
   * When adding a new feature it's expected to add tests covering the new functionalities.
-  * Before submitting the patch, it's recommended to pass all existing tests to avoid regression.
-    ```bash
-    # terminal 1
-    ros2 run grasp_library grasp_library
-    # terminal 2
-    colcon test --packages-select grasp_msgs grasp_library
-    ```
-    For failed cases check detailed logs at "ros2_ws/log/latest_test/<package_name>/stdout.log".
+  * Before submitting a patch, it's recommended to pass all existing tests to avoid regression.
 
 ###### *Any security issue should be reported using process at https://01.org/security*

@@ -70,6 +70,7 @@ TEST(GraspLibraryTests, TestGraspTopic) {
   rclcpp::spin_some(node);
   EXPECT_TRUE(received_topic);
   EXPECT_GT(num_grasps, 0);
+  pcd_stop = true;
 }
 
 TEST(GraspLibraryTests, TestGraspService) {
