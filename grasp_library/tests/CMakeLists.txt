@@ -7,7 +7,7 @@ find_package(moveit_msgs REQUIRED)
 ament_add_gtest(tgrasp_library tgrasp_library.cpp)
 if(TARGET tgrasp_library)
   get_filename_component(RESOURCE_DIR "resource" ABSOLUTE)
-  configure_file(tgrasp_library.h.in tests/tgrasp_library.h)
+  configure_file(tgrasp_library.h.in tgrasp_library.h)
   include_directories(${CMAKE_CURRENT_BINARY_DIR} ${PCL_INCLUDE_DIRS})
   link_directories(${PCL_LIBRARY_DIRS})
   target_include_directories(tgrasp_library PUBLIC
