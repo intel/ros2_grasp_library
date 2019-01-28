@@ -108,7 +108,8 @@ colcon build --symlink-install --packages-select grasp_msgs moveit_msgs grasp_li
 ros2 run realsense_ros2_camera realsense_ros2_camera
 # Terminal 2, launch Grasp Library
 ros2 launch grasp_library grasp_library.launch.py cloud_topic:=<name of point cloud topic>
-# Terminal 3, Optionally, launch Rviz2 to illustrate detection results. NOTE you may update rviz2 for the "cloud_topic" name
+# Terminal 3, Optionally, launch Rviz2 to illustrate detection results.
+# NOTE You may customize the ".rviz" file for your own camera, like for the "cloud_topic" name
 ros2 run rviz2 rviz2 -d ~/ros2_ws/src/ros2_grasp_library/grasp_library/rviz2/grasp.rviz
 ```
 
