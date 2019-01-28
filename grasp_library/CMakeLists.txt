@@ -108,6 +108,12 @@ install(
   DESTINATION include
 )
 
+# Install launch files
+install(
+  DIRECTORY launch/
+  DESTINATION share/${PROJECT_NAME}
+)
+
 # Flags
 if(UNIX OR APPLE)
   # Linker flags.
