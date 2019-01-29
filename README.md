@@ -1,4 +1,6 @@
 # ROS2 OpenVINO Grasp Library
+
+## Overview
 ROS2 Grasp Library enables grasp detection algorithms on ROS2 for visual based industrial robot manipulation. This package provides two levels of interface. Application can decide which level to use, depending on whether MoveIt! framework is adopted.
 * ROS2 grasp planning service as MoveIt plugin, used by MoveIt manipulation applications
 * ROS2 topic conveys grasp detection results, used by other ROS/ROS2 manipulation applications
@@ -11,82 +13,22 @@ ROS2 Grasp Library keep enabling various grasp detection algorithms in the back-
   <img src="docs/img/ros2_grasp_library.png" width = 50% height = 50% alt="ROS2 Grasp Library" align=center />
 
 
-## Dependencies
+## Requirements
+### Hardware
+* Host running ROS2/ROS
+* RGBD sensor
+### Software
 We verified the software with Ubuntu 18.04 Bionic and ROS2 Crystal Clemmys release.
-### Install ROS2 packages
+* Install ROS2 packages
   [ros-crystal-desktop](https://index.ros.org/doc/ros2/Installation/Linux-Install-Debians)
 
-### Install non ROS packages
+* Install non ROS packages
   ```bash
   sudo apt-get install libpcl-dev libeigen3-dev
   ```
 
-### Install [Intel OpenVINO Toolkit](https://github.com/opencv/dldt)
-1. Build and install Inference Engine for [Linux](https://github.com/opencv/dldt/blob/2018/inference-engine/README.md#build-on-linux-systems). Detailed steps for your ref
-   ```bash
-   git clone https://github.com/opencv/dldt.git
-   cd dldt/inference-engine
-   git submodule init
-   git submodule update --recursive
-   # install common dependencies
-   source ./install_dependencies.sh
-   # install mkl for cpu acceleration
-   wget https://github.com/intel/mkl-dnn/releases/download/v0.17/mklml_lnx_2019.0.1.20180928.tgz
-   tar -zxvf mklml_lnx_2019.0.1.20180928.tgz
-   sudo ln -s `pwd`/mklml_lnx_2019.0.1.20180928 /usr/local/lib/mklml
-   # install opencl for gpu acceleration
-   wget https://github.com/intel/compute-runtime/releases/download/18.28.11080/intel-opencl_18.28.11080_amd64.deb
-   sudo dpkg -i intel-opencl_18.28.11080_amd64.deb
-   # build
-   mkdir build && cd build
-   cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local -DGEMM=MKL -DMKLROOT=/usr/local/lib/mklml -DENABLE_MKL_DNN=ON -DENABLE_CLDNN=ON ..
-   make -j8
-   sudo make install
-   ```
-2. Share the CMake configures for Inference Engine to be found by other packages
-   ```bash
-   sudo mkdir /usr/share/InferenceEngine
-   sudo cp InferenceEngineConfig*.cmake /usr/share/InferenceEngine
-   sudo cp targets.cmake /usr/share/InferenceEngine
-   ```
-   Then Inference Engine will be found when adding "find_package(InferenceEngine)" into the CMakeLists.txt
-3. Configure library path for dynamic loading
-   ```bash
-   echo `pwd`/../bin/intel64/Release/lib | sudo tee -a /etc/ld.so.conf.d/openvino.conf
-   sudo ldconfig
-   ```
-
-### Install [GPG](https://github.com/atenpas/gpg)
-1. Get the code
-```bash
-git clone https://github.com/atenpas/gpg.git
-cd gpg
-```
-2. Build the library
-```bash
-mkdir build && cd build
-cmake ..
-make
-sudo make install
-# by default, "libgrasp_candidates_generator.so" shall be installed to "/usr/local/lib"
-```
-
-### Install [GPD](https://github.com/sharronliu/gpd)
-1. Get the code
-```bash
-git clone https://github.com/sharronliu/gpd.git
-git checkout libgpd
-cd gpd/src/gpd
-```
-2. Build the library
-```bash
-mkdir build && cd build
-cmake -DUSE_OPENVINO=ON ..
-make
-sudo make install
-# by default, "libgrasp_pose_detection.so" shall be installed to "/usr/local/lib"
-# and header files installed to "/usr/local/include/gpd"
-```
+* Install [Intel OpenVINO Toolkit](docs/install_openvino.md)
+* Install [GPD](docs/install_gpd.md)
 
 ## Get source codes of Grasp Library
 ```bash
@@ -113,7 +55,7 @@ ros2 launch grasp_library grasp_library.launch.py cloud_topic:=<name of point cl
 ros2 run rviz2 rviz2 -d ~/ros2_ws/src/ros2_grasp_library/grasp_library/rviz2/grasp.rviz
 ```
 
-## Launch Options
+### Launch Options
 * cloud_topic: name of point cloud topic
 
 ## Test Grasp Library
@@ -126,13 +68,14 @@ colcon test --packages-select grasp_msgs grasp_library
 ```
 For failed cases check detailed logs at "ros2_ws/log/latest_test/<package_name>/stdout.log".
 
-## Subscribed Topics
+## ROS2 Interfaces
+### Subscribed Topics
   * /camera/depth_registered/points ([sensor_msgs::msg::PointCloud2](https://github.com/ros2/common_interfaces/blob/master/sensor_msgs/msg/PointCloud2.msg)), PointCloud2 messages from RGBD camera
 
-## Published Topics
+### Published Topics
   * /grasp_library/clustered_grasps ([grasp_msgs::msg::GraspConfigList](https://github.com/intel/ros2_grasp_library/blob/master/grasp_msgs/msg/GraspConfigList.msg)), detected grasps from GPD
 
-## Delivered Services
+### Delivered Services
   * plan_grasps ([moveit_msgs::srv::GraspPlanning](https://github.com/intel/ros2_grasp_library/blob/master/moveit_msgs_light/srv/GraspPlanning.srv)), MoveIt! grasp planning service
 
 ## Known Issues
