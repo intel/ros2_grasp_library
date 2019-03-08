@@ -15,56 +15,83 @@
 #ifndef GRASP_LIBRARY__GRASP_PLANNER_HPP_
 #define GRASP_LIBRARY__GRASP_PLANNER_HPP_
 
-// ROS2
 #include <rclcpp/logger.hpp>
 #include <rclcpp/rclcpp.hpp>
-
-// this project (messages)
 #include <grasp_msgs/msg/grasp_config_list.hpp>
+#include <moveit_msgs/msg/grasp.h>
 #include <moveit_msgs/srv/grasp_planning.hpp>
+#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
+#include <tf2_ros/transform_listener.h>
+#include <trajectory_msgs/msg/joint_trajectory_point.hpp>
 
-// system
+#include <condition_variable>
 #include <deque>
 #include <map>
 #include <memory>
 #include <mutex>
 #include <string>
 #include <utility>
+#include <vector>
+
+#include "grasp_library/grasp_detector_base.hpp"
 
 /** GraspPlanner class
  *
  * \brief A MoveIt grasp planner
  *
- * This class provide ROS service for MoveIt grasp planning
- *
+ * This class provide ROS service for MoveIt grasp planning. Grasp Planner drives grasp detection
+ * and takes the results from Grasp Detector.
 */
-class GraspPlanner
+class GraspPlanner : public rclcpp::Node, public GraspCallback
 {
 public:
   struct GraspPlanningParameters
   {
-    /** offset of the grasp along the approach vector*/
-    double grasp_offset_;
-    /** grasps older than this threshold are not considered anymore*/
-    int32_t grasp_cache_time_threshold_;
+    /** timeout in seconds for a service request waiting for grasp detection result*/
+    int grasp_service_timeout_;
+    /** frame id expected for grasps returned from this service*/
+    std::string grasp_frame_id_;
+    /** minimum score expected for grasps returned from this service*/
+    int grasp_score_threshold_;
+    /** offset [x, y, z] in metres applied to the grasps detected*/
+    std::vector<double> grasp_offset_;
+    /** boundry in grasp_frame_id_ expected for grasps returned from this service*/
+    std::vector<double> grasp_boundry_;
+    /** minimum distance in metres for a grasp to approach and retreat*/
+    double grasp_min_distance_;
+    /** desired distance in metres for a grasp to approach and retreat*/
+    double grasp_desired_distance_;
+    /** joint names of gripper fingers*/
+    std::vector<std::string> finger_joint_names_;
+    /** trajectory points in 'open' status, for joints in the same order as 'finger_joint_names_'*/
+    trajectory_msgs::msg::JointTrajectoryPoint finger_points_open_;
+    /** trajectory points in 'close' status, for joints in the same order as 'finger_joint_names_'*/
+    trajectory_msgs::msg::JointTrajectoryPoint finger_points_close_;
   };
 
   /**
    * \brief Constructor.
+   * \param grasp_detector Grasp Detector used by this planner.
   */
-  GraspPlanner(rclcpp::Node * node, GraspPlanningParameters & param);
+  explicit GraspPlanner(GraspDetectorBase * grasp_detector);
 
   /**
    * \brief Destructor.
   */
   ~GraspPlanner()
   {
+    delete tfBuffer_;
   }
 
   void grasp_callback(const grasp_msgs::msg::GraspConfigList::SharedPtr msg);
 
   /**
-   * \brief Grasp planning service handler
+   * \brief Grasp planning service handler.
+   * When a grasp service request comes, Grasp Planner tells the Grasp Detector to start grasp
+   * detection, waits for grasp callback arrival or till a configurable timeout period, then stops
+   * grasp detection, skips grasps with low scores, transforms grasps into the specified frame_id
+   * (if TF available), applies the configured offset, skips grasps out of boundry, and returns the
+   * results via grasp service response.
   */
   void grasp_service(
     const std::shared_ptr<rmw_request_id_t> request_header,
@@ -72,25 +99,44 @@ public:
     const std::shared_ptr<moveit_msgs::srv::GraspPlanning::Response> res);
 
 private:
-  void jointValuesToJointTrajectory(
-    std::map<std::string, double> target_values, rclcpp::Duration duration,
-    trajectory_msgs::msg::JointTrajectory & grasp_pose);
+  /**
+   * \brief Transform a grasp from original frame to the 'grasp_frame_id_' frame.
+   * Keep 'to' grasp identical to 'from' grasp, in case of transform missing or failure.
+   * \param from The grasp to transform.
+   * \param to The transformed output.
+   * \param header Message header for the frame of the 'from' grasp.
+   * \return true if transformation success, otherwise false.
+   */
+  bool transform(
+    grasp_msgs::msg::GraspConfig & from, grasp_msgs::msg::GraspConfig & to,
+    const std_msgs::msg::Header & header);
 
-  geometry_msgs::msg::Pose grasp_to_pose(grasp_msgs::msg::GraspConfig & grasp);
+  /**
+   * \brief Check if the grasp position is in boundary.
+   * \param p Grasp position.
+   * \return True if the grasp position in boundary, otherwise False.
+   */
+  bool check_boundry(const geometry_msgs::msg::Point & p);
 
-  /** ROS service for grasp planning*/
-  rclcpp::Service<moveit_msgs::srv::GraspPlanning>::SharedPtr grasp_srv_;
-  rclcpp::Logger logger_ = rclcpp::get_logger("GraspPlanner");
-  GraspPlanningParameters param_;
+  /**
+   * \brief Translate a grasp message to MoveIt message.
+   * \param grasp Grasp message to be translated.
+   * \header Message header for the frame where the 'grasp' was detected.
+   * \return MoveIt message
+   */
+  moveit_msgs::msg::Grasp toMoveIt(
+    grasp_msgs::msg::GraspConfig & grasp,
+    const std_msgs::msg::Header & header);
 
-  moveit_msgs::msg::Grasp grasp_candidate_;
-  std::deque<std::pair<moveit_msgs::msg::Grasp, builtin_interfaces::msg::Time>> grasp_candidates_;
   std::mutex m_;
-
-  // frame of the grasp
-  std::string frame_id_;
-
-  // todo table top boundry check
+  std::condition_variable cv_;
+  GraspPlanningParameters param_;
+  rclcpp::Logger logger_ = rclcpp::get_logger("GraspPlanner");
+  /** buffer for grasps to be returned from this service*/
+  std::vector<moveit_msgs::msg::Grasp> moveit_grasps_;
+  GraspDetectorBase * grasp_detector_; /**< grasp detector node*/
+  rclcpp::Service<moveit_msgs::srv::GraspPlanning>::SharedPtr grasp_srv_; /**< grasp service*/
+  tf2_ros::Buffer * tfBuffer_; /**< buffer for transformation listener*/
 };
 
 #endif  // GRASP_LIBRARY__GRASP_PLANNER_HPP_

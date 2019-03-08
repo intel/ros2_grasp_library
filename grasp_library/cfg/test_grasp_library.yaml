@@ -1,0 +1,26 @@
+GraspDetectorGPD:
+  ros__parameters:
+    cloud_topic: /camera/depth_registered/points
+    rviz: true
+    remove_plane: true
+    auto_mode: false
+    # grasp workspace in camera frames
+    workspace: [-0.3, 0.3, -0.5, 0.1, 0.3, 0.6]
+    # gripper geometry parameters in metre
+    # finger_width: the finger thickness
+    # hand_outer_diameter: the maximum robot hand aperture 
+    # hand_depth: the hand depth (the finger length)
+    # hand_height: the finger breadth
+    finger_width: 0.005
+    hand_outer_diameter: 0.100
+    hand_depth: 0.038
+    hand_height: 0.020
+GraspPlanner:
+  ros__parameters:
+    grasp_service_timeout: 5
+    grasp_frame_id: base
+    grasp_score_threshold: 0
+    grasp_offset: [0.006, 0.003, 0.0]
+    # grasp boundry in grasp_frame_id
+    grasp_boundry: [-0.3, 0.1, -0.7, -0.35, -0.15, 0.0]
+    finger_joint_names: ["finger0_joint", "finger1_joint"]

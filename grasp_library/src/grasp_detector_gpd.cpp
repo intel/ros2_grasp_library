@@ -1,4 +1,4 @@
-// Copyright (c) 2018 Intel Corporation. All Rights Reserved
+// Copyright (c) 2019 Intel Corporation. All Rights Reserved
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,55 +16,52 @@
 #include <limits>
 #include <memory>
 #include <string>
+#include <thread>
 #include <vector>
-#include "grasp_library/grasp_library_node.hpp"
+#include "grasp_library/grasp_detector_gpd.hpp"
 #include "grasp_library/ros_params.hpp"
 
-GraspLibraryNode::GraspLibraryNode()
-: Node("GraspLibraryNode"), size_left_cloud_(0),
-  has_cloud_(false), has_normals_(false), has_samples_(true), frame_("")
+GraspDetectorGPD::GraspDetectorGPD()
+: Node("GraspDetectorGPD"), GraspDetectorBase(), cloud_camera_(NULL), has_cloud_(false), frame_(""),
+  tabletop_pub_(nullptr), grasps_rviz_pub_(nullptr)
 {
-  cloud_camera_ = NULL;
-  // set camera viewpoint to default origin
   std::vector<double> camera_position;
-  // this->get_parameter("camera_position", camera_position);
-  view_point_ << 0, 0, 0;  // todo passed from launch
+  this->get_parameter_or("camera_position", camera_position,
+    std::vector<double>(std::initializer_list<double>({0, 0, 0})));
+  view_point_ << camera_position[0], camera_position[1], camera_position[2];
+  this->get_parameter_or("auto_mode", auto_mode_, true);
   std::string cloud_topic, grasp_topic, rviz_topic, tabletop_topic;
   this->get_parameter_or("cloud_topic", cloud_topic,
-    std::string("/camera/depth_registered/points"));
-  this->get_parameter_or("grasp_topic", grasp_topic,
-    std::string("/grasp_library/clustered_grasps"));
-  this->get_parameter_or("rviz_topic", rviz_topic, std::string("/grasp_library/grasps_rviz"));
-  this->get_parameter_or("tabletop_topic", tabletop_topic,
-    std::string("/grasp_library/tabletop_points"));
+    std::string(Consts::kTopicPointCloud2));
+  bool rviz, plane_remove;
+  this->get_parameter_or("rviz", rviz, false);
+  this->get_parameter_or("plane_remove", plane_remove, false);
 
   auto callback = [this](const sensor_msgs::msg::PointCloud2::SharedPtr msg) -> void {
       this->cloud_callback(msg);
     };
   cloud_sub_ = this->create_subscription<sensor_msgs::msg::PointCloud2>(cloud_topic, callback);
-  grasps_pub_ = this->create_publisher<grasp_msgs::msg::GraspConfigList>(grasp_topic, 10);
-  if (!tabletop_topic.empty()) {
-    tabletop_pub_ = this->create_publisher<sensor_msgs::msg::PointCloud2>(tabletop_topic, 1);
+  grasps_pub_ = this->create_publisher<grasp_msgs::msg::GraspConfigList>(
+    Consts::kTopicDetectedGrasps, 10);
+  if (plane_remove) {
+    tabletop_pub_ = this->create_publisher<sensor_msgs::msg::PointCloud2>(
+      Consts::kTopicTabletop, 1);
   }
-  if (!rviz_topic.empty()) {
-    grasps_rviz_pub_ = this->create_publisher<visualization_msgs::msg::MarkerArray>(rviz_topic, 1);
+  if (rviz) {
+    grasps_rviz_pub_ = this->create_publisher<visualization_msgs::msg::MarkerArray>(
+      Consts::kTopicVisualGrasps, 1);
   }
 
   GraspDetector::GraspDetectionParameters detection_param;
   ROSParameters::getDetectionParams(this, detection_param);
   grasp_detector_ = new GraspDetector(detection_param);
-
-  GraspPlanner::GraspPlanningParameters planning_param;
-  ROSParameters::getPlanningParams(this, planning_param);
-  grasp_planner_ = new GraspPlanner(this, planning_param);
-
-  // this->get_parameter("workspace", workspace_);
-  std::initializer_list<double> workspace = {-1, 1, -1, 1, -1, 1};  // todo passed from launch
-  workspace_ = workspace;
   RCLCPP_INFO(logger_, "ROS2 Grasp Library node up...");
+
+  detector_thread_ = new std::thread(&GraspDetectorGPD::onInit, this);
+  detector_thread_->detach();
 }
 
-void GraspLibraryNode::onInit()
+void GraspDetectorGPD::onInit()
 {
   rclcpp::Rate rate(100);
   RCLCPP_INFO(logger_, "Waiting for point cloud to arrive ...");
@@ -86,12 +83,12 @@ void GraspLibraryNode::onInit()
       RCLCPP_INFO(logger_, "Waiting for point cloud to arrive ...");
     }
 
-    rclcpp::spin_some(shared_from_this());
+    // rclcpp::spin(shared_from_this());
     rate.sleep();
   }
 }
 
-std::vector<Grasp> GraspLibraryNode::detectGraspPosesInTopic()
+std::vector<Grasp> GraspDetectorGPD::detectGraspPosesInTopic()
 {
   // detect grasp poses
   std::vector<Grasp> grasps;
@@ -105,16 +102,21 @@ std::vector<Grasp> GraspLibraryNode::detectGraspPosesInTopic()
 
   // Publish the selected grasps.
   grasp_msgs::msg::GraspConfigList selected_grasps_msg = createGraspListMsg(grasps);
-  grasp_planner_->grasp_callback(std::make_shared<grasp_msgs::msg::GraspConfigList>(
-      selected_grasps_msg));
+  if (grasp_cb) {
+    grasp_cb->grasp_callback(
+      std::make_shared<grasp_msgs::msg::GraspConfigList>(selected_grasps_msg));
+  }
   grasps_pub_->publish(selected_grasps_msg);
   RCLCPP_INFO(logger_, "Published %d highest-scoring grasps.", selected_grasps_msg.grasps.size());
 
   return grasps;
 }
 
-void GraspLibraryNode::cloud_callback(const sensor_msgs::msg::PointCloud2::SharedPtr msg)
+void GraspDetectorGPD::cloud_callback(const sensor_msgs::msg::PointCloud2::SharedPtr msg)
 {
+  if (!auto_mode_ && !started) {return;}
+  RCLCPP_DEBUG(logger_, "PCD callback...");
+
   if (!has_cloud_) {
     delete cloud_camera_;
     cloud_camera_ = NULL;
@@ -166,7 +168,7 @@ void GraspLibraryNode::cloud_callback(const sensor_msgs::msg::PointCloud2::Share
   }
 }
 
-grasp_msgs::msg::GraspConfigList GraspLibraryNode::createGraspListMsg(
+grasp_msgs::msg::GraspConfigList GraspDetectorGPD::createGraspListMsg(
   const std::vector<Grasp> & hands)
 {
   grasp_msgs::msg::GraspConfigList msg;
@@ -180,7 +182,7 @@ grasp_msgs::msg::GraspConfigList GraspLibraryNode::createGraspListMsg(
   return msg;
 }
 
-grasp_msgs::msg::GraspConfig GraspLibraryNode::convertToGraspMsg(const Grasp & hand)
+grasp_msgs::msg::GraspConfig GraspDetectorGPD::convertToGraspMsg(const Grasp & hand)
 {
   grasp_msgs::msg::GraspConfig msg;
   pointEigenToMsg(hand.getGraspBottom(), msg.bottom);
@@ -196,7 +198,7 @@ grasp_msgs::msg::GraspConfig GraspLibraryNode::convertToGraspMsg(const Grasp & h
   return msg;
 }
 
-visualization_msgs::msg::MarkerArray GraspLibraryNode::convertToVisualGraspMsg(
+visualization_msgs::msg::MarkerArray GraspDetectorGPD::convertToVisualGraspMsg(
   const std::vector<Grasp> & hands,
   double outer_diameter, double hand_depth, double finger_width, double hand_height,
   const std::string & frame_id)
@@ -238,7 +240,7 @@ visualization_msgs::msg::MarkerArray GraspLibraryNode::convertToVisualGraspMsg(
   return marker_array;
 }
 
-visualization_msgs::msg::Marker GraspLibraryNode::createFingerMarker(
+visualization_msgs::msg::Marker GraspDetectorGPD::createFingerMarker(
   const Eigen::Vector3d & center,
   const Eigen::Matrix3d & frame, double length, double width, double height, int id,
   const std::string & frame_id)
@@ -275,7 +277,7 @@ visualization_msgs::msg::Marker GraspLibraryNode::createFingerMarker(
   return marker;
 }
 
-visualization_msgs::msg::Marker GraspLibraryNode::createHandBaseMarker(
+visualization_msgs::msg::Marker GraspDetectorGPD::createHandBaseMarker(
   const Eigen::Vector3d & start,
   const Eigen::Vector3d & end, const Eigen::Matrix3d & frame, double length, double height, int id,
   const std::string & frame_id)
@@ -312,17 +314,4 @@ visualization_msgs::msg::Marker GraspLibraryNode::createHandBaseMarker(
   marker.color.b = 1.0;
 
   return marker;
-}
-
-int main(int argc, char ** argv)
-{
-  // initialize ROS
-  rclcpp::init(argc, argv);
-  auto node = std::make_shared<GraspLibraryNode>();
-  node->onInit();
-
-  rclcpp::spin(node);
-  rclcpp::shutdown();
-
-  return 0;
 }

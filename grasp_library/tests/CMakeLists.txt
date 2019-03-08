@@ -3,8 +3,10 @@ find_package(ament_cmake_gtest REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(grasp_msgs REQUIRED)
 find_package(moveit_msgs REQUIRED)
+find_package(grasp_library REQUIRED)
 
-ament_add_gtest(tgrasp_library tgrasp_library.cpp)
+ament_add_gtest(tgrasp_library tgrasp_library.cpp ${CMAKE_CURRENT_SOURCE_DIR}/../src/consts.cpp)
+
 if(TARGET tgrasp_library)
   get_filename_component(RESOURCE_DIR "resource" ABSOLUTE)
   configure_file(tgrasp_library.h.in tgrasp_library.h)
@@ -21,4 +23,14 @@ if(TARGET tgrasp_library)
     sensor_msgs
   )
   target_link_libraries(tgrasp_library ${GTEST_LIBRARIES} ${PCL_LIBRARIES})
+
+  # Install binaries
+  install(TARGETS tgrasp_library
+    RUNTIME DESTINATION bin
+  )
+
+  install(TARGETS tgrasp_library
+    DESTINATION lib/${PROJECT_NAME}
+  )
+
 endif()

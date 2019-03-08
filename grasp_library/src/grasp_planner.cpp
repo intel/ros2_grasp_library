@@ -1,4 +1,4 @@
-// Copyright (c) 2018 Intel Corporation. All Rights Reserved
+// Copyright (c) 2019 Intel Corporation
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,45 +14,36 @@
 
 #include <tf2/LinearMath/Matrix3x3.h>
 #include <tf2/LinearMath/Quaternion.h>
+#include <tf2_ros/transform_listener.h>
+
+#include <algorithm>
+#include <condition_variable>
 #include <map>
 #include <memory>
 #include <mutex>
 #include <string>
 #include <utility>
+
+#include "grasp_library/consts.hpp"
 #include "grasp_library/grasp_planner.hpp"
 #include "grasp_library/ros_params.hpp"
 
-GraspPlanner::GraspPlanner(rclcpp::Node * node, GraspPlanningParameters & param)
+using GraspPlanning = moveit_msgs::srv::GraspPlanning;
+
+GraspPlanner::GraspPlanner(GraspDetectorBase * grasp_detector)
+: Node("GraspPlanner"), GraspCallback(), grasp_detector_(grasp_detector)
 {
-  param_ = param;
-
-  // Setting variables in grasp_candidate_ that are the same for every grasp
-  grasp_candidate_.id = "grasp";
-
-  grasp_candidate_.pre_grasp_approach.min_distance = 0.08;
-  grasp_candidate_.pre_grasp_approach.desired_distance = 0.1;
-
-  grasp_candidate_.post_grasp_retreat.min_distance = 0.13;
-  grasp_candidate_.post_grasp_retreat.desired_distance = 0.15;
-  // todo frame_id from MoveIt
-  grasp_candidate_.post_grasp_retreat.direction.header.frame_id = "move_group_arm_frame_id";
-  grasp_candidate_.post_grasp_retreat.direction.vector.z = 1.0;
-
-  std::map<std::string, double> gripper_joint_values;
-  gripper_joint_values["open"] = 0.7;  // todo joint value from MoveIt
-  gripper_joint_values["closed"] = 0.05;  // todo joint value from MoveIt
-  jointValuesToJointTrajectory(gripper_joint_values, rclcpp::Duration(
-      1.0), grasp_candidate_.pre_grasp_posture);
-  jointValuesToJointTrajectory(gripper_joint_values, rclcpp::Duration(
-      2.0), grasp_candidate_.grasp_posture);
-  RCLCPP_INFO(logger_, "Gripper joint value to trajectory...");
-
+  ROSParameters::getPlanningParams(this, param_);
   auto service = [this](const std::shared_ptr<rmw_request_id_t> request_header,
-      const std::shared_ptr<moveit_msgs::srv::GraspPlanning::Request> req,
-      const std::shared_ptr<moveit_msgs::srv::GraspPlanning::Response> res) -> void {
+      const std::shared_ptr<GraspPlanning::Request> req,
+      const std::shared_ptr<GraspPlanning::Response> res) -> void {
       this->grasp_service(request_header, req, res);
     };
-  grasp_srv_ = node->create_service<moveit_msgs::srv::GraspPlanning>("plan_grasps", service);
+  grasp_srv_ = this->create_service<GraspPlanning>("plan_grasps", service);
+
+  grasp_detector_->add_callback(this);
+
+  tfBuffer_ = new tf2_ros::Buffer(this->get_clock());
 
   RCLCPP_INFO(logger_, "ROS2 Grasp Planning Service up...");
 }
@@ -61,98 +52,159 @@ void GraspPlanner::grasp_callback(const grasp_msgs::msg::GraspConfigList::Shared
 {
   RCLCPP_INFO(logger_, "Received grasp callback");
 
-  std::lock_guard<std::mutex> lock(m_);
-  rclcpp::Time grasp_stamp = msg->header.stamp;
-  frame_id_ = msg->header.frame_id;
-  grasp_candidate_.grasp_pose.header.frame_id = frame_id_;
-  grasp_candidate_.pre_grasp_approach.direction.header.frame_id = frame_id_;
+  static bool tf_available = tfBuffer_->canTransform(param_.grasp_frame_id_, msg->header.frame_id,
+      tf2_ros::fromMsg(msg->header.stamp), tf2::durationFromSec(0));
+  std_msgs::msg::Header header;
+  header.frame_id = tf_available ? param_.grasp_frame_id_ : msg->header.frame_id;
+  header.stamp = msg->header.stamp;
+  grasp_msgs::msg::GraspConfig to_grasp;
 
-  for (auto grasp : msg->grasps) {
-    // shift the grasp according to the offset parameter
-    grasp.top.x = grasp.top.x + param_.grasp_offset_ * grasp.approach.x;
-    grasp.top.y = grasp.top.y + param_.grasp_offset_ * grasp.approach.y;
-    grasp.top.z = grasp.top.z + param_.grasp_offset_ * grasp.approach.z;
-
-    // todo grasp_boundry_check
-    {
-      grasp_candidate_.grasp_pose.pose = grasp_to_pose(grasp);
-
-      grasp_candidate_.grasp_quality = grasp.score.data;
-      grasp_candidate_.pre_grasp_approach.direction.vector.x = grasp.approach.x;
-      grasp_candidate_.pre_grasp_approach.direction.vector.y = grasp.approach.y;
-      grasp_candidate_.pre_grasp_approach.direction.vector.z = grasp.approach.z;
-
-      grasp_candidates_.push_front(std::make_pair(grasp_candidate_, grasp_stamp));
+  std::unique_lock<std::mutex> lock(m_);
+  for (auto from_grasp : msg->grasps) {
+    // skip low score grasp
+    if (from_grasp.score.data < param_.grasp_score_threshold_) {
+      RCLCPP_DEBUG(logger_, "skip low score grasps");
+      continue;
+    }
+    // transform grasp to grasp_frame_id
+    if (tf_available) {
+      if (!transform(from_grasp, to_grasp, msg->header)) {
+        // skip failed grasp
+        continue;
+      }
+    }
+    // apply grasp offset
+    to_grasp.top.x += param_.grasp_offset_[0];
+    to_grasp.top.y += param_.grasp_offset_[1];
+    to_grasp.top.z += param_.grasp_offset_[2];
+    // skip out of boundary grasps
+    if (!tf_available || check_boundry(to_grasp.top)) {
+      // translate into moveit grasp
+      moveit_grasps_.push_back(toMoveIt(to_grasp, header));
     }
   }
+
+  cv_.notify_all();
 }
 
-geometry_msgs::msg::Pose GraspPlanner::grasp_to_pose(grasp_msgs::msg::GraspConfig & grasp)
+bool GraspPlanner::transform(
+  grasp_msgs::msg::GraspConfig & from, grasp_msgs::msg::GraspConfig & to,
+  const std_msgs::msg::Header & header)
 {
-  RCLCPP_INFO(logger_, "Converting grasp msgs to geometry msgs...");
-  geometry_msgs::msg::Pose pose;
-  tf2::Matrix3x3 orientation(grasp.approach.x, grasp.binormal.x, grasp.axis.x,
-    grasp.approach.y, grasp.binormal.y, grasp.axis.y,
-    grasp.approach.z, grasp.binormal.z, grasp.axis.z);
+  static tf2_ros::TransformListener tfListener(*tfBuffer_);
+  geometry_msgs::msg::PointStamped from_top, to_top, from_surface, to_surface;
+  geometry_msgs::msg::Vector3Stamped from_approach, to_approach, from_binormal, to_binormal,
+    from_axis, to_axis;
 
-  tf2::Quaternion orientation_quat;
-  orientation.getRotation(orientation_quat);
-  orientation_quat.normalize();
-  pose.orientation.x = orientation_quat.x();
-  pose.orientation.y = orientation_quat.y();
-  pose.orientation.z = orientation_quat.z();
-  pose.orientation.w = orientation_quat.w();
+  to = from;
 
-  pose.position = grasp.top;
+  from_top.point = from.top;
+  from_top.header = header;
+  from_surface.point = from.surface;
+  from_surface.header = header;
+  from_approach.vector = from.approach;
+  from_approach.header = header;
+  from_binormal.vector = from.binormal;
+  from_binormal.header = header;
+  from_axis.vector = from.axis;
+  from_axis.header = header;
+  try {
+    tfBuffer_->transform(from_top, to_top, param_.grasp_frame_id_);
+    tfBuffer_->transform(from_surface, to_surface, param_.grasp_frame_id_);
+    tfBuffer_->transform(from_approach, to_approach, param_.grasp_frame_id_);
+    tfBuffer_->transform(from_binormal, to_binormal, param_.grasp_frame_id_);
+    tfBuffer_->transform(from_axis, to_axis, param_.grasp_frame_id_);
+  } catch (tf2::TransformException & ex) {
+    RCLCPP_WARN(logger_, "transform exception");
+    return false;
+  }
 
-  return pose;
+  to.top = to_top.point;
+  to.surface = to_surface.point;
+  to.approach = to_approach.vector;
+  to.binormal = to_binormal.vector;
+  to.axis = to_axis.vector;
+  return true;
+}
+
+bool GraspPlanner::check_boundry(const geometry_msgs::msg::Point & p)
+{
+  RCLCPP_INFO(logger_, "point [%f %f %f]", p.x, p.y, p.z);
+  return p.x >= param_.grasp_boundry_[0] && p.x <= param_.grasp_boundry_[1] &&
+         p.y >= param_.grasp_boundry_[2] && p.y <= param_.grasp_boundry_[3] &&
+         p.z >= param_.grasp_boundry_[4] && p.z <= param_.grasp_boundry_[5];
+}
+
+moveit_msgs::msg::Grasp GraspPlanner::toMoveIt(
+  grasp_msgs::msg::GraspConfig & grasp,
+  const std_msgs::msg::Header & header)
+{
+  moveit_msgs::msg::Grasp msg;
+  msg.grasp_pose.header = header;
+  msg.grasp_quality = grasp.score.data;
+
+  // set grasp position
+  msg.grasp_pose.pose.position = grasp.top;
+
+  // rotation matrix https://github.com/atenpas/gpd/blob/master/tutorials/hand_frame.png
+  tf2::Matrix3x3 r(
+    grasp.binormal.x, grasp.binormal.y, grasp.binormal.z,   // x-axis of the parent_link of the EEF
+    grasp.axis.x, grasp.axis.y, grasp.axis.z,               // y-axis of the parent_link of the EEF
+    grasp.approach.x, grasp.approach.y, grasp.approach.z);  // z-axis of the parent_link of the EEF
+  tf2::Quaternion quat;
+  r.getRotation(quat);
+  quat.normalize();
+  // set grasp orientation
+  msg.grasp_pose.pose.orientation = tf2::toMsg(quat);
+
+  // set pre-grasp approach
+  msg.pre_grasp_approach.direction.header = header;
+  msg.pre_grasp_approach.direction.vector = grasp.approach;
+  msg.pre_grasp_approach.min_distance = param_.grasp_min_distance_;
+  msg.pre_grasp_approach.desired_distance = param_.grasp_desired_distance_;
+
+  // set post-grasp retreat
+  msg.post_grasp_retreat.direction.header = header;
+  msg.post_grasp_retreat.direction.vector.x = -grasp.approach.x;
+  msg.post_grasp_retreat.direction.vector.y = -grasp.approach.y;
+  msg.post_grasp_retreat.direction.vector.z = -grasp.approach.z;
+  msg.post_grasp_retreat.min_distance = param_.grasp_min_distance_;
+  msg.post_grasp_retreat.desired_distance = param_.grasp_desired_distance_;
+
+  // set pre-grasp posture
+  msg.pre_grasp_posture.joint_names = param_.finger_joint_names_;
+  msg.pre_grasp_posture.points.push_back(param_.finger_points_open_);
+
+  // set grasp posture
+  msg.grasp_posture.joint_names = param_.finger_joint_names_;
+  msg.grasp_posture.points.push_back(param_.finger_points_close_);
+
+  return msg;
 }
 
 void GraspPlanner::grasp_service(
   const std::shared_ptr<rmw_request_id_t> request_header,
-  const std::shared_ptr<moveit_msgs::srv::GraspPlanning::Request> req,
-  const std::shared_ptr<moveit_msgs::srv::GraspPlanning::Response> res)
+  const std::shared_ptr<GraspPlanning::Request> req,
+  const std::shared_ptr<GraspPlanning::Response> res)
 {
-  RCLCPP_INFO(logger_, "Received Grasp Planning request");
   (void)request_header;
   (void)req;
+  RCLCPP_INFO(logger_, "Received Grasp Planning request");
 
   {
-    std::lock_guard<std::mutex> lock(m_);
-    for (auto grasp_candidate : grasp_candidates_) {
-      // after the first grasp older than the set amount of seconds is found, break the loop
-      builtin_interfaces::msg::Time ros_now = rclcpp::Clock(RCL_ROS_TIME).now();
-      if (grasp_candidate.second.sec < ros_now.sec - param_.grasp_cache_time_threshold_) {
-        // break;
-      }
-      res->grasps.push_back(grasp_candidate.first);
-    }
-    grasp_candidates_.clear();
+    std::unique_lock<std::mutex> lock(m_);
+    moveit_grasps_.clear();
+    grasp_detector_->start();
+    cv_.wait_for(lock, std::chrono::seconds(param_.grasp_service_timeout_));
   }
+  res->grasps = moveit_grasps_;
+  grasp_detector_->stop();
 
   if (res->grasps.empty()) {
-    RCLCPP_INFO(logger_, "No valid grasp found.");
+    RCLCPP_INFO(logger_, "No expected grasp found.");
     res->error_code.val = moveit_msgs::msg::MoveItErrorCodes::FAILURE;
   } else {
     RCLCPP_INFO(logger_, "%ld grasps found.", res->grasps.size());
     res->error_code.val = moveit_msgs::msg::MoveItErrorCodes::SUCCESS;
   }
-}
-
-void GraspPlanner::jointValuesToJointTrajectory(
-  std::map<std::string, double> target_values, rclcpp::Duration duration,
-  trajectory_msgs::msg::JointTrajectory & grasp_pose)
-{
-  grasp_pose.joint_names.reserve(target_values.size());
-  grasp_pose.points.resize(1);
-  grasp_pose.points[0].positions.reserve(target_values.size());
-
-  for (std::map<std::string, double>::iterator it =
-    target_values.begin(); it != target_values.end();
-    ++it)
-  {
-    grasp_pose.joint_names.push_back(it->first);
-    grasp_pose.points[0].positions.push_back(it->second);
-  }
-  grasp_pose.points[0].time_from_start = duration;
 }

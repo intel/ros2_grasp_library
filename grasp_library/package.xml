@@ -17,6 +17,10 @@
   <build_depend>moveit_msgs</build_depend>
   <build_depend>visualization_msgs</build_depend>
   <build_depend>pcl_conversions</build_depend>
+  <build_depend>tf2</build_depend>
+  <build_depend>tf2_ros</build_depend>
+  <build_depend>tf2_geometry_msgs</build_depend>
+  <build_depend>trajectory_msgs</build_depend>
 
   <exec_depend>rosidl_default_runtime</exec_depend>
   <exec_depend>builtin_interfaces</exec_depend>
@@ -27,6 +31,10 @@
   <exec_depend>moveit_msgs</exec_depend>
   <exec_depend>visualization_msgs</exec_depend>
   <exec_depend>pcl_conversions</exec_depend>
+  <exec_depend>tf2</exec_depend>
+  <exec_depend>tf2_ros</exec_depend>
+  <exec_depend>tf2_geometry_msgs</exec_depend>
+  <exec_depend>trajectory_msgs</exec_depend>
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
