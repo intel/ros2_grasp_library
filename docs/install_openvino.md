@@ -34,3 +34,5 @@ The toolkit is available from open source project [Intel OpenVINO Toolkit](https
    echo `pwd`/../bin/intel64/Release/lib | sudo tee -a /etc/ld.so.conf.d/openvino.conf
    sudo ldconfig
    ```
+4. Optionally install plug-ins for InferenceEngine deployment on heterogeneous devices
+   * Install [plug-in](https://software.intel.com/en-us/neural-compute-stick/get-started) for deployment on Intel Movidius Neural Computation Sticks Myriad X.

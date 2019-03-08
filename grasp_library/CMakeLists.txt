@@ -37,8 +37,11 @@ find_package(grasp_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(moveit_msgs)
 find_package(visualization_msgs)
+find_package(tf2)
+find_package(tf2_ros REQUIRED)
+find_package(tf2_geometry_msgs REQUIRED)
+find_package(trajectory_msgs REQUIRED)
 find_package(pcl_conversions REQUIRED)
-find_package(tf2 REQUIRED)
 find_package(Eigen3 REQUIRED)
 find_package(InferenceEngine)
 
@@ -70,9 +73,11 @@ include_directories(
 )
 
 add_executable(${PROJECT_NAME}
-  src/grasp_library_node.cpp
+  src/consts.cpp
+  src/grasp_detector_gpd.cpp
   src/grasp_planner.cpp
   src/ros_params.cpp
+  src/grasp_composition.cpp
 )
 
 ament_target_dependencies(${PROJECT_NAME}
@@ -83,10 +88,14 @@ ament_target_dependencies(${PROJECT_NAME}
   "moveit_msgs"
   "visualization_msgs"
   "tf2"
+  "tf2_ros"
+  "tf2_geometry_msgs"
+  "trajectory_msgs"
   "pcl_conversions"
 )
 
 target_link_libraries(${PROJECT_NAME}
+  ${ament_LIBRARIES}
   ${gpg_LIBRARIES}
   ${gpd_LIBRARIES}
   ${PCL_LIBRARIES}
@@ -106,12 +115,6 @@ install(TARGETS ${PROJECT_NAME}
 install(
   DIRECTORY include/
   DESTINATION include
-)
-
-# Install launch files
-install(
-  DIRECTORY launch/
-  DESTINATION share/${PROJECT_NAME}
 )
 
 # Flags

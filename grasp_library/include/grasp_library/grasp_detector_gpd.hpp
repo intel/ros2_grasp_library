@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef GRASP_LIBRARY__GRASP_LIBRARY_NODE_HPP_
-#define GRASP_LIBRARY__GRASP_LIBRARY_NODE_HPP_
+#ifndef GRASP_LIBRARY__GRASP_DETECTOR_GPD_HPP_
+#define GRASP_LIBRARY__GRASP_DETECTOR_GPD_HPP_
 
 // ROS2
 #include <geometry_msgs/msg/point.hpp>
@@ -38,50 +38,52 @@
 #include <gpd/grasp_detector.h>
 #include <grasp_msgs/msg/grasp_config.hpp>
 #include <grasp_msgs/msg/grasp_config_list.hpp>
-#include <grasp_msgs/msg/samples_msg.hpp>
 
 // system
 #include <algorithm>
 #include <string>
 #include <vector>
 
+#include "grasp_library/consts.hpp"
+#include "grasp_library/grasp_detector_base.hpp"
 #include "grasp_library/grasp_planner.hpp"
 
 typedef pcl::PointCloud<pcl::PointXYZRGBA> PointCloudRGBA;
 typedef pcl::PointCloud<pcl::PointNormal> PointCloudPointNormal;
 
 
-/** GraspLibraryNode class
+/** GraspDetectorGPD class
  *
  * \brief A ROS node that can detect grasp poses in a point cloud.
  *
  * This class is a ROS node that handles all the ROS topics.
  *
 */
-class GraspLibraryNode : public rclcpp::Node
+class GraspDetectorGPD : public rclcpp::Node, public GraspDetectorBase
 {
 public:
   /**
    * \brief Constructor.
   */
-  GraspLibraryNode();
+  GraspDetectorGPD();
 
   /**
    * \brief Destructor.
   */
-  ~GraspLibraryNode()
+  ~GraspDetectorGPD()
   {
     delete cloud_camera_;
 
     delete grasp_detector_;
 
-    delete grasp_planner_;
+    // todo stop and delete threads
   }
 
+private:
   /**
    * \brief Run the ROS node. Loops while waiting for incoming ROS messages.
    */
-  virtual void onInit();
+  void onInit();
 
   /**
    * \brief Detect grasp poses in a point cloud received from a ROS topic.
@@ -89,7 +91,6 @@ public:
    */
   std::vector<Grasp> detectGraspPosesInTopic();
 
-private:
   /**
    * \brief Callback function for the ROS topic that contains the input point cloud.
    * \param msg the incoming ROS message
@@ -152,15 +153,14 @@ private:
   }
 
   Eigen::Vector3d view_point_; /**< (input) view point of the camera onto the point cloud*/
-
   /** stores point cloud with (optional) camera information and surface normals*/
   CloudCamera * cloud_camera_;
   std_msgs::msg::Header cloud_camera_header_; /**< stores header of the point cloud*/
-  /** (input) size of the left point cloud (when using two point clouds as input)*/
-  int size_left_cloud_;
   /** status variables for received (input) messages*/
-  bool has_cloud_, has_normals_, has_samples_;
+  bool has_cloud_;
   std::string frame_; /**< point cloud frame*/
+  bool auto_mode_; /**< grasp detection mode*/
+
   /** ROS subscriber for point cloud messages*/
   rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr cloud_sub_;
   /** ROS publisher for grasp list messages*/
@@ -170,17 +170,9 @@ private:
   /** ROS publisher for grasps in rviz (visualization)*/
   rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr grasps_rviz_pub_;
 
-  bool filter_grasps_; /**< if grasps are filtered on workspace and gripper aperture*/
-  bool filter_half_antipodal_; /**< if half-antipodal grasps are filtered*/
-  bool plot_filtered_grasps_; /**< if filtered grasps are plotted*/
-  bool plot_selected_grasps_; /**< if selected grasps are plotted*/
-  bool plot_normals_; /**< if normals are plotted*/
-  bool plot_samples_; /**< if samples/indices are plotted*/
-  std::vector<double> workspace_; /**< workspace limits*/
-
   GraspDetector * grasp_detector_; /**< used to run the grasp pose detection*/
-  GraspPlanner * grasp_planner_; /**< grasp planning service*/
-  rclcpp::Logger logger_ = rclcpp::get_logger("GraspLibraryNode");
+  rclcpp::Logger logger_ = rclcpp::get_logger("GraspDetectorGPD");
+  std::thread * detector_thread_; /**< thread for grasp detection*/
 };
 
-#endif  // GRASP_LIBRARY__GRASP_LIBRARY_NODE_HPP_
+#endif  // GRASP_LIBRARY__GRASP_DETECTOR_GPD_HPP_
