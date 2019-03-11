@@ -1,11 +1,13 @@
-# Grasp Library with RGBD Camera
+# OpenVINO Grasp Library with RGBD Camera
+
+This tutorial introduce the OpenVINO environment setup, how to build and launch Grasp Library with RGBD camera.
 
 ## Requirements
 ### Hardware
 * Host running ROS2/ROS
 * RGBD sensor
 ### Software
-We verified the software with Ubuntu 18.04 Bionic and ROS2 Crystal Clemmys release.
+We verified the software with Ubuntu 18.04 Bionic and ROS2 Crystal Clemmys release. Verification with ROS2 MoveIt is still work in progress. Before this, we have verified the grasp detection with MoveIt Melodic branch (tag 0.10.8) and our visual pick & place application.
 * Install ROS2 packages
   [ros-crystal-desktop](https://index.ros.org/doc/ros2/Installation/Linux-Install-Debians)
 

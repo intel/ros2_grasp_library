@@ -2,8 +2,9 @@ GraspDetectorGPD:
   ros__parameters:
     cloud_topic: /camera/depth/color/points
     rviz: true
-    remove_plane: true
+    device: 0
     auto_mode: true
+    plane_remove: true
     # grasp workspace in camera frames
     workspace: [-0.3, 0.3, -0.5, 0.1, 0.3, 0.6]
     # gripper geometry parameters in metre

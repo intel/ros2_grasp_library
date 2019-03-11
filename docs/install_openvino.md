@@ -1,6 +1,18 @@
-Intel® Distribution of OpenVINO™ (Open Visual Inference & Neural Network Optimization) toolkit, based on convolutional neural networks (CNN), extends workloads across Intel® hardware (including accelerators) and maximizes performance. The toolkit enables CNN-based deep learning inference at the edge computation, and supports heterogeneous execution across various compution vision devices -- CPU, GPU, Intel® Movidius™ NCS, and FPGA -- using a **common** API.
+# Intel® DLDT toolkit and Intel® OpenVINO™ toolkit
 
-The toolkit is available from open source project [Intel OpenVINO Toolkit](https://github.com/opencv/dldt). Refer to the installation guides to build and install Inference Engine for [Linux](https://github.com/opencv/dldt/blob/2018/inference-engine/README.md#build-on-linux-systems). Below is detailed steps for your ref.
+This tutorial introduces the DLDT toolkit and OpenVINO toolkit.
+
+Intel® [DLDT](https://github.com/opencv/dldt) is a Deep Learning Deployment Toolkit common to all architectures. The toolkit allows developers to convert pre-trained deep learning models into optimized Intermediate Representation (IR) models, then deploy the IR models through a high-level C++ Inference Engine API integrated with application logic. Additionally, [Open Model Zoo](https://github.com/opencv/open_model_zoo) provides more than 100 pre-trained optimized deep learning models and a set of demos to expedite development of high-performance deep learning inference applications. Online tutorials are availble for
+* [Inference Engine Build Instructions](https://github.com/opencv/dldt/blob/2018/inference-engine/README.md)
+
+Intel® [OpenVINO™](https://software.intel.com/en-us/openvino-toolkit) (Open Visual Inference & Neural Network Optimization) toolkit enables CNN-based deep learning inference at the edge computation, extends workloads across Intel® hardware (including accelerators) and maximizes performance. The toolkit supports heterogeneous execution across various compution vision devices -- CPU, GPU, Intel® Movidius™ NCS, and FPGA -- using a common API. Online tutorials are available for
+* [Model Optimize Developer Guide](https://software.intel.com/en-us/articles/OpenVINO-ModelOptimizer)
+* [Inference Engine Developer Guide](https://software.intel.com/en-us/articles/OpenVINO-InferEngine)
+* [Intel® Neural Compute Stick 2](https://software.intel.com/en-us/neural-compute-stick/get-started)
+
+
+## Install DLDT and OpenVINO
+It's recommended to refer to the online documents of the toolkits for the latest installation instruction. Below is detailed steps we verified with Ubuntu 18.04 on Intel NUC6i7KYK for your ref.
 1. Build and install Inference Engine
    ```bash
    git clone https://github.com/opencv/dldt.git

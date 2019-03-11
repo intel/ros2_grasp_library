@@ -63,7 +63,7 @@ void ROSParameters::getDetectionParams(
   node->get_parameter_or("trained_file", param.weights_file_, std::string(""));
   node->get_parameter_or("min_score_diff", param.min_score_diff_, 500.0);
   node->get_parameter_or("create_image_batches", param.create_image_batches_, false);
-  node->get_parameter_or("device", param.device_, 1);
+  node->get_parameter_or("device", param.device_, 0);
 
   // Read grasp image parameters.
   node->get_parameter_or("image_outer_diameter", param.image_params.outer_diameter_,
