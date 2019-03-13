@@ -28,7 +28,10 @@ git clone https://github.com/intel/ros2_grasp_library.git
 # copy GPD models
 cp -a <path-to-gpd-repo>/models ros2_grasp_library/gpd
 # build
+cd ..
+source /opt/ros/crystal/setup.bash
 colcon build --symlink-install --packages-select grasp_msgs moveit_msgs grasp_library
+source ./install/local_setup.bash
 ```
 
 ## Launch Grasp Library
@@ -41,5 +44,5 @@ ros2 run realsense_ros2_camera realsense_ros2_camera
 ros2 run grasp_library grasp_library __params:=src/ros2_grasp_library/grasp_library/cfg/grasp_library_params.yaml
 # Terminal 3, Optionally, launch Rviz2 to illustrate detection results.
 # NOTE You may customize the ".rviz" file for your own camera, like "Global Options -> Fixed Frame" or "Point Cloud 2 -> Topic"
-ros2 run rviz2 rviz2 -d ~/ros2_ws/src/ros2_grasp_library/grasp_library/rviz2/grasp.rviz
+ros2 run rviz2 rviz2 -d src/ros2_grasp_library/grasp_library/rviz2/grasp.rviz
 ```

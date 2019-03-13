@@ -2,7 +2,7 @@ GraspDetectorGPD:
   ros__parameters:
     cloud_topic: /camera/depth/color/points
     rviz: true
-    device: 0
+    device: 0 # 0:CPU, 1:GPU, 2:VPU
     auto_mode: true
     plane_remove: true
     # grasp workspace in camera frames
@@ -18,10 +18,12 @@ GraspDetectorGPD:
     hand_height: 0.020
 GraspPlanner:
   ros__parameters:
-    grasp_service_timeout: 5
-    grasp_frame_id: base
+    grasp_service_timeout: 8
     grasp_score_threshold: 200
+    grasp_frame_id: base
+    grasp_approach: [0.0, 0.0, -1.0] # expect approach in -z axis
+    grasp_approach_angle_threshold: 0.5236 # M_PI/6
     grasp_offset: [0.006, 0.003, 0.0]
     # grasp boundry in grasp_frame_id
     grasp_boundry: [-0.3, 0.1, -0.7, -0.35, -0.15, 0.0]
-    finger_joint_names: ["finger0_joint", "finger1_joint"]
+    finger_joint_names: ["panda_finger_joint1", "panda_finger_joint2"]
