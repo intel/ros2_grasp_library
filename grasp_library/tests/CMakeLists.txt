@@ -3,7 +3,6 @@ find_package(ament_cmake_gtest REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(grasp_msgs REQUIRED)
 find_package(moveit_msgs REQUIRED)
-find_package(grasp_library REQUIRED)
 
 ament_add_gtest(tgrasp_library tgrasp_library.cpp ${CMAKE_CURRENT_SOURCE_DIR}/../src/consts.cpp)
 
