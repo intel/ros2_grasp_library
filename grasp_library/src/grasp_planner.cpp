@@ -73,18 +73,31 @@ void GraspPlanner::grasp_callback(const grasp_msgs::msg::GraspConfigList::Shared
         continue;
       }
     }
+    if (param_.grasp_approach_angle_ != M_PI) {
+      // skip unacceptable approach
+      tf2::Vector3 approach(to_grasp.approach.x, to_grasp.approach.y, to_grasp.approach.z);
+      double ang = tf2::tf2Angle(approach, param_.grasp_approach_);
+      if (std::isnan(ang) ||
+        ang < -param_.grasp_approach_angle_ || ang > param_.grasp_approach_angle_)
+      {
+        RCLCPP_INFO(logger_, "skip unacceptable approach");
+        continue;
+      }
+    }
     // apply grasp offset
-    to_grasp.top.x += param_.grasp_offset_[0];
-    to_grasp.top.y += param_.grasp_offset_[1];
-    to_grasp.top.z += param_.grasp_offset_[2];
+    to_grasp.bottom.x += param_.grasp_offset_[0];
+    to_grasp.bottom.y += param_.grasp_offset_[1];
+    to_grasp.bottom.z += param_.grasp_offset_[2];
     // skip out of boundary grasps
-    if (!tf_available || check_boundry(to_grasp.top)) {
+    if (!tf_available || check_boundry(to_grasp.bottom)) {
       // translate into moveit grasp
       moveit_grasps_.push_back(toMoveIt(to_grasp, header));
     }
   }
 
-  cv_.notify_all();
+  if (!moveit_grasps_.empty()) {
+    cv_.notify_all();
+  }
 }
 
 bool GraspPlanner::transform(
@@ -144,7 +157,7 @@ moveit_msgs::msg::Grasp GraspPlanner::toMoveIt(
   msg.grasp_quality = grasp.score.data;
 
   // set grasp position
-  msg.grasp_pose.pose.position = grasp.top;
+  msg.grasp_pose.pose.position = grasp.bottom;
 
   // rotation matrix https://github.com/atenpas/gpd/blob/master/tutorials/hand_frame.png
   tf2::Matrix3x3 r(

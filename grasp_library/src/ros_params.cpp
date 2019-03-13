@@ -63,7 +63,7 @@ void ROSParameters::getDetectionParams(
   node->get_parameter_or("trained_file", param.weights_file_, std::string(""));
   node->get_parameter_or("min_score_diff", param.min_score_diff_, 500.0);
   node->get_parameter_or("create_image_batches", param.create_image_batches_, false);
-  node->get_parameter_or("device", param.device_, 1);
+  node->get_parameter_or("device", param.device_, 0);
 
   // Read grasp image parameters.
   node->get_parameter_or("image_outer_diameter", param.image_params.outer_diameter_,
@@ -97,20 +97,25 @@ void ROSParameters::getPlanningParams(
   GraspPlanner::GraspPlanningParameters & param)
 {
   node->get_parameter_or("grasp_service_timeout", param.grasp_service_timeout_, 5);
-  node->get_parameter_or("grasp_frame_id", param.grasp_frame_id_, std::string("base"));
   node->get_parameter_or("grasp_score_threshold", param.grasp_score_threshold_, 200);
+  node->get_parameter_or("grasp_frame_id", param.grasp_frame_id_, std::string("base"));
+  std::vector<double> approach;
+  node->get_parameter_or("grasp_approach", approach,
+    std::vector<double>(std::initializer_list<double>({0.0, 0.0, -1.0})));
+  param.grasp_approach_ = tf2::Vector3(approach[0], approach[1], approach[2]);
+  node->get_parameter_or("grasp_approach_angle", param.grasp_approach_angle_, M_PI);
   node->get_parameter_or("grasp_offset", param.grasp_offset_,
     std::vector<double>(std::initializer_list<double>({0.0, 0.0, 0.0})));
   node->get_parameter_or("grasp_boundry", param.grasp_boundry_,
-    std::vector<double>(std::initializer_list<double>({-0.5, 0.5, -0.5, 0.5, -0.5, 0.5})));
+    std::vector<double>(std::initializer_list<double>({-1.0, 1.0, -1.0, 1.0, -1.0, 1.0})));
   node->get_parameter_or("grasp_min_distance", param.grasp_min_distance_, 0.06);
   node->get_parameter_or("grasp_desired_distance", param.grasp_desired_distance_, 0.1);
 
   // gripper parameters
   std::vector<double> finger_opens, finger_closes;
   node->get_parameter_or("finger_joint_names", param.finger_joint_names_,
-    std::vector<std::string>(std::initializer_list<std::string>({std::string("finger0_joint"),
-      std::string("finger1_joint")})));
+    std::vector<std::string>(std::initializer_list<std::string>({std::string("panda_finger_joint1"),
+      std::string("panda_finger_joint2")})));
   node->get_parameter_or("finger_positions_open", param.finger_points_open_.positions,
     std::vector<double>(std::initializer_list<double>({-0.04, 0.04})));
   node->get_parameter_or("finger_positions_close", param.finger_points_close_.positions,

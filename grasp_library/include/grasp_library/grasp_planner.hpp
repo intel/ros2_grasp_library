@@ -49,13 +49,18 @@ public:
   {
     /** timeout in seconds for a service request waiting for grasp detection result*/
     int grasp_service_timeout_;
-    /** frame id expected for grasps returned from this service*/
-    std::string grasp_frame_id_;
     /** minimum score expected for grasps returned from this service*/
     int grasp_score_threshold_;
+    /** frame id expected for grasps returned from this service*/
+    std::string grasp_frame_id_;
+    /** approach direction in grasp_frame_id_ expected for grasps*/
+    tf2::Vector3 grasp_approach_;
+    /** maxmimum angle in radian acceptable between the expected 'approach_' and
+     * the real approach returned from this service*/
+    double grasp_approach_angle_;
     /** offset [x, y, z] in metres applied to the grasps detected*/
     std::vector<double> grasp_offset_;
-    /** boundry in grasp_frame_id_ expected for grasps returned from this service*/
+    /** boundry cube in grasp_frame_id_ expected for grasps returned from this service*/
     std::vector<double> grasp_boundry_;
     /** minimum distance in metres for a grasp to approach and retreat*/
     double grasp_min_distance_;
@@ -120,6 +125,8 @@ private:
 
   /**
    * \brief Translate a grasp message to MoveIt message.
+   * 'Grasp.grasp_pose.pose.position' was translated from 'GraspConfig.bottom', which is the
+   * position closest to the 'parent_link' of the end-effector.
    * \param grasp Grasp message to be translated.
    * \header Message header for the frame where the 'grasp' was detected.
    * \return MoveIt message
