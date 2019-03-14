@@ -69,7 +69,7 @@ int main(int argc, char * argv[])
   rclcpp::init(argc, argv);
   // create ROS2 node
   node = rclcpp::Node::make_shared("GraspPlanningExample");
-  // create ROS2 client for MoevIt "plan_grasps" service
+  // create ROS2 client for MoveIt "plan_grasps" service
   auto client = node->create_client<GraspPlanning>("plan_grasps");
   // wait for ROS2 service ready
   while (!client->wait_for_service(std::chrono::seconds(1))) {
