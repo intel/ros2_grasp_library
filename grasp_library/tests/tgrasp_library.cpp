@@ -85,7 +85,7 @@ int main(int argc, char * argv[])
 
   node = rclcpp::Node::make_shared("GraspLibraryTest");
   auto sub = node->create_subscription<grasp_msgs::msg::GraspConfigList>(
-    Consts::kTopicDetectedGrasps, topic_cb);
+    Consts::kTopicDetectedGrasps, rclcpp::QoS(rclcpp::KeepLast(1)), topic_cb);
 
   auto client = node->create_client<GraspPlanning>("plan_grasps");
   while (!client->wait_for_service(std::chrono::seconds(1))) {
