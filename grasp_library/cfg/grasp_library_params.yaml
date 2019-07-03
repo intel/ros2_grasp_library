@@ -1,6 +1,6 @@
 GraspDetectorGPD:
   ros__parameters:
-    cloud_topic: /camera/depth/color/points
+    cloud_topic: /camera/aligned_depth_to_color/color/points
     rviz: true
     device: 0 # 0:CPU, 1:GPU, 2:VPU
     auto_mode: true
@@ -26,4 +26,6 @@ GraspPlanner:
     grasp_offset: [0.006, 0.003, 0.0]
     # grasp boundry in grasp_frame_id
     grasp_boundry: [-0.3, 0.1, -0.7, -0.35, -0.15, 0.0]
+    eef_offset: 0.154
+    eef_yaw_offset: 0.7854 # M_PI/4
     finger_joint_names: ["panda_finger_joint1", "panda_finger_joint2"]

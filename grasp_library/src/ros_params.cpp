@@ -108,6 +108,8 @@ void ROSParameters::getPlanningParams(
     std::vector<double>(std::initializer_list<double>({0.0, 0.0, 0.0})));
   node->get_parameter_or("grasp_boundry", param.grasp_boundry_,
     std::vector<double>(std::initializer_list<double>({-1.0, 1.0, -1.0, 1.0, -1.0, 1.0})));
+  node->get_parameter_or("eef_offset", param.eef_offset, 0.154);
+  node->get_parameter_or("eef_yaw_offset", param.eef_yaw_offset, 0.0);
   node->get_parameter_or("grasp_min_distance", param.grasp_min_distance_, 0.06);
   node->get_parameter_or("grasp_desired_distance", param.grasp_desired_distance_, 0.1);
 
@@ -117,7 +119,7 @@ void ROSParameters::getPlanningParams(
     std::vector<std::string>(std::initializer_list<std::string>({std::string("panda_finger_joint1"),
       std::string("panda_finger_joint2")})));
   node->get_parameter_or("finger_positions_open", param.finger_points_open_.positions,
-    std::vector<double>(std::initializer_list<double>({-0.04, 0.04})));
+    std::vector<double>(std::initializer_list<double>({-0.01, 0.01})));
   node->get_parameter_or("finger_positions_close", param.finger_points_close_.positions,
     std::vector<double>(std::initializer_list<double>({-0.0, 0.0})));
 }
