@@ -31,7 +31,8 @@
 using GraspPlanning = moveit_msgs::srv::GraspPlanning;
 
 GraspPlanner::GraspPlanner(GraspDetectorBase * grasp_detector)
-: Node("GraspPlanner"), GraspCallback(), grasp_detector_(grasp_detector)
+: Node("GraspPlanner", rclcpp::NodeOptions().automatically_declare_parameters_from_overrides(true)),
+  GraspCallback(), grasp_detector_(grasp_detector)
 {
   ROSParameters::getPlanningParams(this, param_);
   auto service = [this](const std::shared_ptr<rmw_request_id_t> request_header,
@@ -105,7 +106,8 @@ bool GraspPlanner::transform(
   const std_msgs::msg::Header & header)
 {
   static tf2_ros::TransformListener tfListener(*tfBuffer_);
-  geometry_msgs::msg::PointStamped from_top, to_top, from_surface, to_surface;
+  geometry_msgs::msg::PointStamped from_top, to_top, from_surface, to_surface,
+    from_bottom, to_bottom;
   geometry_msgs::msg::Vector3Stamped from_approach, to_approach, from_binormal, to_binormal,
     from_axis, to_axis;
 
@@ -115,6 +117,8 @@ bool GraspPlanner::transform(
   from_top.header = header;
   from_surface.point = from.surface;
   from_surface.header = header;
+  from_bottom.point = from.bottom;
+  from_bottom.header = header;
   from_approach.vector = from.approach;
   from_approach.header = header;
   from_binormal.vector = from.binormal;
@@ -124,6 +128,7 @@ bool GraspPlanner::transform(
   try {
     tfBuffer_->transform(from_top, to_top, param_.grasp_frame_id_);
     tfBuffer_->transform(from_surface, to_surface, param_.grasp_frame_id_);
+    tfBuffer_->transform(from_bottom, to_bottom, param_.grasp_frame_id_);
     tfBuffer_->transform(from_approach, to_approach, param_.grasp_frame_id_);
     tfBuffer_->transform(from_binormal, to_binormal, param_.grasp_frame_id_);
     tfBuffer_->transform(from_axis, to_axis, param_.grasp_frame_id_);
@@ -134,6 +139,7 @@ bool GraspPlanner::transform(
 
   to.top = to_top.point;
   to.surface = to_surface.point;
+  to.bottom = to_bottom.point;
   to.approach = to_approach.vector;
   to.binormal = to_binormal.vector;
   to.axis = to_axis.vector;
@@ -158,14 +164,20 @@ moveit_msgs::msg::Grasp GraspPlanner::toMoveIt(
 
   // set grasp position
   msg.grasp_pose.pose.position = grasp.bottom;
+  // set grasp position, translation from hand-base to the parent-link of EEF
+  msg.grasp_pose.pose.position.x = grasp.bottom.x - grasp.approach.x * param_.eef_offset;
+  msg.grasp_pose.pose.position.y = grasp.bottom.y - grasp.approach.y * param_.eef_offset;
+  msg.grasp_pose.pose.position.z = grasp.bottom.z - grasp.approach.z * param_.eef_offset;
 
   // rotation matrix https://github.com/atenpas/gpd/blob/master/tutorials/hand_frame.png
   tf2::Matrix3x3 r(
-    grasp.binormal.x, grasp.binormal.y, grasp.binormal.z,   // x-axis of the parent_link of the EEF
-    grasp.axis.x, grasp.axis.y, grasp.axis.z,               // y-axis of the parent_link of the EEF
-    grasp.approach.x, grasp.approach.y, grasp.approach.z);  // z-axis of the parent_link of the EEF
+    grasp.binormal.x, grasp.axis.x, grasp.approach.x,
+    grasp.binormal.y, grasp.axis.y, grasp.approach.y,
+    grasp.binormal.z, grasp.axis.z, grasp.approach.z);
   tf2::Quaternion quat;
   r.getRotation(quat);
+  // EEF yaw-offset to its parent-link (last link of arm)
+  quat *= tf2::Quaternion(tf2::Vector3(0, 0, 1), param_.eef_yaw_offset);
   quat.normalize();
   // set grasp orientation
   msg.grasp_pose.pose.orientation = tf2::toMsg(quat);

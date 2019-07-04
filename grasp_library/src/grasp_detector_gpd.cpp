@@ -22,7 +22,9 @@
 #include "grasp_library/ros_params.hpp"
 
 GraspDetectorGPD::GraspDetectorGPD()
-: Node("GraspDetectorGPD"), GraspDetectorBase(), cloud_camera_(NULL), has_cloud_(false), frame_(""),
+: Node("GraspDetectorGPD",
+    rclcpp::NodeOptions().automatically_declare_parameters_from_overrides(true)),
+  GraspDetectorBase(), cloud_camera_(NULL), has_cloud_(false), frame_(""),
   tabletop_pub_(nullptr), grasps_rviz_pub_(nullptr)
 {
   std::vector<double> camera_position;
@@ -40,7 +42,9 @@ GraspDetectorGPD::GraspDetectorGPD()
   auto callback = [this](const sensor_msgs::msg::PointCloud2::SharedPtr msg) -> void {
       this->cloud_callback(msg);
     };
-  cloud_sub_ = this->create_subscription<sensor_msgs::msg::PointCloud2>(cloud_topic, callback);
+  cloud_sub_ =
+    this->create_subscription<sensor_msgs::msg::PointCloud2>(cloud_topic,
+      rclcpp::QoS(rclcpp::KeepLast(1)), callback);
   grasps_pub_ = this->create_publisher<grasp_msgs::msg::GraspConfigList>(
     Consts::kTopicDetectedGrasps, 10);
   if (plane_remove) {

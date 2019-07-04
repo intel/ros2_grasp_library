@@ -41,13 +41,14 @@ int main(int argc, char * argv[])
   // create ROS2 node
   node = rclcpp::Node::make_shared("GraspDetectionExample");
   // subscribe to the "Detected Grasps" topic
-  auto sub = node->create_subscription<grasp_msgs::msg::GraspConfigList>(Consts::kTopicDetectedGrasps, topic_cb);
+  auto sub = node->create_subscription<grasp_msgs::msg::GraspConfigList>
+    (Consts::kTopicDetectedGrasps, rclcpp::QoS(rclcpp::KeepLast(1)), topic_cb);
   // create ROS2 executor to process any pending in/out messages
   rclcpp::spin(node);
 
   node = nullptr;
   rclcpp::shutdown();
-  return ret;
+  return 0;
 }
 ```
 
@@ -97,6 +98,6 @@ int main(int argc, char * argv[])
 
   node = nullptr;
   rclcpp::shutdown();
-  return ret;
+  return 0;
 }
 ```

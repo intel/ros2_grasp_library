@@ -62,6 +62,10 @@ public:
     std::vector<double> grasp_offset_;
     /** boundry cube in grasp_frame_id_ expected for grasps returned from this service*/
     std::vector<double> grasp_boundry_;
+    /** offset in metres from the gripper base (finger root) to the parent link of gripper*/
+    double eef_offset;
+    /** gripper yaw offset to its parent link, in radian (e.g. 0.0, or M_PI/4)*/
+    double eef_yaw_offset;
     /** minimum distance in metres for a grasp to approach and retreat*/
     double grasp_min_distance_;
     /** desired distance in metres for a grasp to approach and retreat*/
