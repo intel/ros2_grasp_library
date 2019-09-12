@@ -1,6 +1,6 @@
 GraspDetectorGPD:
   ros__parameters:
-    cloud_topic: /camera/aligned_depth_to_color/color/points
+    cloud_topic: /camera/pointcloud
     rviz: true
     device: 0 # 0:CPU, 1:GPU, 2:VPU
     auto_mode: true
