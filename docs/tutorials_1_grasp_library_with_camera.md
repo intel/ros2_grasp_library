@@ -46,7 +46,7 @@ ros2 run rviz2 rviz2
 # Terminal 2, launch RGBD camera
 # e.g. launch [ROS2 Realsenes](https://github.com/intel/ros2_intel_realsense)
 # or, with a ros-bridge, launch any ROS OpenNI RGBD cameras, like [ROS Realsense](https://github.com/intel-ros/realsense)
-ros2 run realsense_ros2_camera realsense_ros2_camera
+ros2 run realsense_node realsense_node
 
 # Terminal 3, launch Grasp Library
 ros2 run grasp_library grasp_library __params:=src/ros2_grasp_library/grasp_library/cfg/grasp_library_params.yaml
