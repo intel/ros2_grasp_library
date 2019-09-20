@@ -12,15 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef GRASP_LIBRARY__ROS_PARAMS_HPP_
-#define GRASP_LIBRARY__ROS_PARAMS_HPP_
+#ifndef GRASP_LIBRARY_ROS2_ROS_PARAMS_HPP_
+#define GRASP_LIBRARY_ROS2_ROS_PARAMS_HPP_
 
 // ROS2 core
 #include <rclcpp/rclcpp.hpp>
 
 // ROS2 projects
 #include <gpd/grasp_detector.h>
-#include "grasp_library/grasp_planner.hpp"
+#include "grasp_library/ros2/grasp_planner.hpp"
+
+namespace grasp_ros2
+{
 
 /** ROSParameters class
  *
@@ -36,4 +39,6 @@ public:
   static void getPlanningParams(rclcpp::Node * Node, GraspPlanner::GraspPlanningParameters & param);
 };
 
-#endif  // GRASP_LIBRARY__ROS_PARAMS_HPP_
+}  // namespace grasp_ros2
+
+#endif  // GRASP_LIBRARY_ROS2_ROS_PARAMS_HPP_

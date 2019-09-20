@@ -16,33 +16,25 @@
 
 #include <memory>
 
-#include "grasp_library/grasp_detector_gpd.hpp"
-#include "grasp_library/grasp_planner.hpp"
+#include "grasp_library/ros2/grasp_detector_gpd.hpp"
+#include "grasp_library/ros2/grasp_planner.hpp"
 
-rclcpp::Node::SharedPtr detector_node, planner_node;
-
-void thread(rclcpp::Node::SharedPtr node)
-{
-  rclcpp::spin(node);
-}
+using namespace grasp_ros2;
 
 int main(int argc, char ** argv)
 {
   rclcpp::init(argc, argv);
+  rclcpp::executors::SingleThreadedExecutor exec;
 
-  detector_node = std::make_shared<GraspDetectorGPD>();
+  auto detect_node = std::make_shared<GraspDetectorGPD>(rclcpp::NodeOptions().automatically_declare_parameters_from_overrides(true));
+  exec.add_node(detect_node);
+  GraspDetectorBase * grasp_detector = dynamic_cast<GraspDetectorBase *>(detect_node.get());
+  auto plan_node = std::make_shared<GraspPlanner>(rclcpp::NodeOptions().automatically_declare_parameters_from_overrides(true), grasp_detector);
+  exec.add_node(plan_node);
+  exec.spin();
 
-  GraspDetectorBase * grasp_detector = dynamic_cast<GraspDetectorBase *>(detector_node.get());
-
-  planner_node = std::make_shared<GraspPlanner>(grasp_detector);
-
-  std::thread th(thread, planner_node);
-  th.detach();
-
-  rclcpp::spin(detector_node);
-
-  detector_node = nullptr;
-  planner_node = nullptr;
+  detect_node = nullptr;
+  plan_node = nullptr;
   rclcpp::shutdown();
   return 0;
 }

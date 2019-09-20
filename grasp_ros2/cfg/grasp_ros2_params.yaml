@@ -1,10 +1,12 @@
 GraspDetectorGPD:
   ros__parameters:
     cloud_topic: /camera/pointcloud
+    object_topic: /ros2_openvino_toolkit/detected_objects
     rviz: true
-    device: 0 # 0:CPU, 1:GPU, 2:VPU
+    device: 1 # 0:CPU, 1:GPU, 2:VPU
     auto_mode: true
     plane_remove: true
+    object_detect: true
     # grasp workspace in camera frames
     workspace: [-0.3, 0.3, -0.5, 0.1, 0.3, 0.6]
     # gripper geometry parameters in metre

@@ -24,14 +24,17 @@
 #include <string>
 #include <utility>
 
-#include "grasp_library/consts.hpp"
-#include "grasp_library/grasp_planner.hpp"
-#include "grasp_library/ros_params.hpp"
+#include "grasp_library/ros2/consts.hpp"
+#include "grasp_library/ros2/grasp_planner.hpp"
+#include "grasp_library/ros2/ros_params.hpp"
+
+namespace grasp_ros2
+{
 
 using GraspPlanning = moveit_msgs::srv::GraspPlanning;
 
-GraspPlanner::GraspPlanner(GraspDetectorBase * grasp_detector)
-: Node("GraspPlanner", rclcpp::NodeOptions().automatically_declare_parameters_from_overrides(true)),
+GraspPlanner::GraspPlanner(const rclcpp::NodeOptions & options, GraspDetectorBase * grasp_detector)
+: Node("GraspPlanner", options),
   GraspCallback(), grasp_detector_(grasp_detector)
 {
   ROSParameters::getPlanningParams(this, param_);
@@ -233,3 +236,8 @@ void GraspPlanner::grasp_service(
     res->error_code.val = moveit_msgs::msg::MoveItErrorCodes::SUCCESS;
   }
 }
+
+}  // namespace grasp_ros2
+
+#include "rclcpp_components/register_node_macro.hpp"
+RCLCPP_COMPONENTS_REGISTER_NODE(grasp_ros2::GraspPlanner)

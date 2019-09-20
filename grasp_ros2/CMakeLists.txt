@@ -13,7 +13,7 @@
 # limitations under the License.
 
 cmake_minimum_required(VERSION 3.5)
-project(grasp_library)
+project(grasp_ros2)
 
 if(NOT CMAKE_CXX_STANDARD)
   set(CMAKE_CXX_STANDARD 14)
@@ -33,9 +33,11 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(builtin_interfaces REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(rclcpp_components REQUIRED)
 find_package(grasp_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(moveit_msgs)
+find_package(object_msgs)
 find_package(visualization_msgs)
 find_package(tf2)
 find_package(tf2_ros REQUIRED)
@@ -65,6 +67,9 @@ include_directories(
   ${grasp_msgs_INCLUDE_DIRS}
   ${sensor_msgs_INCLUDE_DIRS}
   ${moveit_msgs_INCLUDE_DIRS}
+  ${object_msgs_INCLUDE_DIRS}
+  ${tf2_geometry_msgs_INCLUDE_DIRS}
+  ${trajectory_msgs_INCLUDE_DIRS}
   ${visualization_msgs_INCLUDE_DIRS}
   ${pcl_conversions_INCLUDE_DIRS}
   ${tf2_INCLUDE_DIRS}
@@ -72,11 +77,60 @@ include_directories(
   ${gpd_INCLUDE_DIRS}
 )
 
-add_executable(${PROJECT_NAME}
+# create ament index resource which references the libraries in the binary dir
+set(node_plugins "")
+
+# grasp detect
+set(libgrasp_detect "grasp_detect")
+add_library(${libgrasp_detect} SHARED
   src/consts.cpp
-  src/grasp_detector_gpd.cpp
-  src/grasp_planner.cpp
   src/ros_params.cpp
+  src/grasp_detector_gpd.cpp)
+target_compile_definitions(${libgrasp_detect}
+	PRIVATE "GRASP_ROS2_BUILDING_DLL")
+ament_target_dependencies(${libgrasp_detect}
+  "class_loader"
+  "rclcpp"
+  "rclcpp_components"
+  "grasp_msgs"
+  "sensor_msgs"
+  "moveit_msgs"
+  "object_msgs"
+  "visualization_msgs")
+target_link_libraries(${libgrasp_detect}
+  ${gpg_LIBRARIES}
+  ${gpd_LIBRARIES}
+  ${PCL_LIBRARIES}
+  ${InferenceEngine_LIBRARIES}
+)
+rclcpp_components_register_nodes(${libgrasp_detect} "grasp_ros2::GraspDetectorGPD")
+set(node_plugins "${node_plugins}grasp_ros2::GraspDetectorGPD;$<TARGET_FILE:${libgrasp_detect}>\n")
+
+# grasp plan
+set(libgrasp_plan "grasp_plan")
+add_library(${libgrasp_plan} SHARED
+  src/consts.cpp
+  src/ros_params.cpp
+  src/grasp_planner.cpp)
+target_compile_definitions(${libgrasp_plan}
+	PRIVATE "GRASP_ROS2_BUILDING_DLL")
+ament_target_dependencies(${libgrasp_plan}
+  "class_loader"
+  "rclcpp"
+  "rclcpp_components"
+  "grasp_msgs"
+  "moveit_msgs"
+  "object_msgs"
+  "tf2"
+  "tf2_ros"
+  "tf2_geometry_msgs"
+  "trajectory_msgs")
+target_link_libraries(${libgrasp_plan}
+)
+rclcpp_components_register_nodes(${libgrasp_plan} "grasp_ros2::GraspPlanner")
+set(node_plugins "${node_plugins}grasp_ros2::GraspPlanner;$<TARGET_FILE:${libgrasp_plan}>\n")
+
+add_executable(${PROJECT_NAME}
   src/grasp_composition.cpp
 )
 
@@ -86,6 +140,7 @@ ament_target_dependencies(${PROJECT_NAME}
   "grasp_msgs"
   "sensor_msgs"
   "moveit_msgs"
+  "object_msgs"
   "visualization_msgs"
   "tf2"
   "tf2_ros"
@@ -100,13 +155,22 @@ target_link_libraries(${PROJECT_NAME}
   ${gpd_LIBRARIES}
   ${PCL_LIBRARIES}
   ${InferenceEngine_LIBRARIES}
+  ${libgrasp_detect}
+  ${libgrasp_plan}
 )
+
+# Install libs
+install(TARGETS
+  ${libgrasp_detect}
+  ${libgrasp_plan}
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin)
 
 # Install binaries
 install(TARGETS ${PROJECT_NAME}
   RUNTIME DESTINATION bin
 )
-
 install(TARGETS ${PROJECT_NAME}
   DESTINATION lib/${PROJECT_NAME}
 )

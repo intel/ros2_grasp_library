@@ -15,7 +15,10 @@
 #include <string>
 #include <vector>
 
-#include "grasp_library/ros_params.hpp"
+#include "grasp_library/ros2/ros_params.hpp"
+
+namespace grasp_ros2
+{
 
 void ROSParameters::getDetectionParams(
   rclcpp::Node * node,
@@ -123,3 +126,5 @@ void ROSParameters::getPlanningParams(
   node->get_parameter_or("finger_positions_close", param.finger_points_close_.positions,
     std::vector<double>(std::initializer_list<double>({-0.0, 0.0})));
 }
+
+}  // namespace grasp_ros2

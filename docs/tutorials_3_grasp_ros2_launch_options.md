@@ -25,7 +25,7 @@ This tutorial documents the launch options which are used for customization. Eac
 * **eef_yaw_offset** [**0.0**|double]: Gripper yaw offset to its parent link, in radian. *This need to be customized if the gripper has yaw offset to TCP (tool center point) of the robot arm.*
 * **finger_joint_names** [**["panda_finger_joint1", "panda_finger_joint2"]**|[1*2 "string"]]: Joint names of gripper fingers. Joint names are filled into MoveIt's grasp interface, to control the posture of hand for the position of 'pre_grasp_posture' and 'grasp_posture' (see [moveit_msgs::msg::Grasp](http://docs.ros.org/api/moveit_msgs/html/msg/Grasp.html)). Joint names are usually defined in URDF of the robot hand. *This need to be customized according to user's setup.*
 
-Other ROS parameters not mentioned here, refer to the codes [ros_params.cpp](../grasp_library/src/ros_params.cpp) for details.
+Other ROS parameters not mentioned here, refer to the codes [ros_params.cpp](../grasp_ros2/src/ros_params.cpp) for details.
 
 ## Customization Notes
 * **Model training for grasp detection**: It depends on which back-end grasp detection algorithm is used. For [Grasp Pose Detection](https://github.com/atenpas/gpd), the model was trained with 185K labeled grasps and 55 object models from [bigBIRD](http://rll.berkeley.edu/bigbird). In case of any necessity to re-train, please refer to the discussion [#49](https://github.com/atenpas/gpd/issues/49) in the upstream project.

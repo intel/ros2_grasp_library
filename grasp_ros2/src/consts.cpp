@@ -12,9 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "grasp_library/consts.hpp"
+#include "grasp_library/ros2/consts.hpp"
+
+namespace grasp_ros2
+{
 
 const char Consts::kTopicPointCloud2[] = "/camera/depth_registered/points";
+const char Consts::kTopicDetectedObjects[] = "/ros2_openvino_toolkit/detected_objects";
 const char Consts::kTopicDetectedGrasps[] = "/grasp_library/clustered_grasps";
 const char Consts::kTopicVisualGrasps[] = "/grasp_library/grasps_rviz";
 const char Consts::kTopicTabletop[] = "/grasp_library/tabletop_points";
+
+}  // namespace grasp_ros2

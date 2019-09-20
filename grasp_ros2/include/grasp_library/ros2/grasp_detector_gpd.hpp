@@ -12,12 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef GRASP_LIBRARY__GRASP_DETECTOR_GPD_HPP_
-#define GRASP_LIBRARY__GRASP_DETECTOR_GPD_HPP_
+#ifndef GRASP_LIBRARY_ROS2_GRASP_DETECTOR_GPD_HPP_
+#define GRASP_LIBRARY_ROS2_GRASP_DETECTOR_GPD_HPP_
 
 // ROS2
 #include <geometry_msgs/msg/point.hpp>
 #include <geometry_msgs/msg/vector3.hpp>
+#include <object_msgs/msg/objects_in_boxes.hpp>
 #include <rclcpp/logger.hpp>
 #include <rclcpp/rclcpp.hpp>
 #include <sensor_msgs/msg/point_cloud2.hpp>
@@ -41,12 +42,17 @@
 
 // system
 #include <algorithm>
+#include <map>
 #include <string>
+#include <tuple>
 #include <vector>
 
-#include "grasp_library/consts.hpp"
-#include "grasp_library/grasp_detector_base.hpp"
-#include "grasp_library/grasp_planner.hpp"
+#include "grasp_library/ros2/consts.hpp"
+#include "grasp_library/ros2/grasp_detector_base.hpp"
+#include "grasp_library/ros2/grasp_planner.hpp"
+
+namespace grasp_ros2
+{
 
 typedef pcl::PointCloud<pcl::PointXYZRGBA> PointCloudRGBA;
 typedef pcl::PointCloud<pcl::PointNormal> PointCloudPointNormal;
@@ -65,7 +71,7 @@ public:
   /**
    * \brief Constructor.
   */
-  GraspDetectorGPD();
+  GraspDetectorGPD(const rclcpp::NodeOptions & options);
 
   /**
    * \brief Destructor.
@@ -96,6 +102,12 @@ private:
    * \param msg the incoming ROS message
    */
   void cloud_callback(const sensor_msgs::msg::PointCloud2::SharedPtr msg);
+
+  /**
+   * \brief Callback function for the ROS topic that contains the input point cloud.
+   * \param msg the incoming ROS message
+   */
+  void object_callback(const object_msgs::msg::ObjectsInBoxes::SharedPtr msg);
 
   /**
    * \brief Create a ROS message that contains a list of grasp poses from a list of handles.
@@ -160,14 +172,19 @@ private:
   bool has_cloud_;
   std::string frame_; /**< point cloud frame*/
   bool auto_mode_; /**< grasp detection mode*/
+  bool object_detect_; /**< whether enable object detection>*/
+  /** objects detected and to grasp <name, probability, bounding-box>*/
+  std::map<std::string, std::tuple<double, object_msgs::msg::ObjectsInBoxes>> objects;
 
-  /** ROS subscriber for point cloud messages*/
+  /** ROS2 subscriber for point cloud messages*/
   rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr cloud_sub_;
-  /** ROS publisher for grasp list messages*/
+  /** ROS2 subscriber for object  messages*/
+  rclcpp::Subscription<object_msgs::msg::ObjectsInBoxes>::SharedPtr object_sub_;
+  /** ROS2 publisher for grasp list messages*/
   rclcpp::Publisher<grasp_msgs::msg::GraspConfigList>::SharedPtr grasps_pub_;
-  /** ROS publisher for tabletop point clouds*/
+  /** ROS2 publisher for tabletop point clouds*/
   rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr tabletop_pub_;
-  /** ROS publisher for grasps in rviz (visualization)*/
+  /** ROS2 publisher for grasps in rviz (visualization)*/
   rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr grasps_rviz_pub_;
 
   GraspDetector * grasp_detector_; /**< used to run the grasp pose detection*/
@@ -175,4 +192,6 @@ private:
   std::thread * detector_thread_; /**< thread for grasp detection*/
 };
 
-#endif  // GRASP_LIBRARY__GRASP_DETECTOR_GPD_HPP_
+}  // namespace grasp_ros2
+
+#endif  // GRASP_LIBRARY_ROS2_GRASP_DETECTOR_GPD_HPP_

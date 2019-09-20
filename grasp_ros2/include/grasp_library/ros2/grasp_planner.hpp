@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef GRASP_LIBRARY__GRASP_PLANNER_HPP_
-#define GRASP_LIBRARY__GRASP_PLANNER_HPP_
+#ifndef GRASP_LIBRARY_ROS2_GRASP_PLANNER_HPP_
+#define GRASP_LIBRARY_ROS2_GRASP_PLANNER_HPP_
 
 #include <rclcpp/logger.hpp>
 #include <rclcpp/rclcpp.hpp>
@@ -33,7 +33,10 @@
 #include <utility>
 #include <vector>
 
-#include "grasp_library/grasp_detector_base.hpp"
+#include "grasp_library/ros2/grasp_detector_base.hpp"
+
+namespace grasp_ros2
+{
 
 /** GraspPlanner class
  *
@@ -82,7 +85,7 @@ public:
    * \brief Constructor.
    * \param grasp_detector Grasp Detector used by this planner.
   */
-  explicit GraspPlanner(GraspDetectorBase * grasp_detector);
+  explicit GraspPlanner(const rclcpp::NodeOptions & options, GraspDetectorBase * grasp_detector = nullptr);
 
   /**
    * \brief Destructor.
@@ -145,9 +148,11 @@ private:
   rclcpp::Logger logger_ = rclcpp::get_logger("GraspPlanner");
   /** buffer for grasps to be returned from this service*/
   std::vector<moveit_msgs::msg::Grasp> moveit_grasps_;
-  GraspDetectorBase * grasp_detector_; /**< grasp detector node*/
   rclcpp::Service<moveit_msgs::srv::GraspPlanning>::SharedPtr grasp_srv_; /**< grasp service*/
   tf2_ros::Buffer * tfBuffer_; /**< buffer for transformation listener*/
+  GraspDetectorBase * grasp_detector_; /**< grasp detector node*/
 };
 
-#endif  // GRASP_LIBRARY__GRASP_PLANNER_HPP_
+}  // namespace grasp_ros2
+
+#endif  // GRASP_LIBRARY_ROS2_GRASP_PLANNER_HPP_
