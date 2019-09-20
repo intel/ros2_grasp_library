@@ -30,7 +30,7 @@ cp -a <path-to-gpd-repo>/models ros2_grasp_library/gpd
 # build
 cd ..
 source /opt/ros/dashing/setup.bash
-colcon build --symlink-install --packages-select grasp_msgs moveit_msgs grasp_library
+colcon build --symlink-install --packages-select grasp_msgs moveit_msgs grasp_ros2
 source ./install/local_setup.bash
 ```
 
@@ -38,7 +38,7 @@ source ./install/local_setup.bash
 ```bash
 # Terminal 1, Optionally, launch Rviz2 to illustrate detection results.
 ros2 run rviz2 rviz2
-# Load rviz2 configure from "src/ros2_grasp_library/grasp_library/rviz2/grasp.rviz"
+# Load rviz2 configure from "src/ros2_grasp_library/grasp_ros2/rviz2/grasp.rviz"
 # Note You may customize the ".rviz" file for your own camera, for example:
 # To change to fixed frame: "Global Options -> Fixed Frame"
 # To change the point cloud topic: "Point Cloud 2 -> Topic"
@@ -49,5 +49,5 @@ ros2 run rviz2 rviz2
 ros2 run realsense_node realsense_node
 
 # Terminal 3, launch Grasp Library
-ros2 run grasp_library grasp_library __params:=src/ros2_grasp_library/grasp_library/cfg/grasp_library_params.yaml
+ros2 run grasp_ros2 grasp_ros2 __params:=src/ros2_grasp_library/grasp_ros2/cfg/grasp_ros2_params.yaml
 ```

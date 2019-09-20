@@ -5,27 +5,27 @@ This tutorial documents Grasp Library tests which also serve as example codes fo
 ## Grasp Library Tests
 Test Suites enabled:
 * ROS2 built-in tests for static code scanning like, copyright tests, cppcheck tests, cpplint tests, lint_cmake tests, uncrustify tests, xmllint tests.
-* Grasp Library basic functional tests: tgrasp_library, basic tests cover ROS2 topic and ROS2 service of Grasp Library.
+* Grasp ROS2 basic functional tests: tgrasp_ros2, basic tests cover ROS2 topic and ROS2 service of Grasp Library.
 
 Before test, make sure you have setup the environment to build the Grasp Library, following tutorials [Grasp Library with RGBD Camera](tutorials_1_grasp_library_with_camera.md). The tests take inputs from a pre-stored PointCloud file (.pcd). Thus it's unnecessary to launch an RGBD camera.
 ```bash
 # Terminal 1, launch Grasp Library
-ros2 run grasp_library grasp_library __params:=src/ros2_grasp_library/grasp_library/cfg/test_grasp_library.yaml
+ros2 run grasp_ros2 grasp_ros2 __params:=src/ros2_grasp_library/grasp_ros2/cfg/test_grasp_ros2.yaml
 # Terminal 2, run tests
-colcon test --packages-select grasp_msgs grasp_library
+colcon test --packages-select grasp_msgs grasp_ros2
 ```
-For failed cases check detailed logs at "log/latest_test/grasp_library/stdout.log".
+For failed cases check detailed logs at "log/latest_test/grasp_ros2/stdout.log".
 
 ## Grasp Library Examples
-The [grasp test codes](../grasp_library/tests/tgrasp_library.cpp) also demonstrate how to use this Grasp Library for grasp detection and grasp planning.
+The [grasp test codes](../grasp_ros2/tests/tgrasp_ros2.cpp) also demonstrate how to use this Grasp Library for grasp detection and grasp planning.
 
 ### Grasp Detection Example (Non-MoveIt App)
-This example creats ROS2 subscription to the "Detected Grasps" topic and get the detection results from callback. Grasp Library is expected to work in 'auto_mode=true', sensor-driven grasp detection, see example launch options [here](../grasp_library/cfg/grasp_library_params.yaml).
+This example creats ROS2 subscription to the "Detected Grasps" topic and get the detection results from callback. Grasp Library is expected to work in 'auto_mode=true', sensor-driven grasp detection, see example launch options [here](../grasp_ros2/cfg/grasp_ros2_params.yaml).
 
 ```bash
 #include <rclcpp/rclcpp.hpp>
 #include <grasp_msgs/msg/grasp_config_list.hpp>
-#include "grasp_library/consts.hpp"
+#include "grasp_ros2/consts.hpp"
 
 static rclcpp::Node::SharedPtr node = nullptr;
 
@@ -53,13 +53,13 @@ int main(int argc, char * argv[])
 ```
 
 ### Grasp Planning Example (MoveIt App)
-This example creates ROS2 client for the "plan_grasps" service and get the palnning results from async service response. Grasp Library is expected to work in 'auto_mode=false', service-driven grasp detection, see launch option example [here](../grasp_library/cfg/test_grasp_library.yaml).
+This example creates ROS2 client for the "plan_grasps" service and get the palnning results from async service response. Grasp Library is expected to work in 'auto_mode=false', service-driven grasp detection, see launch option example [here](../grasp_ros2/cfg/test_grasp_ros2.yaml).
 
 ```bash
 #include <rclcpp/rclcpp.hpp>
 #include <moveit_msgs/msg/move_it_error_codes.hpp>
 #include <moveit_msgs/srv/grasp_planning.hpp>
-#include "grasp_library/consts.hpp"
+#include "grasp_ros2/consts.hpp"
 
 static rclcpp::Node::SharedPtr node = nullptr;
 static std::shared_ptr<GraspPlanning::Response> result = nullptr;

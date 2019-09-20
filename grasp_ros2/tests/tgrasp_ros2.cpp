@@ -27,9 +27,10 @@
 #include <string>
 #include <thread>
 
-#include "grasp_library/consts.hpp"
-#include "./tgrasp_library.h"
+#include "grasp_library/ros2/consts.hpp"
+#include "./tgrasp_ros2.h"
 
+using namespace grasp_ros2;
 using GraspPlanning = moveit_msgs::srv::GraspPlanning;
 
 static bool received_topic = false;

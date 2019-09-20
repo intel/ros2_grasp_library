@@ -18,12 +18,15 @@
 #include <string>
 #include <thread>
 #include <vector>
-#include "grasp_library/grasp_detector_gpd.hpp"
-#include "grasp_library/ros_params.hpp"
+#include "grasp_library/ros2/grasp_detector_gpd.hpp"
+#include "grasp_library/ros2/ros_params.hpp"
 
-GraspDetectorGPD::GraspDetectorGPD()
-: Node("GraspDetectorGPD",
-    rclcpp::NodeOptions().automatically_declare_parameters_from_overrides(true)),
+namespace grasp_ros2
+{
+
+GraspDetectorGPD::GraspDetectorGPD(const rclcpp::NodeOptions & options)
+: Node("GraspDetectorGPD", options),
+//    rclcpp::NodeOptions().automatically_declare_parameters_from_overrides(true)),
   GraspDetectorBase(), cloud_camera_(NULL), has_cloud_(false), frame_(""),
   tabletop_pub_(nullptr), grasps_rviz_pub_(nullptr)
 {
@@ -32,12 +35,13 @@ GraspDetectorGPD::GraspDetectorGPD()
     std::vector<double>(std::initializer_list<double>({0, 0, 0})));
   view_point_ << camera_position[0], camera_position[1], camera_position[2];
   this->get_parameter_or("auto_mode", auto_mode_, true);
-  std::string cloud_topic, grasp_topic, rviz_topic, tabletop_topic;
+  std::string cloud_topic, grasp_topic, rviz_topic, tabletop_topic, object_topic;
   this->get_parameter_or("cloud_topic", cloud_topic,
     std::string(Consts::kTopicPointCloud2));
-  bool rviz, plane_remove;
+  bool rviz, plane_remove, object_detect;
   this->get_parameter_or("rviz", rviz, false);
   this->get_parameter_or("plane_remove", plane_remove, false);
+  this->get_parameter_or("object_detect", object_detect, false);
 
   auto callback = [this](const sensor_msgs::msg::PointCloud2::SharedPtr msg) -> void {
       this->cloud_callback(msg);
@@ -54,6 +58,16 @@ GraspDetectorGPD::GraspDetectorGPD()
   if (rviz) {
     grasps_rviz_pub_ = this->create_publisher<visualization_msgs::msg::MarkerArray>(
       Consts::kTopicVisualGrasps, 1);
+  }
+  if (object_detect) {
+      this->get_parameter_or("object_topic", object_topic,
+        std::string(Consts::kTopicDetectedObjects));
+      auto callback = [this](const object_msgs::msg::ObjectsInBoxes::SharedPtr msg) -> void {
+        this->object_callback(msg);
+      };
+      object_sub_ =
+        this->create_subscription<object_msgs::msg::ObjectsInBoxes>(object_topic,
+          rclcpp::QoS(rclcpp::KeepLast(1)), callback);
   }
 
   GraspDetector::GraspDetectionParameters detection_param;
@@ -169,6 +183,14 @@ void GraspDetectorGPD::cloud_callback(const sensor_msgs::msg::PointCloud2::Share
 
     has_cloud_ = true;
     frame_ = msg->header.frame_id;
+  }
+}
+
+void GraspDetectorGPD::object_callback(const object_msgs::msg::ObjectsInBoxes::SharedPtr msg)
+{
+  RCLCPP_INFO(logger_, "Object callback*******************************************************");
+  for (auto obj : msg->objects_vector) {
+    RCLCPP_INFO(logger_, "obj name %s prob %f", obj.object.object_name.c_str(), obj.object.probability);
   }
 }
 
@@ -319,3 +341,8 @@ visualization_msgs::msg::Marker GraspDetectorGPD::createHandBaseMarker(
 
   return marker;
 }
+
+}  // namespace grasp_ros2
+
+#include "rclcpp_components/register_node_macro.hpp"
+RCLCPP_COMPONENTS_REGISTER_NODE(grasp_ros2::GraspDetectorGPD)

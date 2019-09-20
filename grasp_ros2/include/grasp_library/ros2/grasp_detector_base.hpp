@@ -12,11 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef GRASP_LIBRARY__GRASP_DETECTOR_BASE_HPP_
-#define GRASP_LIBRARY__GRASP_DETECTOR_BASE_HPP_
+#ifndef GRASP_LIBRARY_ROS2_GRASP_DETECTOR_BASE_HPP_
+#define GRASP_LIBRARY_ROS2_GRASP_DETECTOR_BASE_HPP_
 
 #include <grasp_msgs/msg/grasp_config_list.hpp>
 #include <string>
+
+namespace grasp_ros2
+{
 
 /** GraspCallback class
  *
@@ -92,4 +95,6 @@ protected:
   GraspCallback * grasp_cb = nullptr;
 };
 
-#endif  // GRASP_LIBRARY__GRASP_DETECTOR_BASE_HPP_
+}  // namespace grasp_ros2
+
+#endif  // GRASP_LIBRARY_ROS2_GRASP_DETECTOR_BASE_HPP_

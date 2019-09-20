@@ -12,10 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef GRASP_LIBRARY__CONSTS_HPP_
-#define GRASP_LIBRARY__CONSTS_HPP_
+#ifndef GRASP_LIBRARY_ROS2_CONSTS_HPP_
+#define GRASP_LIBRARY_ROS2_CONSTS_HPP_
 
 #include <string>
+
+namespace grasp_ros2
+{
 
 /** Consts class
  *
@@ -27,6 +30,8 @@ class Consts
 public:
   /** Topic name of "PointCloud2" message published by an RGBD sensor.*/
   static const char kTopicPointCloud2[];
+  /** Topic name of "detected objects" message published by Object Detector.*/
+  static const char kTopicDetectedObjects[];
   /** Topic name of "detected grasps" message published by this Grasp Detector.*/
   static const char kTopicDetectedGrasps[];
   /** Topic name of "rviz grasps" message published by this Grasp Detector.*/
@@ -35,4 +40,6 @@ public:
   static const char kTopicTabletop[];
 };
 
-#endif  // GRASP_LIBRARY__CONSTS_HPP_
+}  // namespace grasp_ros2
+
+#endif  // GRASP_LIBRARY_ROS2_CONSTS_HPP_

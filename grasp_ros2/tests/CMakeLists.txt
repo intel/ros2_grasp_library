@@ -3,32 +3,33 @@ find_package(ament_cmake_gtest REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(grasp_msgs REQUIRED)
 find_package(moveit_msgs REQUIRED)
+set(TEST_NAME tgrasp_ros2)
 
-ament_add_gtest(tgrasp_library tgrasp_library.cpp ${CMAKE_CURRENT_SOURCE_DIR}/../src/consts.cpp)
+ament_add_gtest(${TEST_NAME} tgrasp_ros2.cpp ${CMAKE_CURRENT_SOURCE_DIR}/../src/consts.cpp)
 
-if(TARGET tgrasp_library)
+if(TARGET ${TEST_NAME})
   get_filename_component(RESOURCE_DIR "resource" ABSOLUTE)
-  configure_file(tgrasp_library.h.in tgrasp_library.h)
+  configure_file(tgrasp_ros2.h.in tgrasp_ros2.h)
   include_directories(${CMAKE_CURRENT_BINARY_DIR} ${PCL_INCLUDE_DIRS})
   link_directories(${PCL_LIBRARY_DIRS})
-  target_include_directories(tgrasp_library PUBLIC
+  target_include_directories(${TEST_NAME} PUBLIC
     ${grasp_library_INCLUDE_DIRS}
   )
-  ament_target_dependencies(tgrasp_library
+  ament_target_dependencies(${TEST_NAME}
     pcl_conversion
     rclcpp
     grasp_msgs
     moveit_msgs
     sensor_msgs
   )
-  target_link_libraries(tgrasp_library ${GTEST_LIBRARIES} ${PCL_LIBRARIES})
+  target_link_libraries(${TEST_NAME} ${GTEST_LIBRARIES} ${PCL_LIBRARIES})
 
   # Install binaries
-  install(TARGETS tgrasp_library
+  install(TARGETS ${TEST_NAME}
     RUNTIME DESTINATION bin
   )
 
-  install(TARGETS tgrasp_library
+  install(TARGETS ${TEST_NAME}
     DESTINATION lib/${PROJECT_NAME}
   )
 
