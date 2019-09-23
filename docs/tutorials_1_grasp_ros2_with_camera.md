@@ -37,14 +37,13 @@ source ./install/local_setup.bash
 ## Launch Grasp Library
 ```bash
 # Terminal 1, Optionally, launch Rviz2 to illustrate detection results.
-ros2 run rviz2 rviz2
-# Load rviz2 configure from "src/ros2_grasp_library/grasp_ros2/rviz2/grasp.rviz"
+ros2 run rviz2 rviz2 -d src/ros2_grasp_library/grasp_ros2/rviz2/grasp.rviz
 # Note You may customize the ".rviz" file for your own camera, for example:
 # To change to fixed frame: "Global Options -> Fixed Frame"
 # To change the point cloud topic: "Point Cloud 2 -> Topic"
 
 # Terminal 2, launch RGBD camera
-# e.g. launch [ROS2 Realsenes](https://github.com/intel/ros2_intel_realsense)
+# e.g. launch [ROS2 Realsenes](https://github.com/intel/ros2_intel_realsense/tree/refactor)
 # or, with a ros-bridge, launch any ROS OpenNI RGBD cameras, like [ROS Realsense](https://github.com/intel-ros/realsense)
 ros2 run realsense_node realsense_node
 
