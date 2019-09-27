@@ -40,7 +40,7 @@ find_package(geometry_msgs REQUIRED)
 find_library(
   ur_modern_driver_LIBRARIES 
   NAMES ur_driver_lib
-  HINTS /usr/local/lib/ur_modern_driver)
+  HINTS /usr/local/lib)
 find_path(ur_modern_driver_INCLUDE_DIRS ur_modern_driver/tcp_socket.h)
 
 # Set include directory path
@@ -48,8 +48,9 @@ include_directories(
   include
   ${rclcpp_INCLUDE_DIRS}
   ${tf2_INCLUDE_DIRS}
-  ${Eigen3_INCLUDE_DIRS}
   ${ur_modern_driver_INCLUDE_DIRS})
+
+include_directories(SYSTEM ${EIGEN3_INCLUDE_DIRS})
 
 # Add robot interface library
 set(${PROJECT_NAME}_LIB_SOURCES
