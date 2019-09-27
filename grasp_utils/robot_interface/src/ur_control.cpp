@@ -68,7 +68,7 @@ bool URControl::urscriptInterface(const std::string command_script)
   return res;
 }
 
-bool URControl::start()
+void URControl::parseArgs()
 {
   // Initialize parameter client
   auto parameters_client = std::make_shared<rclcpp::SyncParametersClient>(this);
@@ -94,7 +94,10 @@ bool URControl::start()
   }
   RCLCPP_INFO(this->get_logger(), ss.str().c_str());
   RCLCPP_INFO(this->get_logger(), std::to_string(args_.shutdown_on_disconnect));
+}
 
+bool URControl::start()
+{
   // Initialize socket communication
   factory_.reset(new URFactory(args_.host));
 

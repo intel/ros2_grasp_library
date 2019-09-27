@@ -129,6 +129,9 @@ public:
   // Function to get tool pose
   bool getTcpPose(RTShared& packet);
 
+  // Parse parameters
+  void parseArgs();
+
 private:
 
   ProgArgs args_;

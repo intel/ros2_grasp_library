@@ -22,6 +22,7 @@ int main(int argc, char * argv[])
                                                         .allow_undeclared_parameters(true)
                                                         .automatically_declare_parameters_from_overrides(true));
 
+  node->parseArgs();
   node->start();
 
   rclcpp::sleep_for(std::chrono::seconds(2));

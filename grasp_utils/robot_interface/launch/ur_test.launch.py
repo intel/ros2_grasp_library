@@ -12,18 +12,25 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os
+
 import launch
 import launch.actions
 import launch.substitutions
 import launch_ros.actions
+from ament_index_python.packages import get_package_share_directory
 
 def generate_launch_description():
+
+    # .yaml file for configuring the parameters
+    yaml = os.path.join(
+        get_package_share_directory('robot_interface'), 
+            'launch', 'ur_test.yaml'
+    )
+
     return launch.LaunchDescription([
-        launch.actions.DeclareLaunchArgument(
-            'node_prefix',
-            default_value=[launch.substitutions.EnvironmentVariable('USER'), '_'],
-            description='Prefix for node names'),
+
         launch_ros.actions.Node(
-            package='robot_interface', node_executable='ur_test', output='screen',
-            node_name=[launch.substitutions.LaunchConfiguration('node_prefix'), 'ur_test']),
+            package='robot_interface', node_executable='ur_test', 
+            output='screen', arguments=['__params:='+yaml]),
     ])
