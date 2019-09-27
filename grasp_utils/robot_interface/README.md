@@ -13,16 +13,28 @@ mkdir build && cd build
 cmake .. && sudo make install
 ```
 
-Install **robot_interface**:
+Install dependency **ros2_ur_description**:
 
 ```shell
-mkdir -p ~/ws_ros2/src && cd ~/ws_ros2/src
-git clone https://github.com/RoboticsYY/robot_interface.git
+mkdir -p ~/ros2_ws/src && cd ~/ros2_ws/src
+git clone https://github.com/RoboticsYY/ros2_ur_description.git
 cd .. && colcon build
 ```
 
+Install **robot_interface**:
+
+The installation should refer to the installation of **ros2_grasp_library**.
+
 ## Launch
 
+Launch the UR robot control test executable:
+
 ```shell
-ros2 run robot_interface ur_test __params:=`ros2 pkg prefix robot_interface`/share/robot_interface/launch/ur_test.yaml
+ros2 launch robot_interface ur_test.launch.py
+```
+
+Launch the Rivz2 display:
+
+```shell
+ros2 launch ur_description view_ur5_ros2.launch.py
 ```
