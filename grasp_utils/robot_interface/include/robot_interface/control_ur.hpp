@@ -12,6 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+/**
+ * @file ur_control.hpp
+ */
+
 #pragma once
 
 #include <rclcpp/rclcpp.hpp>
@@ -104,7 +108,7 @@ public:
   bool urscriptInterface(const std::string command_script);
 
   // Start socket communication loop
-  bool start();
+  bool startLoop();
 
   // Overload URRTPacketConsumer functions
   virtual bool consume(RTState_V1_6__7& state);
