@@ -53,8 +53,13 @@ include_directories(
   include
   ${rclcpp_INCLUDE_DIRS}
   ${tf2_INCLUDE_DIRS}
-  ${ur_modern_driver_INCLUDE_DIRS}
-  ${EIGEN3_INCLUDE_DIRS})
+  ${tf2_eigen_INCLUDE_DIRS}
+  ${Eigen3_INCLUDE_DIRS}
+  ${sensor_msgs_INCLUDE_DIRS}
+  ${geometry_msgs_INCLUDE_DIRS}
+  ${ur_modern_driver_INCLUDE_DIRS})
+
+include_directories(SYSTEM ${EIGEN3_INCLUDE_DIRS})
 
 # Add robot interface library
 set(${PROJECT_NAME}_SOURCES
