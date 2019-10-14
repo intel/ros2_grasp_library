@@ -1,2 +1,8 @@
 # rviz file
 *.rviz
+
+# document buid file
+build
+
+# vscode file
+.vscode

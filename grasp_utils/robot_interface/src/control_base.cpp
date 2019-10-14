@@ -12,6 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+/**
+ * @file control_base.cpp 
+ */
+
 #include <robot_interface/control_base.hpp>
 #include <chrono>
 #include <thread>
