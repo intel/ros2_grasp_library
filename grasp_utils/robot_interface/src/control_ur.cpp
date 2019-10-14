@@ -22,12 +22,26 @@ bool URControl::moveToTcpPose(double x, double y, double z,
                               double alpha, double beta, double gamma, 
                               double vel, double acc)
 {
-  std::string command_script = "movej(p[" + 
+  // Convert euler angles around (x, y, z) to rotation vector
+  tf2::Quaternion q;
+  q.setRPY(alpha, beta, gamma);
+  tf2Scalar angle = q.getAngle();
+  tf2::Vector3 axis = q.getAxis();
+  tf2::Vector3 rotation_vector = axis * angle;
+
+  // Get URScript command
+  std::string command_script = "movej(p[" +
                                std::to_string(x) + "," + std::to_string(y) + "," + std::to_string(z) + "," +
-                               std::to_string(alpha) + "," + std::to_string(beta) + "," + std::to_string(gamma) + "]," + 
+                               std::to_string(rotation_vector[0]) + "," + std::to_string(rotation_vector[1]) + "," + std::to_string(rotation_vector[2]) + "]," + 
                                std::to_string(vel) + "," + std::to_string(acc) + ")\n";
-  urscriptInterface(command_script);
-  return true;
+
+  Eigen::Isometry3d pose_goal = Eigen::Translation3d(x, y, z)
+    * Eigen::AngleAxisd(alpha, Eigen::Vector3d::UnitX())
+    * Eigen::AngleAxisd(beta, Eigen::Vector3d::UnitY())
+    * Eigen::AngleAxisd(gamma, Eigen::Vector3d::UnitZ());
+
+  // Send command and check goal arrived           
+  return (urscriptInterface(command_script) && checkTcpGoalArrived(pose_goal));
 }
 
 bool URControl::open(const double distance)
