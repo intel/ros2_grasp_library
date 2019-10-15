@@ -62,15 +62,15 @@ bool ArmControlBase::pick(double x, double y, double z,
 
   
   if (// Move to pre_grasp
-      moveToTcpPose(pre_grasp, vel, acc) && checkTcpGoalArrived(pre_grasp) &&
+      moveToTcpPose(pre_grasp, vel, acc) &&
       // Open gripper
       open() &&
       // Move to grasp
-      moveToTcpPose(grasp, vel*vel_scale, acc*vel_scale) && checkTcpGoalArrived(grasp) &&
+      moveToTcpPose(grasp, vel*vel_scale, acc*vel_scale) &&
       // Close gripper
       close() &&
       // Move to pre_grasp
-      moveToTcpPose(pre_grasp, vel*vel_scale, acc*vel_scale) && checkTcpGoalArrived(pre_grasp))
+      moveToTcpPose(pre_grasp, vel*vel_scale, acc*vel_scale))
   {
     std::cout << "Pick finished." << std::endl;
     return true;
@@ -106,13 +106,13 @@ bool ArmControlBase::place(double x, double y, double z,
 
   
   if (// Move to pre_place
-      moveToTcpPose(pre_place, vel, acc) && checkTcpGoalArrived(pre_place) &&
+      moveToTcpPose(pre_place, vel, acc) &&
       // Move to place
-      moveToTcpPose(place, vel*vel_scale, acc*vel_scale) && checkTcpGoalArrived(place) &&
+      moveToTcpPose(place, vel*vel_scale, acc*vel_scale) &&
       // Open gripper
       open() &&
       // Move to pre_grasp
-      moveToTcpPose(pre_place, vel*vel_scale, acc*vel_scale) && checkTcpGoalArrived(pre_place))
+      moveToTcpPose(pre_place, vel*vel_scale, acc*vel_scale))
   {
     std::cout << "Place finished." << std::endl;
     return true;

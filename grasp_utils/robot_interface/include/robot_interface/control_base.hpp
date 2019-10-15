@@ -117,7 +117,7 @@ public:
   /**
    * @brief Make the robot arm to pick an object from a grasp pose.
    * 
-   * This function contains a sequence of motions: 
+   * This function defines a sequence of motions: 
    * -# Move the end-effector to a pose above the object.
    * -# Open gripper.
    * -# Stretch the end-effector along its Z axis to the grasp pose that gripper can grasp the object.
@@ -144,7 +144,7 @@ public:
     /**
    * @brief Make the robot arm to pick an object from a grasp pose.
    * 
-   * This function contains a sequence of motions: 
+   * This function defines a sequence of motions: 
    * -# Move the end-effector to a pose above the object.
    * -# Open gripper.
    * -# Stretch the end-effector along its Z axis to the grasp pose that gripper can grasp the object.
@@ -165,7 +165,7 @@ public:
   /**
    * @brief Make the robot arm to place an object from a place pose.
    * 
-   * This function contains a sequence of motions: 
+   * This function defines a sequence of motions: 
    * -# Move the end-effector to a pre-place pose.
    * -# Stretch the end-effector along its Z axis to the place pose.
    * -# Open gripper.
@@ -191,7 +191,7 @@ public:
   /**
    * @brief Make the robot arm to place an object from a place pose.
    * 
-   * This function contains a sequence of motions: 
+   * This function defines a sequence of motions: 
    * -# Move the end-effector to a pre-place pose.
    * -# Stretch the end-effector along its Z axis to the place pose.
    * -# Open gripper.
@@ -234,11 +234,17 @@ public:
 
   /** 
    * @brief Parse arguments
+   * 
+   * This function is used to parse the communication or control configuration parameters. A common method is 
+   * defining the configuration parameters in a .yaml file, then loading them as ROS2 node parameter and parsing them
+   * by ROS2 node parameter client.
    */
   virtual void parseArgs() = 0;
 
   /**
    * @brief Start control loop
+   * 
+   * This function is used to initialize the communication process and start the thread that reads and publishes the robot state.
    */
   virtual bool startLoop() = 0;
 

@@ -80,7 +80,7 @@ target_link_libraries(ur_test ${PROJECT_NAME} ${ur_modern_driver_LIBRARIES})
 
 ament_export_include_directories(include)
 ament_export_interfaces(${PROJECT_NAME} HAS_LIBRARY_TARGET)
-
+ament_export_libraries(${PROJECT_NAME} ${ur_modern_driver_LIBRARIES})
 ament_export_dependencies(rclcpp)
 ament_export_dependencies(sensor_msgs)
 ament_export_dependencies(geometry_msgs)

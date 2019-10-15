@@ -20,6 +20,7 @@
 
 #include <rclcpp/rclcpp.hpp>
 #include <robot_interface/control_base.hpp>
+#include <tf2/LinearMath/Quaternion.h>
 
 #include "ur_modern_driver/log.h"
 #include "ur_modern_driver/pipeline.h"
