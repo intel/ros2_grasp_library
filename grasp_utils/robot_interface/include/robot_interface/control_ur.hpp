@@ -100,6 +100,8 @@ public:
   virtual bool moveToTcpPose(double x, double y, double z, 
                              double alpha, double beta, double gamma, 
                              double vel, double acc);
+  
+  virtual bool moveToJointValues(const std::vector<double>& joint_values, double vel, double acc);
 
   virtual bool open(const double distance = 0);
 
