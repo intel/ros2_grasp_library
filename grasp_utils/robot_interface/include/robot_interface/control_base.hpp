@@ -76,7 +76,7 @@ public:
   }
 
   /**
-   * @brief Move the robot end-effector to a goal pose (position and orientation) in 3D Cartesian space.
+   * @brief Move the robot end-effector to a goal pose (position and orientation) w.r.t the robot base in 3D Cartesian space.
    * @param x Goal position on X dimension.
    * @param y Goal position on Y dimension.
    * @param z Goal position on Z dimension.
@@ -92,13 +92,22 @@ public:
                              double vel, double acc) = 0;
 
   /**
-   * @brief Move the robot end-effector to a goal pose (position and orientation) in 3D Cartesian space.
+   * @brief Move the robot end-effector to a goal pose (position and orientation) w.r.t the robot base in 3D Cartesian space.
    * @param pose Goal pose as a Eigen transform (Isometry3d).
    * @param vel Max joint velocity. 
    * @param acc Max joint acceleration.
    * @return If the robot successfully receives the "move" command, return True. Otherwise, return false.
    */
   virtual bool moveToTcpPose(const Eigen::Isometry3d& pose, double vel, double acc);
+
+  /**
+   * @brief Move the robot to a joint value goal.
+   * @param joint_values Goal joint values, the number of joints depends on the robot arm model.
+   * @param vel Max joint velocity. 
+   * @param acc Max joint acceleration.
+   * @return If the robot successfully receives the "move" command, return True. Otherwise, return false.
+   */
+  virtual bool moveToJointValues(const std::vector<double>& joint_values, double vel, double acc) = 0;
 
   /**
    * @brief Open the robot gripper and make it ready for grasping.
@@ -115,7 +124,7 @@ public:
   virtual bool close(const double distance = 0) = 0;
 
   /**
-   * @brief Make the robot arm to pick an object from a grasp pose.
+   * @brief Make the robot arm to pick an object from a grasp pose w.r.t the robot base.
    * 
    * This function defines a sequence of motions: 
    * -# Move the end-effector to a pose above the object.
@@ -142,7 +151,7 @@ public:
                     double vel, double acc, double vel_scale, double approach);
   
     /**
-   * @brief Make the robot arm to pick an object from a grasp pose.
+   * @brief Make the robot arm to pick an object from a grasp pose w.r.t the robot base.
    * 
    * This function defines a sequence of motions: 
    * -# Move the end-effector to a pose above the object.
@@ -163,7 +172,7 @@ public:
                     double vel, double acc, double vel_scale, double approach);
 
   /**
-   * @brief Make the robot arm to place an object from a place pose.
+   * @brief Make the robot arm to place an object from a place pose w.r.t the robot base.
    * 
    * This function defines a sequence of motions: 
    * -# Move the end-effector to a pre-place pose.
@@ -189,7 +198,7 @@ public:
                      double vel, double acc, double vel_scale, double retract);
 
   /**
-   * @brief Make the robot arm to place an object from a place pose.
+   * @brief Make the robot arm to place an object from a place pose w.r.t the robot base.
    * 
    * This function defines a sequence of motions: 
    * -# Move the end-effector to a pre-place pose.

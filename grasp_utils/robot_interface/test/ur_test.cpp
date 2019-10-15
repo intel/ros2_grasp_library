@@ -33,6 +33,8 @@ int main(int argc, char * argv[])
 
   arm_control->moveToTcpPose(-0.350, -0.296, 0.12, 3.14159, 0, 0, 0.3, 0.3);
 
+  arm_control->moveToJointValues(std::vector<double>{0.87, -1.44, 1.68, -1.81, -1.56, 0}, 1.05, 1.4);
+
   while(rclcpp::ok())
   {
     arm_control->pick(-0.153, -0.433, 0.145, 2.8, -0.144, 0.0245, 1.05, 1.4, 0.5, 0.1);

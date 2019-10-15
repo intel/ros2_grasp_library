@@ -44,6 +44,18 @@ bool URControl::moveToTcpPose(double x, double y, double z,
   return (urscriptInterface(command_script) && checkTcpGoalArrived(pose_goal));
 }
 
+bool URControl::moveToJointValues(const std::vector<double>& joint_values, double vel, double acc)
+{
+  // Get URScript command
+  std::string command_script = "movej([" +
+                               std::to_string(joint_values[0]) + "," + std::to_string(joint_values[1]) + "," + std::to_string(joint_values[2]) + "," +
+                               std::to_string(joint_values[3]) + "," + std::to_string(joint_values[4]) + "," + std::to_string(joint_values[5]) + "]," + 
+                               std::to_string(vel) + "," + std::to_string(acc) + ")\n";
+
+  // Send command and check goal arrived           
+  return urscriptInterface(command_script);
+}
+
 bool URControl::open(const double distance)
 {
   rt_commander_->setToolVoltage(static_cast<uint8_t>(24));
