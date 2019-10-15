@@ -53,7 +53,7 @@ bool URControl::moveToJointValues(const std::vector<double>& joint_values, doubl
                                std::to_string(vel) + "," + std::to_string(acc) + ")\n";
 
   // Send command and check goal arrived           
-  return urscriptInterface(command_script);
+  return urscriptInterface(command_script) && checkJointValueGoalArrived(joint_values);;
 }
 
 bool URControl::open(const double distance)
@@ -182,21 +182,28 @@ bool URControl::getTcpPose(RTShared& packet)
   return true;
 }
 
+bool URControl::getJointValues(RTShared& packet)
+{
+  joint_values_.assign(packet.q_actual.begin(), packet.q_actual.end());
+
+  return true;
+}
+
 bool URControl::consume(RTState_V1_6__7& state)
 {
-  return publish(state) && getTcpPose(state);
+  return publish(state) && getTcpPose(state) && getJointValues(state);
 }
 bool URControl::consume(RTState_V1_8& state)
 {
-  return publish(state) && getTcpPose(state);
+  return publish(state) && getTcpPose(state) && getJointValues(state);
 }
 bool URControl::consume(RTState_V3_0__1& state)
 {
-  return publish(state) && getTcpPose(state);
+  return publish(state) && getTcpPose(state) && getJointValues(state);
 }
 bool URControl::consume(RTState_V3_2__3& state)
 {
-  return publish(state) && getTcpPose(state);
+  return publish(state) && getTcpPose(state) && getJointValues(state);
 }
 
 bool URControl::publish(RTShared& packet)
