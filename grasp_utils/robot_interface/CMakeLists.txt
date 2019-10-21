@@ -33,6 +33,7 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(tf2_eigen REQUIRED)
+find_package(tf2_ros REQUIRED)
 find_package(Eigen3 REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(sensor_msgs REQUIRED)
@@ -54,6 +55,7 @@ include_directories(
   ${rclcpp_INCLUDE_DIRS}
   ${tf2_INCLUDE_DIRS}
   ${tf2_eigen_INCLUDE_DIRS}
+  ${tf2_ros_INCLUDE_DIRS}
   ${Eigen3_INCLUDE_DIRS}
   ${sensor_msgs_INCLUDE_DIRS}
   ${geometry_msgs_INCLUDE_DIRS}
@@ -67,7 +69,7 @@ set(${PROJECT_NAME}_SOURCES
   src/control_ur.cpp
 ) 
 add_library(${PROJECT_NAME} ${${PROJECT_NAME}_SOURCES})
-ament_target_dependencies(${PROJECT_NAME} rclcpp sensor_msgs geometry_msgs)
+ament_target_dependencies(${PROJECT_NAME} rclcpp sensor_msgs geometry_msgs tf2_ros)
 target_link_libraries(${PROJECT_NAME} ${ur_modern_driver_LIBRARIES})
 
 # Add test of UR robot interface library

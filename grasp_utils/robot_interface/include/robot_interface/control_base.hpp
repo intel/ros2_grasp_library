@@ -27,11 +27,13 @@
 #pragma once
 
 #include <mutex>
+#include <thread>
 #include <Eigen/Geometry>
 #include <rclcpp/rclcpp.hpp>
 #include <tf2_eigen/tf2_eigen.h>
 #include <sensor_msgs/msg/joint_state.hpp>
 #include <geometry_msgs/msg/pose_stamped.hpp>
+#include <tf2_ros/static_transform_broadcaster.h>
 
 /**
  * @brief Data type to represent robot arm's end-effector pose in 3D cartesian space.
@@ -62,10 +64,12 @@ public:
    * @param options ROS2 node options.
    */
   ArmControlBase(const std::string node_name, const rclcpp::NodeOptions & options)
-  : Node(node_name, options)
+  : Node(node_name, options), broadcaster_(this)
   {
     joint_pub_ = this->create_publisher<sensor_msgs::msg::JointState>("/joint_states", 1);
     time_out_ = 15.0;
+
+    tf_thread_ = std::thread(&ArmControlBase::publishTFGoal, this);
   }
 
   /**
@@ -73,6 +77,8 @@ public:
    */
   virtual ~ArmControlBase()
   {
+    rclcpp::shutdown();
+    tf_thread_.join();
   }
 
   /**
@@ -99,6 +105,15 @@ public:
    * @return If the robot successfully receives the "move" command, return True. Otherwise, return false.
    */
   virtual bool moveToTcpPose(const Eigen::Isometry3d& pose, double vel, double acc);
+
+  /**
+   * @brief Move the robot end-effector to a goal pose (position and orientation) w.r.t the robot base in 3D Cartesian space.
+   * @param pose_stamped Goal pose as geometry_msgs/PoseStamped.
+   * @param vel Max joint velocity. 
+   * @param acc Max joint acceleration.
+   * @return If the robot successfully receives the "move" command, return True. Otherwise, return false.
+   */
+  virtual bool moveToTcpPose(const geometry_msgs::msg::PoseStamped& pose_stamped, double vel, double acc);
 
   /**
    * @brief Move the robot to a joint value goal.
@@ -265,6 +280,15 @@ public:
    */
   virtual bool startLoop() = 0;
 
+  /**
+   * @brief Publish the pose input to 
+   * 
+   * This function is used to initialize the communication process and start the thread that reads and publishes the robot state.
+   */
+  virtual void publishTFGoal();
+
+  void updateTFGoal(const geometry_msgs::msg::PoseStamped& pose_stamped);
+
 protected:
   /// Joint state publisher
   rclcpp::Publisher<sensor_msgs::msg::JointState>::SharedPtr joint_pub_;
@@ -278,4 +302,8 @@ protected:
   std::mutex m_;
   /// Time duration to finish a pick or place task
   double time_out_;
+  /// Thread to publish tf pose
+  std::thread tf_thread_;
+  geometry_msgs::msg::TransformStamped tf_msg_;
+  tf2_ros::StaticTransformBroadcaster broadcaster_;
 };

@@ -20,6 +20,31 @@
 #include <chrono>
 #include <thread>
 
+void ArmControlBase::publishTFGoal()
+{
+  while (rclcpp::ok())
+  {
+    // std::cout << "Publish" << std::endl;
+    broadcaster_.sendTransform(tf_msg_);
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+  }
+}
+
+void ArmControlBase::updateTFGoal(const geometry_msgs::msg::PoseStamped& pose_stamped)
+{
+  std::unique_lock<std::mutex> lock(m_);
+  tf_msg_.transform.translation.x = pose_stamped.pose.position.x;
+  tf_msg_.transform.translation.y = pose_stamped.pose.position.y;
+  tf_msg_.transform.translation.z = pose_stamped.pose.position.z;
+  tf_msg_.transform.rotation.x = pose_stamped.pose.orientation.x;
+  tf_msg_.transform.rotation.y = pose_stamped.pose.orientation.y;
+  tf_msg_.transform.rotation.z = pose_stamped.pose.orientation.z;
+  tf_msg_.transform.rotation.w = pose_stamped.pose.orientation.w;
+  tf_msg_.header.stamp = this->now();
+  tf_msg_.header.frame_id = pose_stamped.header.frame_id;
+  tf_msg_.child_frame_id = "pose_goal";
+}
+
 bool ArmControlBase::moveToTcpPose(const Eigen::Isometry3d& pose, double vel, double acc)
 {
   TcpPose tcp_pose;
@@ -28,11 +53,27 @@ bool ArmControlBase::moveToTcpPose(const Eigen::Isometry3d& pose, double vel, do
                              tcp_pose.alpha, tcp_pose.beta, tcp_pose.gamma, vel, acc);
 }
 
+bool ArmControlBase::moveToTcpPose(const geometry_msgs::msg::PoseStamped& pose_stamped, double vel, double acc)
+{
+  updateTFGoal(pose_stamped);
+
+  TcpPose tcp_pose;
+  toTcpPose(pose_stamped, tcp_pose);
+  return this->moveToTcpPose(tcp_pose.x, tcp_pose.y, tcp_pose.z, 
+                             tcp_pose.alpha, tcp_pose.beta, tcp_pose.gamma, vel, acc);
+}
+
 void ArmControlBase::toTcpPose(const geometry_msgs::msg::PoseStamped& pose_stamped, TcpPose& tcp_pose)
 {
-  Eigen::Isometry3d pose_transform;
-  tf2::fromMsg(pose_stamped.pose, pose_transform);
-  toTcpPose(pose_transform, tcp_pose);
+  tcp_pose.x = pose_stamped.pose.position.x;
+  tcp_pose.y = pose_stamped.pose.position.y;
+  tcp_pose.z = pose_stamped.pose.position.z;
+
+  tf2::Matrix3x3 r(tf2::Quaternion(pose_stamped.pose.orientation.x, 
+                    pose_stamped.pose.orientation.y, 
+                    pose_stamped.pose.orientation.z, 
+                    pose_stamped.pose.orientation.w));
+  r.getRPY(tcp_pose.alpha, tcp_pose.beta, tcp_pose.gamma);
 }
 
 void ArmControlBase::toTcpPose(const Eigen::Isometry3d& pose, TcpPose& tcp_pose)
@@ -85,6 +126,8 @@ bool ArmControlBase::pick(double x, double y, double z,
 bool ArmControlBase::pick(const geometry_msgs::msg::PoseStamped& pose_stamped, 
           double vel, double acc, double vel_scale, double approach)
 {
+  updateTFGoal(pose_stamped);
+
   TcpPose tcp_pose;
   toTcpPose(pose_stamped, tcp_pose);
   return pick(tcp_pose.x, tcp_pose.y, tcp_pose.z, 
@@ -127,6 +170,8 @@ bool ArmControlBase::place(double x, double y, double z,
 bool ArmControlBase::place(const geometry_msgs::msg::PoseStamped& pose_stamped, 
           double vel, double acc, double vel_scale, double retract)
 {
+  updateTFGoal(pose_stamped);
+
   TcpPose tcp_pose;
   toTcpPose(pose_stamped, tcp_pose);
   return place(tcp_pose.x, tcp_pose.y, tcp_pose.z, 
