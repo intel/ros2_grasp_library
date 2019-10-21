@@ -138,8 +138,6 @@ bool ArmControlBase::checkTcpGoalArrived(Eigen::Isometry3d& tcp_goal)
   bool wait = true;
   bool arrived = false;
 
-  std::vector<std::vector<double>> record;
-
   auto start = std::chrono::high_resolution_clock::now();
   while(wait)
   {
@@ -164,6 +162,51 @@ bool ArmControlBase::checkTcpGoalArrived(Eigen::Isometry3d& tcp_goal)
       }
     }
   }
+  std::this_thread::sleep_for(std::chrono::milliseconds(500));
+  return arrived;
+}
+
+bool ArmControlBase::checkJointValueGoalArrived(const std::vector<double>& joint_goal)
+{
+  bool wait = true;
+  bool arrived = false;
+
+  if (joint_goal.size() != joint_values_.size())
+  {
+    std::cerr << "Num of joints of goal dosen't match current joint state." << std::endl;
+    wait = false;
+  }
+
+  auto start = std::chrono::high_resolution_clock::now();
+  while(wait)
+  {
+    std::unique_lock<std::mutex> lock(m_);
+    double num_joints = joint_goal.size();
+    Eigen::Map<const Eigen::VectorXd> goal(joint_goal.data(), num_joints);
+    Eigen::Map<const Eigen::VectorXd> current(joint_values_.data(), num_joints);
+    if (current.isApprox(goal, 0.01))
+    {
+      wait = false;
+      arrived = true;
+    }
+    else
+    {
+      auto finish = std::chrono::high_resolution_clock::now();
+      std::chrono::duration<double> elapsed = finish - start;
+      if (elapsed.count() > time_out_)
+      {
+        wait = false;
+        arrived = false;
+        std::cerr << "Motion timeout" << std::endl;
+        std::stringstream ss;
+        ss << "Current joint values: ";
+        for (auto value : joint_values_)
+          ss << value << " ";
+        std::cerr << ss.str() << std::endl;
+      }
+    }
+  }
+
   std::this_thread::sleep_for(std::chrono::milliseconds(500));
   return arrived;
 }

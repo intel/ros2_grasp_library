@@ -136,6 +136,9 @@ public:
   // Function to get tool pose
   bool getTcpPose(RTShared& packet);
 
+  // Function to get current joint values
+  bool getJointValues(RTShared& packet);
+
   // Parse parameters
   void parseArgs();
 

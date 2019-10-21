@@ -241,6 +241,14 @@ public:
    */
   virtual bool checkTcpGoalArrived(Eigen::Isometry3d& tcp_goal);
 
+  /**
+   * @brief Function to check if the robot arm arrived the joint value goal.
+   * 
+   * @param joint_values Joint value goal of the robot arm.
+   * @return If the robot arrived the joint value goal within a <b>time_out_</b> duration, return true. Otherwise, return false.
+   */
+  virtual bool checkJointValueGoalArrived(const std::vector<double>& joint_goal);
+
   /** 
    * @brief Parse arguments
    * 
@@ -264,6 +272,8 @@ protected:
   std::vector<std::string> joint_names_;
   /// Current end-effctor pose
   TcpPose tcp_pose_;
+  /// Current joint value
+  std::vector<double> joint_values_;
   /// Mutex to guard the tcp_pose usage
   std::mutex m_;
   /// Time duration to finish a pick or place task
