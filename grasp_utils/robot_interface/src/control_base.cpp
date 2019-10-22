@@ -24,7 +24,6 @@ void ArmControlBase::publishTFGoal()
 {
   while (rclcpp::ok())
   {
-    // std::cout << "Publish" << std::endl;
     broadcaster_.sendTransform(tf_msg_);
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
   }
@@ -42,7 +41,6 @@ void ArmControlBase::updateTFGoal(const geometry_msgs::msg::PoseStamped& pose_st
   tf_msg_.transform.rotation.w = pose_stamped.pose.orientation.w;
   tf_msg_.header.stamp = this->now();
   tf_msg_.header.frame_id = pose_stamped.header.frame_id;
-  tf_msg_.child_frame_id = "pose_goal";
 }
 
 bool ArmControlBase::moveToTcpPose(const Eigen::Isometry3d& pose, double vel, double acc)
