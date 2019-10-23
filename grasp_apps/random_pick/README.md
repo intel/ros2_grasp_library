@@ -1,0 +1,1 @@
+../../grasp_tutorials/doc/random_pick.rst

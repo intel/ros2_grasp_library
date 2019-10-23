@@ -1,0 +1,22 @@
+# build
+--ament-cmake-args -DBUILD_RECOGNIZE_PICK=ON
+
+# Publish handeye transform, refer to handeye
+ros2 run tf2_ros static_transform_publisher 0.016289810558 0.83987282691 0.483312980714 0.375539744771 0.397068981197 -0.606356068939 0.577614440548 base_link camera_link
+
+# Publish place object
+ros2 run recognize_pick place_publisher sports_ball
+
+# launch object detection and realsense
+ros2 launch dynamic_vino_sample pipeline_segmentation.launch.py
+# close the rviz2 
+
+# launch UR description
+ros2 launch ur_description view_ur5_ros2.launch.py
+# load rviz2 configure file "src/ros2_grasp_library/grasp_apps/recognize_pick/rviz2/recognize_pick.rviz"
+
+# launch random pick app
+ros2 run recognize_pick recognize_pick
+
+# launch grasp planner
+ros2 run grasp_ros2 grasp_ros2 __params:=src/ros2_grasp_library/grasp_apps/recognize_pick/cfg/recognize_pick.yaml
