@@ -1,5 +1,5 @@
 # rviz file
-*.rviz
+# *.rviz
 
 # document buid file
 build

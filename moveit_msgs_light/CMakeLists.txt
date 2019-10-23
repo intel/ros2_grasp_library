@@ -24,6 +24,7 @@ set(msg_files
   "msg/GripperTranslation.msg"
   "msg/MoveItErrorCodes.msg"
   "msg/ObjectType.msg"
+  "msg/PlaceLocation.msg"
 )
 
 set(srv_files

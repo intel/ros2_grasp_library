@@ -30,7 +30,7 @@
 #include "grasp_library/ros2/consts.hpp"
 #include "./tgrasp_ros2.h"
 
-using namespace grasp_ros2;
+using Consts = grasp_ros2::Consts;
 using GraspPlanning = moveit_msgs::srv::GraspPlanning;
 
 static bool received_topic = false;
@@ -49,6 +49,7 @@ static void pcd_publisher()
   }
   sensor_msgs::msg::PointCloud2 msg;
   pcl::toROSMsg(cloud, msg);
+  msg.header.frame_id = "camera_color_optical_frame";
   auto pcd_node = rclcpp::Node::make_shared("PCDPublisher");
   auto pcd_pub = pcd_node->create_publisher<sensor_msgs::msg::PointCloud2>(
     Consts::kTopicPointCloud2, 10);

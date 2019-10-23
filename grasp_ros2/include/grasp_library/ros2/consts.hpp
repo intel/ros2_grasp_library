@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef GRASP_LIBRARY_ROS2_CONSTS_HPP_
-#define GRASP_LIBRARY_ROS2_CONSTS_HPP_
+#ifndef GRASP_LIBRARY__ROS2__CONSTS_HPP_
+#define GRASP_LIBRARY__ROS2__CONSTS_HPP_
 
 #include <string>
 
@@ -42,4 +42,4 @@ public:
 
 }  // namespace grasp_ros2
 
-#endif  // GRASP_LIBRARY_ROS2_CONSTS_HPP_
+#endif  // GRASP_LIBRARY__ROS2__CONSTS_HPP_

@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef GRASP_LIBRARY_ROS2_GRASP_PLANNER_HPP_
-#define GRASP_LIBRARY_ROS2_GRASP_PLANNER_HPP_
+#ifndef GRASP_LIBRARY__ROS2__GRASP_PLANNER_HPP_
+#define GRASP_LIBRARY__ROS2__GRASP_PLANNER_HPP_
 
 #include <rclcpp/logger.hpp>
 #include <rclcpp/rclcpp.hpp>
@@ -22,6 +22,7 @@
 #include <moveit_msgs/srv/grasp_planning.hpp>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 #include <tf2_ros/transform_listener.h>
+#include <tf2_ros/static_transform_broadcaster.h>
 #include <trajectory_msgs/msg/joint_trajectory_point.hpp>
 
 #include <condition_variable>
@@ -85,7 +86,9 @@ public:
    * \brief Constructor.
    * \param grasp_detector Grasp Detector used by this planner.
   */
-  explicit GraspPlanner(const rclcpp::NodeOptions & options, GraspDetectorBase * grasp_detector = nullptr);
+  explicit GraspPlanner(
+    const rclcpp::NodeOptions & options,
+    GraspDetectorBase * grasp_detector = nullptr);
 
   /**
    * \brief Destructor.
@@ -146,13 +149,16 @@ private:
   std::condition_variable cv_;
   GraspPlanningParameters param_;
   rclcpp::Logger logger_ = rclcpp::get_logger("GraspPlanner");
-  /** buffer for grasps to be returned from this service*/
+  /*buffer for grasps to be returned from this service*/
   std::vector<moveit_msgs::msg::Grasp> moveit_grasps_;
-  rclcpp::Service<moveit_msgs::srv::GraspPlanning>::SharedPtr grasp_srv_; /**< grasp service*/
-  tf2_ros::Buffer * tfBuffer_; /**< buffer for transformation listener*/
-  GraspDetectorBase * grasp_detector_; /**< grasp detector node*/
+  rclcpp::callback_group::CallbackGroup::SharedPtr callback_group_subscriber3_;
+  rclcpp::Service<moveit_msgs::srv::GraspPlanning>::SharedPtr grasp_srv_; /*grasp service*/
+  tf2_ros::Buffer * tfBuffer_; /*buffer for transformation listener*/
+  std::shared_ptr<tf2_ros::TransformListener> tfListener_; /*Transform listener*/
+  tf2_ros::StaticTransformBroadcaster tfBroadcaster_; /*grasp pose transformation broadcaster*/
+  GraspDetectorBase * grasp_detector_; /*grasp detector node*/
 };
 
 }  // namespace grasp_ros2
 
-#endif  // GRASP_LIBRARY_ROS2_GRASP_PLANNER_HPP_
+#endif  // GRASP_LIBRARY__ROS2__GRASP_PLANNER_HPP_

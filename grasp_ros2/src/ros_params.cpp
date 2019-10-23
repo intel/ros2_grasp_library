@@ -85,7 +85,7 @@ void ROSParameters::getDetectionParams(
   node->get_parameter_or("filter_grasps", param.filter_grasps_, false);
   node->get_parameter_or("filter_half_antipodal", param.filter_half_antipodal_, false);
   param.gripper_width_range_.push_back(0.03);
-  param.gripper_width_range_.push_back(0.07);
+  param.gripper_width_range_.push_back(0.10);
   // node->get_parameter("gripper_width_range", param.gripper_width_range_);
 
   // Read clustering parameters
@@ -99,7 +99,7 @@ void ROSParameters::getPlanningParams(
   rclcpp::Node * node,
   GraspPlanner::GraspPlanningParameters & param)
 {
-  node->get_parameter_or("grasp_service_timeout", param.grasp_service_timeout_, 5);
+  node->get_parameter_or("grasp_service_timeout", param.grasp_service_timeout_, 0);
   node->get_parameter_or("grasp_score_threshold", param.grasp_score_threshold_, 200);
   node->get_parameter_or("grasp_frame_id", param.grasp_frame_id_, std::string("base"));
   std::vector<double> approach;
