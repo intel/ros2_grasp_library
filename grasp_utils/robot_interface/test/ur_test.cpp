@@ -31,8 +31,6 @@ int main(int argc, char * argv[])
 
   rclcpp::sleep_for(std::chrono::seconds(2));
 
-
-
   while(rclcpp::ok())
   {
     geometry_msgs::msg::PoseStamped pose_stamped;
@@ -50,16 +48,16 @@ int main(int argc, char * argv[])
 
     pose_stamped.header.frame_id = "base";
     pose_stamped.header.stamp = arm_control->now();
-    pose_stamped.pose.position.x = -0.048650; 
-    pose_stamped.pose.position.y = -0.658047; 
-    pose_stamped.pose.position.z = 0.189161;
-    pose_stamped.pose.orientation.x = 0.903822;
-    pose_stamped.pose.orientation.y = 0.395928;
-    pose_stamped.pose.orientation.z = 0.024463;
-    pose_stamped.pose.orientation.w = -0.160461;
+    pose_stamped.pose.position.x = -0.157402; 
+    pose_stamped.pose.position.y = -0.679509; 
+    pose_stamped.pose.position.z = 0.094437;
+    pose_stamped.pose.orientation.x = 0.190600;
+    pose_stamped.pose.orientation.y = 0.948295;
+    pose_stamped.pose.orientation.z = 0.239947;
+    pose_stamped.pose.orientation.w = 0.082662;
 
     arm_control->pick(pose_stamped, 1.05, 1.4, 0.5, 0.1);
-    arm_control->pick(pose_stamped, 1.05, 1.4, 0.5, 0.1);
+    arm_control->place(pose_stamped, 1.05, 1.4, 0.5, 0.1);
 
     arm_control->moveToTcpPose(-0.350, -0.296, 0.12, 3.14159, 0, 0, 0.3, 0.3);
 

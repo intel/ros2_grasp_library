@@ -299,6 +299,14 @@ public:
    */
   void updateTFGoal(const geometry_msgs::msg::PoseStamped& pose_stamped);
 
+  /**
+   * @brief This function is used to rotate a unit vector along z axis, i.e. (0, 0, 1) by the assigned rpy euler angles.
+   * @param alpha Rotation euler angle around X axis.
+   * @param beta Rotation euler angle around Y axis.
+   * @param gamma Rotation euler angle around Z axis.
+   */
+  Eigen::Vector3d getUnitApproachVector(const double& alpha, const double& beta, const double& gamma);
+
 protected:
   /// Joint state publisher
   rclcpp::Publisher<sensor_msgs::msg::JointState>::SharedPtr joint_pub_;

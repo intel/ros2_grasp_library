@@ -86,20 +86,30 @@ void ArmControlBase::toTcpPose(const Eigen::Isometry3d& pose, TcpPose& tcp_pose)
   tcp_pose.gamma = euler_angles[2]; 
 }
 
+Eigen::Vector3d ArmControlBase::getUnitApproachVector(const double& alpha, const double& beta, const double& gamma)
+{
+  tf2::Quaternion q;
+  q.setRPY(alpha, beta, gamma);
+  tf2::Matrix3x3 r(q);
+
+  tf2::Vector3 approach_vector = r * tf2::Vector3(0, 0, 1);
+  approach_vector = approach_vector.normalize();
+  return Eigen::Vector3d(approach_vector[0], approach_vector[1], approach_vector[2]);
+}
+
 bool ArmControlBase::pick(double x, double y, double z, 
                           double alpha, double beta, double gamma, 
                           double vel, double acc, double vel_scale, double approach)
 {
-  Eigen::Isometry3d grasp;
-  grasp = Eigen::AngleAxisd(alpha, Eigen::Vector3d::UnitX())
-           * Eigen::AngleAxisd(beta, Eigen::Vector3d::UnitY())
-           * Eigen::AngleAxisd(gamma, Eigen::Vector3d::UnitZ());
-  grasp = Eigen::Translation3d(x, y, z) * grasp;
+  Eigen::Vector3d pre_grasp_origin = Eigen::Vector3d(x, y, z) - getUnitApproachVector(alpha, beta, gamma) * approach;
 
-  Eigen::Isometry3d pre_grasp;
-  pre_grasp = grasp * Eigen::Translation3d(0, 0, -approach);
+  Eigen::Isometry3d grasp, orientation, pre_grasp;
+  orientation = Eigen::AngleAxisd(alpha, Eigen::Vector3d::UnitX())
+                * Eigen::AngleAxisd(beta, Eigen::Vector3d::UnitY())
+                * Eigen::AngleAxisd(gamma, Eigen::Vector3d::UnitZ());
+  grasp = Eigen::Translation3d(x, y, z) * orientation;
+  pre_grasp = Eigen::Translation3d(pre_grasp_origin) * orientation;
 
-  
   if (// Move to pre_grasp
       moveToTcpPose(pre_grasp, vel, acc) &&
       // Open gripper
@@ -136,14 +146,14 @@ bool ArmControlBase::place(double x, double y, double z,
                            double alpha, double beta, double gamma,
                            double vel, double acc, double vel_scale, double retract)
 {
-  Eigen::Isometry3d place;
-  place = Eigen::AngleAxisd(alpha, Eigen::Vector3d::UnitX())
-              * Eigen::AngleAxisd(beta, Eigen::Vector3d::UnitY())
-              * Eigen::AngleAxisd(gamma, Eigen::Vector3d::UnitZ()); 
-  place = Eigen::Translation3d(x, y, z) * place;
+  Eigen::Vector3d pre_place_origin = Eigen::Vector3d(x, y, z) - getUnitApproachVector(alpha, beta, gamma) * retract;
 
-  Eigen::Isometry3d pre_place;
-  pre_place = place * Eigen::Translation3d(0, 0, -retract);
+  Eigen::Isometry3d place, orientation, pre_place;
+  orientation = Eigen::AngleAxisd(alpha, Eigen::Vector3d::UnitX())
+                * Eigen::AngleAxisd(beta, Eigen::Vector3d::UnitY())
+                * Eigen::AngleAxisd(gamma, Eigen::Vector3d::UnitZ()); 
+  place = Eigen::Translation3d(x, y, z) * orientation;
+  pre_place = Eigen::Translation3d(pre_place_origin) * orientation;
 
   
   if (// Move to pre_place
