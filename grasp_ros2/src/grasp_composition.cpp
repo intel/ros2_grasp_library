@@ -19,17 +19,21 @@
 #include "grasp_library/ros2/grasp_detector_gpd.hpp"
 #include "grasp_library/ros2/grasp_planner.hpp"
 
-using namespace grasp_ros2;
+using GraspDetectorGPD = grasp_ros2::GraspDetectorGPD;
+using GraspDetectorBase = grasp_ros2::GraspDetectorBase;
+using GraspPlanner = grasp_ros2::GraspPlanner;
 
 int main(int argc, char ** argv)
 {
   rclcpp::init(argc, argv);
-  rclcpp::executors::SingleThreadedExecutor exec;
+  rclcpp::executors::MultiThreadedExecutor exec;
 
-  auto detect_node = std::make_shared<GraspDetectorGPD>(rclcpp::NodeOptions().automatically_declare_parameters_from_overrides(true));
+  auto detect_node = std::make_shared<GraspDetectorGPD>(
+    rclcpp::NodeOptions().automatically_declare_parameters_from_overrides(true));
   exec.add_node(detect_node);
   GraspDetectorBase * grasp_detector = dynamic_cast<GraspDetectorBase *>(detect_node.get());
-  auto plan_node = std::make_shared<GraspPlanner>(rclcpp::NodeOptions().automatically_declare_parameters_from_overrides(true), grasp_detector);
+  auto plan_node = std::make_shared<GraspPlanner>(
+    rclcpp::NodeOptions().automatically_declare_parameters_from_overrides(true), grasp_detector);
   exec.add_node(plan_node);
   exec.spin();
 
