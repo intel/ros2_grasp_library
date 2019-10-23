@@ -27,11 +27,13 @@
 #pragma once
 
 #include <mutex>
+#include <thread>
 #include <Eigen/Geometry>
 #include <rclcpp/rclcpp.hpp>
 #include <tf2_eigen/tf2_eigen.h>
 #include <sensor_msgs/msg/joint_state.hpp>
 #include <geometry_msgs/msg/pose_stamped.hpp>
+#include <tf2_ros/static_transform_broadcaster.h>
 
 /**
  * @brief Data type to represent robot arm's end-effector pose in 3D cartesian space.
@@ -62,10 +64,19 @@ public:
    * @param options ROS2 node options.
    */
   ArmControlBase(const std::string node_name, const rclcpp::NodeOptions & options)
-  : Node(node_name, options)
+  : Node(node_name, options), broadcaster_(this)
   {
     joint_pub_ = this->create_publisher<sensor_msgs::msg::JointState>("/joint_states", 1);
     time_out_ = 15.0;
+
+    tf_msg_.header.frame_id = "base"; // Used to void TF_NO_FRAME_ID error, updated by user later
+    tf_msg_.child_frame_id = "pose_goal";
+    // Initialize rotation to avoid TF_DENORMALIZED_QUATERNION error
+    tf_msg_.transform.rotation.x = 0.0;
+    tf_msg_.transform.rotation.y = 0.0;
+    tf_msg_.transform.rotation.z = 0.0;
+    tf_msg_.transform.rotation.w = 1.0;
+    tf_thread_ = std::thread(&ArmControlBase::publishTFGoal, this);
   }
 
   /**
@@ -73,6 +84,8 @@ public:
    */
   virtual ~ArmControlBase()
   {
+    rclcpp::shutdown();
+    tf_thread_.join();
   }
 
   /**
@@ -99,6 +112,15 @@ public:
    * @return If the robot successfully receives the "move" command, return True. Otherwise, return false.
    */
   virtual bool moveToTcpPose(const Eigen::Isometry3d& pose, double vel, double acc);
+
+  /**
+   * @brief Move the robot end-effector to a goal pose (position and orientation) w.r.t the robot base in 3D Cartesian space.
+   * @param pose_stamped Goal pose as geometry_msgs/PoseStamped.
+   * @param vel Max joint velocity. 
+   * @param acc Max joint acceleration.
+   * @return If the robot successfully receives the "move" command, return True. Otherwise, return false.
+   */
+  virtual bool moveToTcpPose(const geometry_msgs::msg::PoseStamped& pose_stamped, double vel, double acc);
 
   /**
    * @brief Move the robot to a joint value goal.
@@ -218,7 +240,7 @@ public:
                      double vel, double acc, double vel_scale, double retract);
 
   /**
-   * @brief Convert <b>geometry_msgs::msg::PoseStamped</b> to #TcpPose
+   * @brief Convert <b>geometry_msgs::msg::PoseStamped</b> to #TcpPose.
    * 
    * @param pose_stamped Pose of the end-effector.
    * @param tcp_pose Variable to store the converted result.
@@ -226,7 +248,7 @@ public:
   void toTcpPose(const geometry_msgs::msg::PoseStamped& pose_stamped, TcpPose& tcp_pose);
 
   /**
-   * @brief Convert <b>Eigen::Isometry3d</b> to #TcpPose
+   * @brief Convert <b>Eigen::Isometry3d</b> to #TcpPose.
    * 
    * @param pose Pose of the end-effector.
    * @param tcp_pose Variable to store the converted result.
@@ -253,17 +275,37 @@ public:
    * @brief Parse arguments
    * 
    * This function is used to parse the communication or control configuration parameters. A common method is 
-   * defining the configuration parameters in a .yaml file, then loading them as ROS2 node parameter and parsing them
+   * defining the configuration parameters in a .yaml file, then loading them as ROS2 node parameters and parsing them
    * by ROS2 node parameter client.
    */
   virtual void parseArgs() = 0;
 
   /**
-   * @brief Start control loop
+   * @brief Start control loop.
    * 
    * This function is used to initialize the communication process and start the thread that reads and publishes the robot state.
    */
   virtual bool startLoop() = 0;
+
+  /**
+   * @brief Publish <b>tf_msg_</b>.
+   * 
+   */
+  virtual void publishTFGoal();
+
+  /**
+   * @brief Update <b>tf_msg_</b>.
+   * @param pose_stamped Pose goal input to the move or pick/place commands.
+   */
+  void updateTFGoal(const geometry_msgs::msg::PoseStamped& pose_stamped);
+
+  /**
+   * @brief This function is used to rotate a unit vector along z axis, i.e. (0, 0, 1) by the assigned rpy euler angles.
+   * @param alpha Rotation euler angle around X axis.
+   * @param beta Rotation euler angle around Y axis.
+   * @param gamma Rotation euler angle around Z axis.
+   */
+  Eigen::Vector3d getUnitApproachVector(const double& alpha, const double& beta, const double& gamma);
 
 protected:
   /// Joint state publisher
@@ -274,8 +316,14 @@ protected:
   TcpPose tcp_pose_;
   /// Current joint value
   std::vector<double> joint_values_;
-  /// Mutex to guard the tcp_pose usage
+  /// Mutex to guard the tcp_pose_ usage
   std::mutex m_;
   /// Time duration to finish a pick or place task
   double time_out_;
+  /// Thread to publish tf pose
+  std::thread tf_thread_;
+  /// TF message converted from the pose stamped input to the move or pick/place commands.
+  geometry_msgs::msg::TransformStamped tf_msg_;
+  /// TF broadcaster
+  tf2_ros::StaticTransformBroadcaster broadcaster_;
 };

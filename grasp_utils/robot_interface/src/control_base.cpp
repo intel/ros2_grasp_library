@@ -20,6 +20,29 @@
 #include <chrono>
 #include <thread>
 
+void ArmControlBase::publishTFGoal()
+{
+  while (rclcpp::ok())
+  {
+    broadcaster_.sendTransform(tf_msg_);
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+  }
+}
+
+void ArmControlBase::updateTFGoal(const geometry_msgs::msg::PoseStamped& pose_stamped)
+{
+  std::unique_lock<std::mutex> lock(m_);
+  tf_msg_.transform.translation.x = pose_stamped.pose.position.x;
+  tf_msg_.transform.translation.y = pose_stamped.pose.position.y;
+  tf_msg_.transform.translation.z = pose_stamped.pose.position.z;
+  tf_msg_.transform.rotation.x = pose_stamped.pose.orientation.x;
+  tf_msg_.transform.rotation.y = pose_stamped.pose.orientation.y;
+  tf_msg_.transform.rotation.z = pose_stamped.pose.orientation.z;
+  tf_msg_.transform.rotation.w = pose_stamped.pose.orientation.w;
+  tf_msg_.header.stamp = this->now();
+  tf_msg_.header.frame_id = pose_stamped.header.frame_id;
+}
+
 bool ArmControlBase::moveToTcpPose(const Eigen::Isometry3d& pose, double vel, double acc)
 {
   TcpPose tcp_pose;
@@ -28,11 +51,27 @@ bool ArmControlBase::moveToTcpPose(const Eigen::Isometry3d& pose, double vel, do
                              tcp_pose.alpha, tcp_pose.beta, tcp_pose.gamma, vel, acc);
 }
 
+bool ArmControlBase::moveToTcpPose(const geometry_msgs::msg::PoseStamped& pose_stamped, double vel, double acc)
+{
+  updateTFGoal(pose_stamped);
+
+  TcpPose tcp_pose;
+  toTcpPose(pose_stamped, tcp_pose);
+  return this->moveToTcpPose(tcp_pose.x, tcp_pose.y, tcp_pose.z, 
+                             tcp_pose.alpha, tcp_pose.beta, tcp_pose.gamma, vel, acc);
+}
+
 void ArmControlBase::toTcpPose(const geometry_msgs::msg::PoseStamped& pose_stamped, TcpPose& tcp_pose)
 {
-  Eigen::Isometry3d pose_transform;
-  tf2::fromMsg(pose_stamped.pose, pose_transform);
-  toTcpPose(pose_transform, tcp_pose);
+  tcp_pose.x = pose_stamped.pose.position.x;
+  tcp_pose.y = pose_stamped.pose.position.y;
+  tcp_pose.z = pose_stamped.pose.position.z;
+
+  tf2::Matrix3x3 r(tf2::Quaternion(pose_stamped.pose.orientation.x, 
+                    pose_stamped.pose.orientation.y, 
+                    pose_stamped.pose.orientation.z, 
+                    pose_stamped.pose.orientation.w));
+  r.getRPY(tcp_pose.alpha, tcp_pose.beta, tcp_pose.gamma);
 }
 
 void ArmControlBase::toTcpPose(const Eigen::Isometry3d& pose, TcpPose& tcp_pose)
@@ -47,20 +86,30 @@ void ArmControlBase::toTcpPose(const Eigen::Isometry3d& pose, TcpPose& tcp_pose)
   tcp_pose.gamma = euler_angles[2]; 
 }
 
+Eigen::Vector3d ArmControlBase::getUnitApproachVector(const double& alpha, const double& beta, const double& gamma)
+{
+  tf2::Quaternion q;
+  q.setRPY(alpha, beta, gamma);
+  tf2::Matrix3x3 r(q);
+
+  tf2::Vector3 approach_vector = r * tf2::Vector3(0, 0, 1);
+  approach_vector = approach_vector.normalize();
+  return Eigen::Vector3d(approach_vector[0], approach_vector[1], approach_vector[2]);
+}
+
 bool ArmControlBase::pick(double x, double y, double z, 
                           double alpha, double beta, double gamma, 
                           double vel, double acc, double vel_scale, double approach)
 {
-  Eigen::Isometry3d grasp;
-  grasp = Eigen::AngleAxisd(alpha, Eigen::Vector3d::UnitX())
-           * Eigen::AngleAxisd(beta, Eigen::Vector3d::UnitY())
-           * Eigen::AngleAxisd(gamma, Eigen::Vector3d::UnitZ());
-  grasp = Eigen::Translation3d(x, y, z) * grasp;
+  Eigen::Vector3d pre_grasp_origin = Eigen::Vector3d(x, y, z) - getUnitApproachVector(alpha, beta, gamma) * approach;
 
-  Eigen::Isometry3d pre_grasp;
-  pre_grasp = grasp * Eigen::Translation3d(0, 0, -approach);
+  Eigen::Isometry3d grasp, orientation, pre_grasp;
+  orientation = Eigen::AngleAxisd(alpha, Eigen::Vector3d::UnitX())
+                * Eigen::AngleAxisd(beta, Eigen::Vector3d::UnitY())
+                * Eigen::AngleAxisd(gamma, Eigen::Vector3d::UnitZ());
+  grasp = Eigen::Translation3d(x, y, z) * orientation;
+  pre_grasp = Eigen::Translation3d(pre_grasp_origin) * orientation;
 
-  
   if (// Move to pre_grasp
       moveToTcpPose(pre_grasp, vel, acc) &&
       // Open gripper
@@ -85,6 +134,8 @@ bool ArmControlBase::pick(double x, double y, double z,
 bool ArmControlBase::pick(const geometry_msgs::msg::PoseStamped& pose_stamped, 
           double vel, double acc, double vel_scale, double approach)
 {
+  updateTFGoal(pose_stamped);
+
   TcpPose tcp_pose;
   toTcpPose(pose_stamped, tcp_pose);
   return pick(tcp_pose.x, tcp_pose.y, tcp_pose.z, 
@@ -95,14 +146,14 @@ bool ArmControlBase::place(double x, double y, double z,
                            double alpha, double beta, double gamma,
                            double vel, double acc, double vel_scale, double retract)
 {
-  Eigen::Isometry3d place;
-  place = Eigen::AngleAxisd(alpha, Eigen::Vector3d::UnitX())
-              * Eigen::AngleAxisd(beta, Eigen::Vector3d::UnitY())
-              * Eigen::AngleAxisd(gamma, Eigen::Vector3d::UnitZ()); 
-  place = Eigen::Translation3d(x, y, z) * place;
+  Eigen::Vector3d pre_place_origin = Eigen::Vector3d(x, y, z) - getUnitApproachVector(alpha, beta, gamma) * retract;
 
-  Eigen::Isometry3d pre_place;
-  pre_place = place * Eigen::Translation3d(0, 0, -retract);
+  Eigen::Isometry3d place, orientation, pre_place;
+  orientation = Eigen::AngleAxisd(alpha, Eigen::Vector3d::UnitX())
+                * Eigen::AngleAxisd(beta, Eigen::Vector3d::UnitY())
+                * Eigen::AngleAxisd(gamma, Eigen::Vector3d::UnitZ()); 
+  place = Eigen::Translation3d(x, y, z) * orientation;
+  pre_place = Eigen::Translation3d(pre_place_origin) * orientation;
 
   
   if (// Move to pre_place
@@ -127,6 +178,8 @@ bool ArmControlBase::place(double x, double y, double z,
 bool ArmControlBase::place(const geometry_msgs::msg::PoseStamped& pose_stamped, 
           double vel, double acc, double vel_scale, double retract)
 {
+  updateTFGoal(pose_stamped);
+
   TcpPose tcp_pose;
   toTcpPose(pose_stamped, tcp_pose);
   return place(tcp_pose.x, tcp_pose.y, tcp_pose.z, 
