@@ -5,3 +5,6 @@ std_msgs/Header header
 
 # The list of grasp configurations.
 grasp_msgs/GraspConfig[] grasps
+
+# Name of the known object these grasps associated to.
+string object_name
