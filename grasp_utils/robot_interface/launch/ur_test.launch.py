@@ -30,7 +30,21 @@ def generate_launch_description():
 
     return launch.LaunchDescription([
 
+        launch.actions.DeclareLaunchArgument(
+            "move",
+            default_value=["true"],
+            description="If using the move command test"
+        ),
+
         launch_ros.actions.Node(
-            package='robot_interface', node_executable='ur_test', 
-            output='screen', arguments=['__params:='+yaml]),
+            package='robot_interface', 
+            node_executable='ur_test_state_publish', 
+            output='screen', arguments=['__params:='+yaml],
+            condition=launch.conditions.UnlessCondition(launch.substitutions.LaunchConfiguration("move"))),
+
+        launch_ros.actions.Node(
+            package='robot_interface', 
+            node_executable='ur_test_move_command', 
+            output='screen', arguments=['__params:='+yaml],
+            condition=launch.conditions.IfCondition(launch.substitutions.LaunchConfiguration("move"))),        
     ])

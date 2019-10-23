@@ -32,7 +32,7 @@ The installation should refer to the installation of **ros2_grasp_library**.
 Launch the UR robot control test executable:
 
 ```shell
-ros2 launch robot_interface ur_test.launch.py
+ros2 launch robot_interface ur_test.launch.py move:=true
 ```
 
 Launch the Rivz2 display:

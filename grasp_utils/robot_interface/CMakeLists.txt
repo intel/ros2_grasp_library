@@ -76,9 +76,13 @@ target_link_libraries(${PROJECT_NAME} ${ur_modern_driver_LIBRARIES})
 set(TEST_SOURCE
   test/ur_test.cpp)
 
-add_executable(ur_test ${TEST_SOURCE})
-ament_target_dependencies(ur_test rclcpp sensor_msgs geometry_msgs)
-target_link_libraries(ur_test ${PROJECT_NAME} ${ur_modern_driver_LIBRARIES})
+add_executable(ur_test_move_command test/ur_test_move_command.cpp)
+ament_target_dependencies(ur_test_move_command rclcpp sensor_msgs geometry_msgs)
+target_link_libraries(ur_test_move_command ${PROJECT_NAME} ${ur_modern_driver_LIBRARIES})
+
+add_executable(ur_test_state_publish test/ur_test_state_publish.cpp)
+ament_target_dependencies(ur_test_state_publish rclcpp sensor_msgs geometry_msgs)
+target_link_libraries(ur_test_state_publish ${PROJECT_NAME} ${ur_modern_driver_LIBRARIES})
 
 ament_export_include_directories(include)
 ament_export_interfaces(${PROJECT_NAME} HAS_LIBRARY_TARGET)
@@ -98,7 +102,7 @@ install(
 )
 
 # Install executables
-install(TARGETS ur_test
+install(TARGETS ur_test_move_command ur_test_state_publish
   DESTINATION lib/${PROJECT_NAME})
 
 # Install header files  
