@@ -37,7 +37,7 @@ find_package(rclcpp_components REQUIRED)
 find_package(grasp_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(moveit_msgs)
-find_package(object_msgs)
+find_package(people_msgs)
 find_package(visualization_msgs)
 find_package(tf2)
 find_package(tf2_ros REQUIRED)
@@ -67,7 +67,7 @@ include_directories(
   ${grasp_msgs_INCLUDE_DIRS}
   ${sensor_msgs_INCLUDE_DIRS}
   ${moveit_msgs_INCLUDE_DIRS}
-  ${object_msgs_INCLUDE_DIRS}
+  ${people_msgs_INCLUDE_DIRS}
   ${tf2_geometry_msgs_INCLUDE_DIRS}
   ${trajectory_msgs_INCLUDE_DIRS}
   ${visualization_msgs_INCLUDE_DIRS}
@@ -87,7 +87,7 @@ add_library(${libgrasp_detect} SHARED
   src/ros_params.cpp
   src/grasp_detector_gpd.cpp)
 target_compile_definitions(${libgrasp_detect}
-	PRIVATE "GRASP_ROS2_BUILDING_DLL")
+  PRIVATE "GRASP_ROS2_BUILDING_DLL")
 ament_target_dependencies(${libgrasp_detect}
   "class_loader"
   "rclcpp"
@@ -95,7 +95,7 @@ ament_target_dependencies(${libgrasp_detect}
   "grasp_msgs"
   "sensor_msgs"
   "moveit_msgs"
-  "object_msgs"
+  "people_msgs"
   "visualization_msgs")
 target_link_libraries(${libgrasp_detect}
   ${gpg_LIBRARIES}
@@ -113,14 +113,13 @@ add_library(${libgrasp_plan} SHARED
   src/ros_params.cpp
   src/grasp_planner.cpp)
 target_compile_definitions(${libgrasp_plan}
-	PRIVATE "GRASP_ROS2_BUILDING_DLL")
+  PRIVATE "GRASP_ROS2_BUILDING_DLL")
 ament_target_dependencies(${libgrasp_plan}
   "class_loader"
   "rclcpp"
   "rclcpp_components"
   "grasp_msgs"
   "moveit_msgs"
-  "object_msgs"
   "tf2"
   "tf2_ros"
   "tf2_geometry_msgs"
@@ -140,7 +139,6 @@ ament_target_dependencies(${PROJECT_NAME}
   "grasp_msgs"
   "sensor_msgs"
   "moveit_msgs"
-  "object_msgs"
   "visualization_msgs"
   "tf2"
   "tf2_ros"

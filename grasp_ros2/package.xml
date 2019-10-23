@@ -2,7 +2,7 @@
 <?xml-model href="http://download.ros.org/schema/package_format2.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="2">
   <name>grasp_ros2</name>
-  <version>0.3.0</version>
+  <version>0.5.0</version>
   <description>ROS2 grasp library as MoveIt plug-in</description>
   <maintainer email="sharron.liu@intel.com">Sharron LIU</maintainer>
   <license>Apache License 2.0</license>
@@ -16,7 +16,7 @@
   <build_depend>sensor_msgs</build_depend>
   <build_depend>grasp_msgs</build_depend>
   <build_depend>moveit_msgs</build_depend>
-  <build_depend>object_msgs</build_depend>
+  <build_depend>people_msgs</build_depend>
   <build_depend>visualization_msgs</build_depend>
   <build_depend>pcl_conversions</build_depend>
   <build_depend>tf2</build_depend>
@@ -32,7 +32,7 @@
   <exec_depend>sensor_msgs</exec_depend>
   <exec_depend>grasp_msgs</exec_depend>
   <exec_depend>moveit_msgs</exec_depend>
-  <exec_depend>object_msgs</exec_depend>
+  <exec_depend>people_msgs</exec_depend>
   <exec_depend>visualization_msgs</exec_depend>
   <exec_depend>pcl_conversions</exec_depend>
   <exec_depend>tf2</exec_depend>
