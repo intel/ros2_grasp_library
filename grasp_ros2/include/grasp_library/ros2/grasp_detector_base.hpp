@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef GRASP_LIBRARY_ROS2_GRASP_DETECTOR_BASE_HPP_
-#define GRASP_LIBRARY_ROS2_GRASP_DETECTOR_BASE_HPP_
+#ifndef GRASP_LIBRARY__ROS2__GRASP_DETECTOR_BASE_HPP_
+#define GRASP_LIBRARY__ROS2__GRASP_DETECTOR_BASE_HPP_
 
 #include <grasp_msgs/msg/grasp_config_list.hpp>
 #include <string>
@@ -52,6 +52,7 @@ public:
    * \brief Constructor.
    */
   GraspDetectorBase()
+  : object_name_(""), grasp_cb_(nullptr)
   {
   }
 
@@ -65,10 +66,12 @@ public:
   /**
    * \brief Start grasp detection.
    * When this function is called, GraspDetector starts processing visual input.
+   * \param name Name of the object for which to detect grasps
    */
-  void start()
+  void start(std::string name = "")
   {
-    started = true;
+    started_ = true;
+    object_name_ = name;
   }
 
   /**
@@ -77,7 +80,7 @@ public:
    */
   void stop()
   {
-    started = false;
+    started_ = false;
   }
 
   /**
@@ -87,14 +90,15 @@ public:
    */
   void add_callback(GraspCallback * cb)
   {
-    grasp_cb = cb;
+    grasp_cb_ = cb;
   }
 
 protected:
-  bool started = false;
-  GraspCallback * grasp_cb = nullptr;
+  bool started_ = false;
+  std::string object_name_;
+  GraspCallback * grasp_cb_;
 };
 
 }  // namespace grasp_ros2
 
-#endif  // GRASP_LIBRARY_ROS2_GRASP_DETECTOR_BASE_HPP_
+#endif  // GRASP_LIBRARY__ROS2__GRASP_DETECTOR_BASE_HPP_
