@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef GRASP_LIBRARY_ROS2_ROS_PARAMS_HPP_
-#define GRASP_LIBRARY_ROS2_ROS_PARAMS_HPP_
+#ifndef GRASP_LIBRARY__ROS2__ROS_PARAMS_HPP_
+#define GRASP_LIBRARY__ROS2__ROS_PARAMS_HPP_
 
 // ROS2 core
 #include <rclcpp/rclcpp.hpp>
@@ -41,4 +41,4 @@ public:
 
 }  // namespace grasp_ros2
 
-#endif  // GRASP_LIBRARY_ROS2_ROS_PARAMS_HPP_
+#endif  // GRASP_LIBRARY__ROS2__ROS_PARAMS_HPP_
