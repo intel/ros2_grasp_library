@@ -11,7 +11,7 @@ ROS2 Grasp Library enables state-of-the-art CNN based deep learning grasp detect
 Grasp detection back-end algorithms enabled by this Grasp Library:
 - [Grasp Pose Detection](https://github.com/atenpas/gpd) detects 6-DOF grasp poses for a 2-finger grasp (e.g. a parallel jaw gripper) in 3D point clouds from RGBD sensor or PCD file. The grasp detection was enabled with Intel® DLDT toolkit and Intel® OpenVINO™ toolkit.
 
-  <img src="docs/img/ros2_grasp_library.png" width = 50% height = 50% alt="ROS2 Grasp Library" align=center />
+  <img src="grasp_tutorials/doc/grasp_ros2/img/ros2_grasp_library.png" width = 50% height = 50% alt="ROS2 Grasp Library" align=center />
 
 ## ROS2 Interfaces
 ### Subscribed Topics
