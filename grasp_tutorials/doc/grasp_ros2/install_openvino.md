@@ -3,7 +3,7 @@
 This tutorial introduces the DLDT toolkit and OpenVINO toolkit.
 
 Intel® [DLDT](https://github.com/opencv/dldt) is a Deep Learning Deployment Toolkit common to all architectures. The toolkit allows developers to convert pre-trained deep learning models into optimized Intermediate Representation (IR) models, then deploy the IR models through a high-level C++ Inference Engine API integrated with application logic. Additionally, [Open Model Zoo](https://github.com/opencv/open_model_zoo) provides more than 100 pre-trained optimized deep learning models and a set of demos to expedite development of high-performance deep learning inference applications. Online tutorials are availble for
-* [Inference Engine Build Instructions](https://github.com/opencv/dldt/blob/2018/inference-engine/README.md)
+* [Inference Engine Build Instructions](https://github.com/opencv/dldt/blob/2019/inference-engine/README.md)
 
 Intel® [OpenVINO™](https://software.intel.com/en-us/openvino-toolkit) (Open Visual Inference & Neural Network Optimization) toolkit enables CNN-based deep learning inference at the edge computation, extends workloads across Intel® hardware (including accelerators) and maximizes performance. The toolkit supports heterogeneous execution across various compution vision devices -- CPU, GPU, Intel® Movidius™ NCS, and FPGA -- using a common API. Online tutorials are available for
 * [Model Optimize Developer Guide](https://software.intel.com/en-us/articles/OpenVINO-ModelOptimizer)
@@ -16,18 +16,9 @@ It's recommended to refer to the online documents of the toolkits for the latest
 1. Build and install Inference Engine
    ```bash
    git clone https://github.com/opencv/dldt.git
-   cd dldt/inference-engine
-   git submodule init
-   git submodule update --recursive
-   # install common dependencies
-   source ./install_dependencies.sh
-   # install mkl for cpu acceleration
-   wget https://github.com/intel/mkl-dnn/releases/download/v0.17/mklml_lnx_2019.0.1.20180928.tgz
-   tar -zxvf mklml_lnx_2019.0.1.20180928.tgz
-   sudo ln -s `pwd`/mklml_lnx_2019.0.1.20180928 /usr/local/lib/mklml
-   # install opencl for gpu acceleration
-   wget https://github.com/intel/compute-runtime/releases/download/18.28.11080/intel-opencl_18.28.11080_amd64.deb
-   sudo dpkg -i intel-opencl_18.28.11080_amd64.deb
+   git checkout 2019_R3
+   # follow the instructions below to install all dependents, including mklml, opencl, etc.
+   # https://github.com/opencv/dldt/blob/2019_R3/inference-engine/README.md#build-on-linux-systems
    # build
    mkdir build && cd build
    cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local -DGEMM=MKL -DMKLROOT=/usr/local/lib/mklml -DENABLE_MKL_DNN=ON -DENABLE_CLDNN=ON ..
@@ -47,4 +38,4 @@ It's recommended to refer to the online documents of the toolkits for the latest
    sudo ldconfig
    ```
 4. Optionally install plug-ins for InferenceEngine deployment on heterogeneous devices
-   * Install [plug-in](https://software.intel.com/en-us/neural-compute-stick/get-started) for deployment on Intel Movidius Neural Computation Sticks Myriad X.
+   * Install [plug-in](https://github.com/opencv/dldt/blob/2019_R3/inference-engine/README.md#optional-additional-installation-steps-for-the-intel-movidius-neural-compute-stick-and-neural-compute-stick-2) for deployment on Intel Movidius Neural Computation Sticks Myriad X.
