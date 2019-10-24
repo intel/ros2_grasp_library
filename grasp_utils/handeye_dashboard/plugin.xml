@@ -1,0 +1,17 @@
+<library path="src">
+  <class name="HandEyeCalibration" type="handeye_dashboard.plugin.HandEyeCalibration" base_class_type="rqt_gui_py::Plugin">
+    <description>
+      Dashboard for the Hand-Eye Calibration
+    </description>
+    <qtgui>
+      <group>
+        <label>Intel</label>
+        <icon type="file">images/Intel.png</icon>
+        <statustip>Plugins created by Intel OTC-Robotics</statustip>
+      </group>
+      <label>Hand-Eye calibration</label>
+      <icon type="file">images/tool-calibration.png</icon>
+      <statustip>Dashboard for the hand-eye calibration</statustip>
+    </qtgui>
+  </class>
+</library>
