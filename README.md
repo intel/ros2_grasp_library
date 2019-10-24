@@ -27,12 +27,6 @@ ROS2 grasp planning service as MoveIt plugin, used by MoveIt manipulation applic
 
 ROS2 interfaces can be bridged back to ROS via [ros1_bridge](https://github.com/ros2/ros1_bridge/blob/master/README.md)
 
-## Tutorials
-* [Introduction to Intel® DLDT toolkit and Intel® OpenVINO™ toolkit](docs/install_openvino.md)
-* [OpenVINO Grasp Library with RGBD Camera](docs/tutorials_1_grasp_ros2_with_camera.md)
-* [Grasp Library Tests and Exmaples](docs/tutorials_2_grasp_ros2_test.md)
-* [Grasp Library Launch Options and Customization Notes](docs/tutorials_3_grasp_ros2_launch_options.md)
-
 ## Known Issues
   * Cloud camera failed at "Invalid sizes when resizing a matrix or array" when dealing with XYZRGBA pointcloud from ROS2 Realsenes, tracked as [#6](https://github.com/atenpas/gpg/issues/6) of gpg, [patch](https://github.com/atenpas/gpg/pull/7) under review.
   * 'colcon test' sometimes failed with test suite "tgrasp_ros2", due to ROS2 service request failure issue (reported ros2 examples issue [#228](https://github.com/ros2/examples/issues/228) and detailed discussed in ros2 demo issue [#304](https://github.com/ros2/demos/issues/304))
