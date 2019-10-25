@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>handeye_target_detection</name>
+  <version>0.1.0</version>
+  <description>Recognize the calibration pattern pose with RGBD camera.</description>
+  <author email="yu.yan@intel.com">yanyu</author>
+  <maintainer email="yu.yan@intel.com">yanyu</maintainer>
+  <license>Apache License 2.0</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  <build_depend>rclcpp</build_depend>
+  <build_depend>std_msgs</build_depend>
+  <build_depend>sensor_msgs</build_depend>
+  <build_depend>cv_bridge</build_depend>
+  <build_depend>image_transport</build_depend>
+  <build_depend>rospy</build_depend>
+  <build_depend>tf</build_depend>
+
+  <exec_depend>rclcpp</exec_depend>
+  <test_depend>ament_cmake_clang_format</test_depend>
+  
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+
+</package>
