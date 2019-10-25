@@ -25,29 +25,29 @@ int main(int argc, char **argv)
   robot->moveToJointValues(HOME, 1.05, 1.4);
 
   // Move to the first corner
-  robot->moveToTcpPose(CORNER1_POSE[0], CORNER1_POSE[1], CORNER1_POSE[2], 
+  robot->moveToTcpPose(CORNER1_POSE[0], CORNER1_POSE[1], CORNER1_POSE[2],
                        CORNER1_POSE[3], CORNER1_POSE[4], CORNER1_POSE[5], 1.05, 1.4);
 
-  robot->moveToTcpPose(CORNER1_POSE[0], CORNER1_POSE[1], CORNER1_POSE[2] - 0.05, 
+  robot->moveToTcpPose(CORNER1_POSE[0], CORNER1_POSE[1], CORNER1_POSE[2] - 0.05,
                        CORNER1_POSE[3], CORNER1_POSE[4], CORNER1_POSE[5], 1.05, 1.4);
 
   // Move to the second corner
-  robot->moveToTcpPose(CORNER2_POSE[0], CORNER2_POSE[1], CORNER2_POSE[2], 
-                       CORNER2_POSE[3], CORNER2_POSE[4], CORNER2_POSE[5] - 0.05, 1.05, 1.4);
+  robot->moveToTcpPose(CORNER2_POSE[0], CORNER2_POSE[1], CORNER2_POSE[2] - 0.05,
+                       CORNER2_POSE[3], CORNER2_POSE[4], CORNER2_POSE[5], 1.05, 1.4);
 
-  robot->moveToTcpPose(CORNER2_POSE[0], CORNER2_POSE[1], CORNER2_POSE[2], 
+  robot->moveToTcpPose(CORNER2_POSE[0], CORNER2_POSE[1], CORNER2_POSE[2],
                        CORNER2_POSE[3], CORNER2_POSE[4], CORNER2_POSE[5], 1.05, 1.4);
 
   // Move to the third corner
   robot->moveToTcpPose(CORNER3_POSE[0], CORNER3_POSE[1], CORNER3_POSE[2],
                        CORNER3_POSE[3], CORNER3_POSE[4], CORNER3_POSE[5], 1.05, 1.4);
 
-  robot->moveToTcpPose(CORNER3_POSE[0], CORNER3_POSE[1], CORNER3_POSE[2] - 0.05, 
+  robot->moveToTcpPose(CORNER3_POSE[0], CORNER3_POSE[1], CORNER3_POSE[2] - 0.05,
                        CORNER3_POSE[3], CORNER3_POSE[4], CORNER3_POSE[5], 1.05, 1.4);
 
   // Move to the fourth corner
   robot->moveToTcpPose(CORNER4_POSE[0], CORNER4_POSE[1], CORNER4_POSE[2] - 0.05,
-                       CORNER4_POSE[3], CORNER4_POSE[4], CORNER4_POSE[5] - 0.05, 1.05, 1.4);
+                       CORNER4_POSE[3], CORNER4_POSE[4], CORNER4_POSE[5], 1.05, 1.4);
 
   robot->moveToTcpPose(CORNER4_POSE[0], CORNER4_POSE[1], CORNER4_POSE[2],
                        CORNER4_POSE[3], CORNER4_POSE[4], CORNER4_POSE[5], 1.05, 1.4);

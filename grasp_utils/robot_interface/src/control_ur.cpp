@@ -30,7 +30,7 @@ bool URControl::moveToTcpPose(double x, double y, double z,
   tf2::Vector3 rotation_vector = axis * angle;
 
   // Get URScript command
-  std::string command_script = "movej(p[" +
+  std::string command_script = "movel(p[" +
                                std::to_string(x) + "," + std::to_string(y) + "," + std::to_string(z) + "," +
                                std::to_string(rotation_vector[0]) + "," + std::to_string(rotation_vector[1]) + "," + std::to_string(rotation_vector[2]) + "]," + 
                                std::to_string(vel) + "," + std::to_string(acc) + ")\n";

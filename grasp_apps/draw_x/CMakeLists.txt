@@ -32,16 +32,11 @@ endif()
 
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
-find_package(Eigen3 REQUIRED)
 find_package(robot_interface REQUIRED)
-if(NOT EIGEN3_INCLUDE_DIRS)
-  set(EIGEN3_INCLUDE_DIRS ${EIGEN3_INCLUDE_DIR})
-endif()
 
 include_directories(
   include
   ${rclcpp_INCLUDE_DIRS}
-  ${Eigen3_INCLUDE_DIRS}
   ${robot_interface_INCLUDE_DIRS}
 )
 

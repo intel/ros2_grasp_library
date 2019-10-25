@@ -10,7 +10,6 @@
 
   <buildtool_depend>ament_cmake</buildtool_depend>
   <build_depend>rclcpp</build_depend>
-  <build_depend>Eigen3</build_depend>
   <build_depend>robot_interface</build_depend>
 
   <exec_depend>rclcpp</exec_depend>
