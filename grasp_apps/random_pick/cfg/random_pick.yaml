@@ -8,7 +8,7 @@ GraspDetectorGPD:
     plane_remove: true
     object_detect: false
     # grasp workspace in camera frames
-    workspace: [-0.35, 0.35, -1.0, 1.0, 0.3, 1.0]
+    workspace: [0.0, 1.0, -0.35, 0.35, -0.1, 1.0]
     # gripper geometry parameters in metre
     # finger_width: the finger thickness
     # hand_outer_diameter: the maximum robot hand aperture 

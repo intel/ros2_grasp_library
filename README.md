@@ -30,7 +30,7 @@ ROS2 interfaces can be bridged back to ROS via [ros1_bridge](https://github.com/
 ## Known Issues
   * Cloud camera failed at "Invalid sizes when resizing a matrix or array" when dealing with XYZRGBA pointcloud from ROS2 Realsenes, tracked as [#6](https://github.com/atenpas/gpg/issues/6) of gpg, [patch](https://github.com/atenpas/gpg/pull/7) under review.
   * 'colcon test' sometimes failed with test suite "tgrasp_ros2", due to ROS2 service request failure issue (reported ros2 examples issue [#228](https://github.com/ros2/examples/issues/228) and detailed discussed in ros2 demo issue [#304](https://github.com/ros2/demos/issues/304))
-  * Rviz2 failed to receive Static TF from camera due to transient_local QoS (expected in the coming ROS2 Eloquent, discussed in geometry2 issue [#183](https://github.com/ros2/geometry2/issues/183)), workaround [patch](https://github.com/intel/ros2_intel_realsense/pull/87) available till the adaption to Eloquent
+  * Rviz2 failed to receive Static TF from camera due to transient_local QoS (expected in the coming ROS2 Eloquent, discussed in geometry2 issue [#183](https://github.com/ros2/geometry2/issues/183)), workaround [patch](https://github.com/intel/ros2_intel_realsense/pull/88) available till the adaption to Eloquent
 
 ## Contribute to This Project
   It's welcomed to contribute to this project. Here're some recommended practices:
