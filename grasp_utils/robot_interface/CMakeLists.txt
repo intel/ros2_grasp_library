@@ -90,6 +90,8 @@ ament_export_libraries(${PROJECT_NAME} ${ur_modern_driver_LIBRARIES})
 ament_export_dependencies(rclcpp)
 ament_export_dependencies(sensor_msgs)
 ament_export_dependencies(geometry_msgs)
+ament_export_dependencies(tf2_ros)
+ament_export_dependencies(Eigen3)
 
 # Install library
 install(
