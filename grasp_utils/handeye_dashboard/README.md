@@ -12,6 +12,10 @@
 
 ## 2. Build and install
 
+```shell
+sudo apt install python3-numpy python3-scipy
+```
+
 Build with the `ros2_grasp_library` package. Installation instructions refer to [here](https://github.com/intel/ros2_grasp_library/blob/master/grasp_tutorials/doc/grasp_ros2/tutorials_1_grasp_ros2_with_camera.md).
 
 ## 3.Run
@@ -79,7 +83,7 @@ The calibration process is controlled by the four buttons on the left panel of t
 
 ### 3.5 Publish calibration result
 
-Please check the result at `~/ros2_ws/install/handeye_dashboard/share/handeye_dashboard/data/camera_robot.txt`:
+Please check the result at `/tmp/camera-robot.txt`:
 
 ```yaml
 camera-robot pose:

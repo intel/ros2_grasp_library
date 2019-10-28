@@ -53,7 +53,7 @@ def save_samples_to_file(samples, file_name='dataset.json', pkg='handeye_dashboa
   import json
   # If the file name exists, write a JSON string into the file.
   if file_name != None:
-    filename = path_pkg + '/share/handeye_dashboard/data/' + file_name
+    filename = '/tmp/' + file_name
     # Writing JSON data
     with open(filename, 'w') as f:
       json.dump(samples_list, f)
@@ -306,7 +306,7 @@ class HandEyeCalibration(Plugin):
     try:
       bTc = solver_cri.solve(method=handeye.solver.Daniilidis1999)
       # save the calibration result to 'camera-robot.json' file
-      file_output = self.path_pkg + '/share/handeye_dashboard/data/' + 'camera-robot.json'
+      file_output = '/tmp/' + 'camera-robot.json'
       with open(file_output, 'w') as f:
         json.dump(bTc.tolist(), f)
     except Exception:
@@ -315,7 +315,7 @@ class HandEyeCalibration(Plugin):
   def execution(self):
     # >>> Publish the camera-robot transform
     self.textedit.append('Publishing the camera TF ...')
-    file_input = self.path_pkg + '/share/handeye_dashboard/data/' + 'camera-robot.json'
+    file_input = '/tmp/' + 'camera-robot.json'
     with open(file_input, 'r') as f:
       datastore = json.load(f)
 
@@ -343,10 +343,10 @@ class HandEyeCalibration(Plugin):
 
     self.publish_tf_transform(static_transformStamped)
 
-    output_string = "camera-robot pose: "
+    output_string = "camera-robot pose:\n"
     output_string += "  Translation: [{}, {}, {}]\n".format(bTc[0,3], bTc[1,3], bTc[2,3])
     output_string += "  Rotation: in Quaternion [{}, {}, {}, {}]".format(q[0], q[1], q[2], q[3])
-    file_path = self.path_pkg + '/share/handeye_dashboard/data/' + 'camera_robot.txt'
+    file_path = '/tmp/' + 'camera-robot.txt'
     with open(file_path, 'w') as f:
       f.write(output_string)
 
