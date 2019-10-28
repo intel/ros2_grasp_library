@@ -3,6 +3,7 @@
 
 # document buid file
 build
+_build
 
 # vscode file
 .vscode

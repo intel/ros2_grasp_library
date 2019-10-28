@@ -20,34 +20,32 @@ Provide hyperlinkage to the procurement info or installation guides. E.g.)*
 
 - Hardware
 
-  - Host running ROS2/ROS
+  - Host running ROS2
 
   - `Robot Arm <https://www.universal-robots.com/products/ur5-robot>`_ (optional)
 
 - Software
 
-  - `ROS Melodic <http://wiki.ros.org/melodic/Installation/Ubuntu>`_ Desktop-Full
+  - `ROS2 Dashing <https://index.ros.org/doc/ros2/Installation/Dashing/Linux-Install-Debians/>`_ Desktop
 
-  - `MoveIt! <https://ros-planning.github.io/moveit_tutorials/doc/getting_started/getting_started.html#install-moveit)>`_
+  - `robot_interface`_
+
+.. _robot_interface: https://github.com/intel/ros2_grasp_library/tree/master/grasp_utils/robot_interface
 
 Download and Build the Application
 ----------------------------------
 *(Describe how to download and build the application.
 List build options specific to this application. E.g.)*
 
-Within your catkin workspace, download and compile the example code
-
 ::
 
-  cd <catkin_workspace>/src
+  cd <path_of_your_ros2_workspace>/src
 
-  git clone https://github.intel.com/otc-rse/moveit_app_zoo.git
+  git clone https://github.com/intel/ros2_grasp_library.git
 
   cd ..
 
-  catkin config --extend /opt/ros/${ROS_DISTRO} --cmake-args -DCMAKE_BUILD_TYPE=Release -DBUILD_RANDOM_PICK=ON
-
-  catkin build
+  colcon build --symlink-install --ament-cmake-args -DBUILD_RANDOM_PICK=ON
 
 - Build Options
 
@@ -60,16 +58,11 @@ Launch the Application
 Provide hyperlinkage to launch robot contollers.
 List launch options specific to this application. E.g.)*
 
-.. toctree::
-   :maxdepth: 1
-
-   launch_robots.rst
-
 - Launch this application
 
 ::
 
-  rosrun template template
+  ros2 launch template template
 
 - Launch Options
 
