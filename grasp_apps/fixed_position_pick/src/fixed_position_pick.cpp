@@ -17,6 +17,7 @@ int main(int argc, char **argv)
        rclcpp::NodeOptions().automatically_declare_parameters_from_overrides(true));
   robot->parseArgs();
   robot->startLoop();
+  rclcpp::sleep_for(2s);
 
   // Move to home
   robot->moveToJointValues(HOME, 1.05, 1.4);
