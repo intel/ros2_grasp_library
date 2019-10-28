@@ -63,11 +63,11 @@ Within your catkin workspace, download and compile the example code
 
   cd ..
 
-  colcon build --symlink-install --ament-cmake-args -DBUILD_RANDOM_PICK=ON
+  colcon build --symlink-install
 
 - Build Options
 
-  - BUILD_RANDOM_PICK (ON | **OFF** )
+  - BUILD_RANDOM_PICK (**ON** | OFF)
     Switch on/off building of this application
 
 
