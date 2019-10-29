@@ -91,8 +91,9 @@ The result can be published without launching the whole GUI on command line:
 
 ```shell
 #ros2 run tf2_ros static_transform_publisher <Translation x, y, z> <Rotation x, y, z, w> <from_frame> <to_frame>
+# NOTE the quaternion stored in "camera_robot.txt" is <w, x, y, z>
 
-ros2 run tf2_ros static_transform_publisher -0.032727495589941216, -0.09304065368400717, 0.0003508296697299189 0.9997471812284859, 0.01090594636560865, -0.009141740972837598, -0.0174086912647742 base camera_color_optical_frame
+ros2 run tf2_ros static_transform_publisher -0.032727495589941216, -0.09304065368400717, 0.0003508296697299189 0.01090594636560865, -0.009141740972837598, -0.0174086912647742, 0.9997471812284859 base camera_color_optical_frame
 ```
 
 ## 4.Result

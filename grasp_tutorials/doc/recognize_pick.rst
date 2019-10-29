@@ -83,7 +83,7 @@ Launch the Application with Real Robot and Camera
 
   #load rviz2 configure file "src/ros2_grasp_library/grasp_apps/recognize_pick/rviz2/recognize_pick.rviz"
 
-- Launch realsense
+- Launch RGBD sensor
 
 ::
 
