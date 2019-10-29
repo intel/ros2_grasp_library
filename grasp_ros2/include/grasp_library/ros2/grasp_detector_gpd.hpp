@@ -80,8 +80,6 @@ public:
   {
     delete cloud_camera_;
 
-    delete grasp_detector_;
-
     // todo stop and delete threads
   }
 
@@ -190,7 +188,7 @@ private:
   /** ROS2 publisher for grasps in rviz (visualization)*/
   rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr grasps_rviz_pub_;
 
-  GraspDetector * grasp_detector_; /**< used to run the grasp pose detection*/
+  std::shared_ptr<GraspDetector> grasp_detector_; /**< used to run the grasp pose detection*/
   rclcpp::Logger logger_ = rclcpp::get_logger("GraspDetectorGPD");
   std::thread * detector_thread_; /**< thread for grasp detection*/
 };
