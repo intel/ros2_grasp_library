@@ -78,13 +78,7 @@ Launch the Application with Real Robot and Camera
 
 ::
 
-  ros2 run tf2_ros static_transform_publisher 0.016289810558 0.83987282691 0.483312980714 0.375539744771 0.397068981197 -0.606356068939 0.577614440548 base_link camera_link
-
-- Launch RGBD sensor
-
-::
-
-  ros2 run realsense_node realsense_node
+  ros2 run tf2_ros static_transform_publisher 0.029308663357415252, 0.8351437768013816, 0.4887928298268225 -0.002101048177610369, -0.9758220841680959, 0.2178663901368447 0.01735170582767297 base_link camera_color_optical_frame
 
 - Launch UR description
 
@@ -93,6 +87,12 @@ Launch the Application with Real Robot and Camera
   ros2 launch ur_description view_ur5_ros2.launch.py
 
   #load rviz2 configure file "src/ros2_grasp_library/grasp_apps/random_pick/rviz2/random_pick.rviz"
+
+- Launch RGBD sensor
+
+::
+
+  ros2 run realsense_node realsense_node
 
 - Launch random pick app
 
