@@ -83,7 +83,7 @@ GraspDetectorGPD::GraspDetectorGPD(const rclcpp::NodeOptions & options)
 
   GraspDetector::GraspDetectionParameters detection_param;
   ROSParameters::getDetectionParams(this, detection_param);
-  grasp_detector_ = new GraspDetector(detection_param);
+  grasp_detector_ = std::make_shared<GraspDetector>(detection_param);
   RCLCPP_INFO(logger_, "ROS2 Grasp Library node up...");
 
   detector_thread_ = new std::thread(&GraspDetectorGPD::onInit, this);
@@ -124,11 +124,10 @@ std::vector<Grasp> GraspDetectorGPD::detectGraspPosesInTopic()
 
   {
     if (object_sub_) {
-      if (grasp_detector_) {delete (grasp_detector_);}
       GraspDetector::GraspDetectionParameters detection_param;
       ROSParameters::getDetectionParams(this, detection_param);
       detection_param.generator_params.workspace_ = grasp_ws_;
-      grasp_detector_ = new GraspDetector(detection_param);
+      grasp_detector_ = std::make_shared<GraspDetector>(detection_param);
     }
     // preprocess the point cloud
     grasp_detector_->preprocessPointCloud(*cloud_camera_);

@@ -6,7 +6,7 @@ GraspDetectorGPD:
     auto_mode: true
     plane_remove: true
     # grasp workspace in camera frames
-    workspace: [0.0, 1.0, -0.35, 0.35, -0.1, 0.5]
+    workspace: [-0.35, 0.35, -0.6, 0.1, 0.0, 1.0]
     # gripper geometry parameters in metre
     # finger_width: the finger thickness
     # hand_outer_diameter: the maximum robot hand aperture 
@@ -20,8 +20,6 @@ GraspPlanner:
   ros__parameters:
     grasp_score_threshold: 20
     grasp_frame_id: "camera_color_optical_frame"
-    grasp_approach: [0.0, 0.0, -1.0] # expect approach in -z axis
-    grasp_approach_angle: 0.523 # 1.047=PI/3 # 0.785=PI/4 # 0.523=PI/6 # 0.345=PI/9 # acceptable approaching angle
     grasp_offset: [0.000, 0.000, 0.0]
     eef_offset: 0.174
     eef_yaw_offset: 0.7854 # M_PI/4
