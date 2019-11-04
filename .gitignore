@@ -1,8 +1,21 @@
 # rviz file
 *.rviz
 
-# document buid file
-build
-
 # vscode file
 .vscode
+
+# Else folders are not expected to change from this branch
+# Except for the "docs" foldr
+./CHANGELOG.rst
+grasp_apps/
+grasp_msgs/
+grasp_ros2/
+grasp_tutorials/
+grasp_utils/*
+./LICENSE
+moveit_msgs_light/
+./README.md
+
+# don't ignore these folders
+!docs/
+!grasp_utils/robot_interface/build/
