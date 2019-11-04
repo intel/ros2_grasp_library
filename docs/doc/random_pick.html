@@ -1,0 +1,328 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Random Pick (OpenVINO Grasp Detection) &mdash; ROS2 Grasp Library Tutorials 0.5.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Recognize Pick (OpenVINO Grasp Detection + OpenVINO Object Segmentation)" href="recognize_pick.html" />
+    <link rel="prev" title="Grasp Planner" href="grasp_planner.html" /> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> ROS2 Grasp Library Tutorials
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.5.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="robot_interface.html">Robot Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="handeye_calibration.html">Hand-eye Calibration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="grasp_planner.html">Grasp Planner</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Random Pick (OpenVINO Grasp Detection)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#requirement">Requirement</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#download-and-build-the-application">Download and Build the Application</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#launch-the-application-with-real-robot-and-camera">Launch the Application with Real Robot and Camera</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="recognize_pick.html">Recognize Pick (OpenVINO Grasp Detection + OpenVINO Object Segmentation)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="template.html">[App Tutorial Template]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="grasp_api.html">ROS2 Grasp Library APIs</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ROS2 Grasp Library Tutorials</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>Random Pick (OpenVINO Grasp Detection)</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/doc/random_pick.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="random-pick-openvino-grasp-detection">
+<h1>Random Pick (OpenVINO Grasp Detection)<a class="headerlink" href="#random-pick-openvino-grasp-detection" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<p>A simple application demonstrating how to pick up objects from clutter scenarios with an industrial robot arm.
+The application interact with Grasp Planner and Robot Interface from this Grasp Library.</p>
+<p>The Grasp Planner takes grasp detection results from <a class="reference external" href="https://github.com/sharronliu/gpd">OpenVINO GPD</a>,
+transforms the grasp pose from camera view
+to the robot view with the <a href="#id1"><span class="problematic" id="id2">`Hand-Eye Calibration`_</span></a>,
+translates the Grasp Pose into <a class="reference external" href="http://docs.ros.org/api/moveit_msgs/html/msg/Grasp.html">moveit_msgs Grasp</a>.</p>
+<p>The Robot Interface takes the grasp poses and place poses, to pick and place the object.
+Watch this <a class="reference external" href="https://www.youtube.com/embed/b4EPvHdidOA?rel=0">demo_video</a> to see the output of this application.</p>
+<iframe width="700px" height="394px" src="https://www.youtube.com/embed/b4EPvHdidOA?rel=0" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe></div>
+<div class="section" id="requirement">
+<h2>Requirement<a class="headerlink" href="#requirement" title="Permalink to this headline">¶</a></h2>
+<p>Before running the code, make sure you have followed the instructions below
+to setup the environment.</p>
+<ul class="simple">
+<li>Hardware<ul>
+<li>Host running ROS2</li>
+<li>RGBD sensor</li>
+<li><a class="reference external" href="https://www.universal-robots.com/products/ur5-robot">Robot Arm</a></li>
+<li><a href="#id3"><span class="problematic" id="id4">`Robot Gripper`_</span></a></li>
+</ul>
+</li>
+<li>Software<ul>
+<li><a class="reference external" href="https://index.ros.org/doc/ros2/Installation/Dashing/Linux-Install-Debians">ROS2</a></li>
+<li><a class="reference external" href="https://github.com/sharronliu/ros2_grasp_library/tree/master/grasp_ros2">Grasp Planner</a></li>
+<li><a class="reference external" href="https://github.com/intel/ros2_grasp_library/tree/master/grasp_utils/robot_interface">Robot Interface</a></li>
+<li>Hand-Eye Calibration</li>
+<li>RGBD Sensor<ul>
+<li><a class="reference external" href="https://github.com/intel/ros2_intel_realsense/tree/refactor">realsense</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="download-and-build-the-application">
+<h2>Download and Build the Application<a class="headerlink" href="#download-and-build-the-application" title="Permalink to this headline">¶</a></h2>
+<p>Within your catkin workspace, download and compile the example code</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="o">&lt;</span><span class="n">path_of_your_ros2_workspace</span><span class="o">&gt;/</span><span class="n">src</span>
+
+<span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">intel</span><span class="o">/</span><span class="n">ros2_grasp_library</span><span class="o">.</span><span class="n">git</span>
+
+<span class="n">cd</span> <span class="o">..</span>
+
+<span class="n">colcon</span> <span class="n">build</span> <span class="o">--</span><span class="n">symlink</span><span class="o">-</span><span class="n">install</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li>Build Options<ul>
+<li>BUILD_RANDOM_PICK (<strong>ON</strong> | OFF)
+Switch on/off building of this application</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="launch-the-application-with-real-robot-and-camera">
+<h2>Launch the Application with Real Robot and Camera<a class="headerlink" href="#launch-the-application-with-real-robot-and-camera" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Publish handeye transform, refer to handeye</li>
+</ul>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">ros2</span> <span class="n">run</span> <span class="n">tf2_ros</span> <span class="n">static_transform_publisher</span> <span class="mf">0.029308663357415252</span><span class="p">,</span> <span class="mf">0.8351437768013816</span><span class="p">,</span> <span class="mf">0.4887928298268225</span> <span class="o">-</span><span class="mf">0.002101048177610369</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.9758220841680959</span><span class="p">,</span> <span class="mf">0.2178663901368447</span> <span class="mf">0.01735170582767297</span> <span class="n">base_link</span> <span class="n">camera_color_optical_frame</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li>Launch UR description</li>
+</ul>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">ros2</span> <span class="n">launch</span> <span class="n">ur_description</span> <span class="n">view_ur5_ros2</span><span class="o">.</span><span class="n">launch</span><span class="o">.</span><span class="n">py</span>
+
+<span class="c1">#load rviz2 configure file &quot;src/ros2_grasp_library/grasp_apps/random_pick/rviz2/random_pick.rviz&quot;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li>Launch RGBD sensor</li>
+</ul>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">ros2</span> <span class="n">run</span> <span class="n">realsense_node</span> <span class="n">realsense_node</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li>Launch random pick app</li>
+</ul>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">ros2</span> <span class="n">run</span> <span class="n">random_pick</span> <span class="n">random_pick</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li>Launch grasp planner</li>
+</ul>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">ros2</span> <span class="n">run</span> <span class="n">grasp_ros2</span> <span class="n">grasp_ros2</span> <span class="n">__params</span><span class="p">:</span><span class="o">=</span><span class="n">src</span><span class="o">/</span><span class="n">ros2_grasp_library</span><span class="o">/</span><span class="n">grasp_apps</span><span class="o">/</span><span class="n">random_pick</span><span class="o">/</span><span class="n">cfg</span><span class="o">/</span><span class="n">random_pick</span><span class="o">.</span><span class="n">yaml</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="recognize_pick.html" class="btn btn-neutral float-right" title="Recognize Pick (OpenVINO Grasp Detection + OpenVINO Object Segmentation)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="grasp_planner.html" class="btn btn-neutral" title="Grasp Planner" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Intel Corporation
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../',
+              VERSION:'0.5.0',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+
+  
+
+  <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
