@@ -4,6 +4,7 @@
 # document buid file
 build
 _build
+docs
 
 # vscode file
 .vscode

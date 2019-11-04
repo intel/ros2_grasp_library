@@ -8,6 +8,8 @@ Build This Tutorial
 
 ::
 
+  git checkout gh-pages
+
   cd grasp_tutorials
 
   sphinx-build . build
