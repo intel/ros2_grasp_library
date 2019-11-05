@@ -112,7 +112,7 @@ class HandEyeCalibration(Plugin):
     self.l1.setFixedWidth(150)
     self.l1.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
     self.camera_frame = QLineEdit(self.widget)
-    self.camera_frame.setText("camera_color_optical_frame")
+    self.camera_frame.setText("camera_link")
     self.toolbar1 = QToolBar()
     self.toolbar1.addWidget(self.l1)
     self.toolbar1.addWidget(self.camera_frame)
