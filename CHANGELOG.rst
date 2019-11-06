@@ -10,7 +10,7 @@ changelog for ros2_grasp_library
   * recognition picking with OpenVINO grasp planning and OpenVINO mask-rcnn object segmentation
 * Support ROS2 hand-eye calibration
 * Support robot interface for manipulation
-* Added tutorials for how to
+* Added tutorials on how to
   * Build and launch example applications
   * Operate hand-eye calibration and publish the transformation
   * Quickly enable robot interface on a new industrial robot
