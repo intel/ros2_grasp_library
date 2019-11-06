@@ -1,6 +1,20 @@
 changelog for ros2_grasp_library
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.5.0 (2019-11-06)
+------------------
+* Added examples for advanced industrial robot applications
+  * draw X
+  * fixed position pick and place
+  * random picking with OpenVINO grasp planning
+  * recognition picking with OpenVINO grasp planning and OpenVINO mask-rcnn object segmentation
+* Support ROS2 hand-eye calibration
+* Support robot interface for manipulation
+* Added tutorials on how to
+  * Build and launch example applications
+  * Operate hand-eye calibration and publish the transformation
+  * Quickly enable robot interface on a new industrial robot
+
 0.4.0 (2019-03-13)
 ------------------
 * Support "service-driven" grasp detection mechanism (via configure auto_mode) to optimize CPU load for real-time processing.
