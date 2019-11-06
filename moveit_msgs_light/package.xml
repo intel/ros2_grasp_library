@@ -2,7 +2,7 @@
 <?xml-model href="http://download.ros.org/schema/package_format2.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
   <name>moveit_msgs</name>
-  <version>0.3.0</version>
+  <version>0.5.0</version>
   <description>ROS2 messages definitions for MoveIt</description>
   <maintainer email="sharron.liu@intel.com">Sharron LIU</maintainer>
   <license>Apache License 2.0</license>
