@@ -9,7 +9,7 @@ Refer to ROS2 Grasp Library Tutorials http://intel.github.io/ros2_grasp_library 
 * Customize this library and the applications
 
 ## Overview
-ROS2 Grasp Library enables state-of-the-art CNN based deep learning grasp detection algorithms on ROS2 for visual based industrial robot manipulation. This package provide ROS2 interfaces compliant with the [MoveIt](http://moveit.ros.org/) motion planning framework which is supported by most of the [robot models](https://moveit.ros.org/robots) in ROS industrial. This package delivers
+ROS2 Grasp Library enables state-of-the-art CNN based deep learning grasp detection algorithms on ROS2 for visual based industrial robot manipulation. This package provides ROS2 interfaces compliant with the [MoveIt](http://moveit.ros.org/) motion planning framework which is supported by most of the [robot models](https://moveit.ros.org/robots) in ROS industrial. This package delivers
 * A ROS2 Grasp Planner providing grasp planning service, as an extensible capability of MoveIt ([moveit_msgs::srv::GraspPlanning](http://docs.ros.org/api/moveit_msgs/html/srv/GraspPlanning.html)), translating grasp detection results into the MoveIt Interfaces ([moveit_msgs::msg::Grasp](http://docs.ros.org/api/moveit_msgs/html/msg/Grasp.html))
 * [Grasp Pose Detection](https://github.com/atenpas/gpd) enabled with Intel® [OpenVINO™](https://software.intel.com/en-us/openvino-toolkit) technology
 * A ROS2 hand-eye calibration module generating transformation from camera frame to robot frame
