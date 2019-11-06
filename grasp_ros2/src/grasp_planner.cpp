@@ -172,13 +172,6 @@ moveit_msgs::msg::Grasp GraspPlanner::toMoveIt(
   msg.grasp_quality = grasp.score.data;
 
   double offset = param_.eef_offset;
-  /* make sure a distance of 'object_height_min/2' from tabletop to fingertip.*/
-  // offset += (param_.grasp_boundry_[4] + 0.014) - grasp.top.z;
-  RCLCPP_INFO(logger_, "==============offset is %f app [%f %f %f]", offset,
-    grasp.approach.x, grasp.approach.y, grasp.approach.z);
-
-  // set grasp position
-  msg.grasp_pose.pose.position = grasp.bottom;
   // set grasp position, translation from hand-base to the parent-link of EEF
   msg.grasp_pose.pose.position.x = grasp.bottom.x - grasp.approach.x * offset;
   msg.grasp_pose.pose.position.y = grasp.bottom.y - grasp.approach.y * offset;
@@ -196,6 +189,9 @@ moveit_msgs::msg::Grasp GraspPlanner::toMoveIt(
   quat.normalize();
   // set grasp orientation
   msg.grasp_pose.pose.orientation = tf2::toMsg(quat);
+  RCLCPP_INFO(logger_, "==============offset is %f quat [%f %f %f %f]", offset,
+    msg.grasp_pose.pose.orientation.x, msg.grasp_pose.pose.orientation.y,
+    msg.grasp_pose.pose.orientation.z, msg.grasp_pose.pose.orientation.w);
 
   // set pre-grasp approach
   msg.pre_grasp_approach.direction.header = header;
