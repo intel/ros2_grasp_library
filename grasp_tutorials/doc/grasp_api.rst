@@ -37,4 +37,4 @@ Hand-Eye Calibration ROS2 Interfaces
 Robot Interface API
 -------------------
 
-- `API <../../../grasp_utils/robot_interface/build/html/index.html>`_
+- `API <../api/html/index.html>`_
