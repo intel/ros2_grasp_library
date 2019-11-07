@@ -21,6 +21,11 @@ git clone https://github.com/RoboticsYY/ros2_ur_description.git
 cd .. && colcon build
 ```
 
+Install dependence **eigen3-cmake-module**:
+```shell
+sudo apt install ros-dashing-eigen3-cmake-module
+```
+
 Install **robot_interface**:
 
 The installation should refer to the installation of **ros2_grasp_library**.
