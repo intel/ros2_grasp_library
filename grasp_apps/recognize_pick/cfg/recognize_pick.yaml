@@ -5,7 +5,7 @@ GraspDetectorGPD:
     object_topic: "/ros2_openvino_toolkit/segmented_obejcts"
     rviz: true
     device: 1 # 0:CPU, 1:GPU, 2:VPU
-    auto_mode: true
+    auto_mode: false
     plane_remove: true
     object_detect: true
     # grasp workspace in camera frames
@@ -25,7 +25,7 @@ GraspPlanner:
     grasp_frame_id: "base"
     grasp_approach: [0.0, 0.0, -1.0] # expect approaching in -z axis
     grasp_approach_angle: 0.785 # 1.047=PI/3 # 0.785=PI/4 # 0.523=PI/6 # 0.345=PI/9 # acceptable approaching angle
-    grasp_offset: [0.000, 0.000, 0.000]
+    grasp_offset: [0.000, -0.004, 0.000]
     # grasp boundry in grasp_frame_id
     grasp_boundry: [-0.25, 0.25, -0.73, -0.27, -0.15, 0.15]
     eef_offset: 0.16
