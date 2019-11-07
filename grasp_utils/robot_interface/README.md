@@ -21,15 +21,14 @@ git clone https://github.com/RoboticsYY/ros2_ur_description.git
 cd .. && colcon build
 ```
 
+Install dependence **eigen3-cmake-module**:
+```shell
+sudo apt install ros-dashing-eigen3-cmake-module
+```
+
 Install **robot_interface**:
 
 The installation should refer to the installation of **ros2_grasp_library**.
-
-> Note: If error "fatal error: Eigen/Geometry: No such file or directory" persists during the compilation, please check the file path of "Eigen/Geometry", if it locates at "/usr/include/eigen3/Eigen", a work around is creating a soft link to "/usr/include/Eigen" as below:
-
-```shell
-ln -s /usr/include/eigen3/Eigen /usr/include/Eigen
-```
 
 ## Launch
 
