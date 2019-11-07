@@ -22,10 +22,10 @@ static double vel_ = 0.4, acc_ = 0.4, vscale_ = 0.5, appr_ = 0.1;
 static std::shared_ptr<URControl> robot_ = nullptr;
 static rclcpp::Node::SharedPtr node_ = nullptr;
 static std::shared_ptr<GraspPlanning::Response> result_ = nullptr;
-static std::vector<moveit_msgs::msg::PlaceLocation::SharedPtr> place_poses_(0);
+static moveit_msgs::msg::PlaceLocation::SharedPtr place_pose_ = nullptr;
 
 static void place_callback(const moveit_msgs::msg::PlaceLocation::SharedPtr msg) {
-  place_poses_.push_back(msg);
+  place_pose_ = msg;
 }
 
 int main(int argc, char **argv)
@@ -60,13 +60,13 @@ int main(int argc, char **argv)
 
   while(rclcpp::ok())
   {
-    if (place_poses_.empty()) {
+    if (place_pose_ == nullptr) {
       RCLCPP_INFO(node_->get_logger(), "Wait for place mission");
       rclcpp::spin_some(node_);
       rclcpp::sleep_for(std::chrono::seconds(2));
       continue;
     }
-    for (auto place : place_poses_) {
+      moveit_msgs::msg::PlaceLocation::SharedPtr place = place_pose_;
       RCLCPP_INFO(node_->get_logger(), "Place %s", place->id.c_str());
       // get grasp poses
       auto request = std::make_shared<GraspPlanning::Request>();
@@ -114,8 +114,7 @@ int main(int argc, char **argv)
       robot_->moveToJointValues(joint_values_place, vel_, acc_);
       robot_->place(place_[0], place_[1], place_[2], place_[3], place_[4], place_[5], vel_, acc_, vscale_, appr_);
 #endif
-    }
-    place_poses_.clear();
+    place_pose_ = nullptr;
   }
 
   rclcpp::shutdown();

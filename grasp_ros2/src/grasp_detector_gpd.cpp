@@ -124,10 +124,7 @@ std::vector<Grasp> GraspDetectorGPD::detectGraspPosesInTopic()
 
   {
     if (object_sub_) {
-      GraspDetector::GraspDetectionParameters detection_param;
-      ROSParameters::getDetectionParams(this, detection_param);
-      detection_param.generator_params.workspace_ = grasp_ws_;
-      grasp_detector_ = std::make_shared<GraspDetector>(detection_param);
+      cloud_camera_->filterWorkspace(grasp_ws_);
     }
     // preprocess the point cloud
     grasp_detector_->preprocessPointCloud(*cloud_camera_);
