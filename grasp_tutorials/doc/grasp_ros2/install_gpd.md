@@ -16,7 +16,7 @@ sudo make install
 ```
 
 ### Install [GPD](https://github.com/sharronliu/gpd)
-1. Get the code
+1. Get the code, originally derived from [GPD](https://github.com/atenpas/gpd) tag 1.5.0
 ```bash
 git clone https://github.com/sharronliu/gpd.git
 git checkout libgpd

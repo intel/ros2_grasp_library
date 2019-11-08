@@ -1,20 +1,20 @@
 Welcome to ROS2 Grasp Library Tutorial
-==========================================
+======================================
 
-ROS2 Grasp Library enables state-of-the-art CNN based deep learning grasp detection algorithms on ROS2 for visual manipulation of industrial robot. This package provide ROS2 interfaces compliant with the `MoveIt <http://moveit.ros.org>`_ motion planning framework which is supported by most of the `robot models <https://moveit.ros.org/robots>`_ in ROS industrial.
+This is a ROS2 intelligent visual grasp solution for advanced industrial usages, with OpenVINO™ grasp detection and MoveIt Grasp Planning.
 
-Build This Tutorial
--------------------
+Build and test this tutorial
+----------------------------
 
 ::
 
-  cd grasp_tutorials
+  cd ros2_grasp_library/grasp_tutorials
 
-  sphinx-build . build
+  sphinx-build . build # check the outputs in the ./build/ folder
 
-  cd grasp_utils/robot_interface
+  cd ros2_grasp_library/grasp_utils/robot_interface
 
-  doxygen Doxyfile
+  doxygen Doxyfile # check the outputs in the ./build/ folder
 
 Contents:
 ---------
@@ -23,16 +23,20 @@ Contents:
 
    doc/overview
 
-   doc/robot_interface
-
-   doc/handeye_calibration
+   doc/getting_start
 
    doc/grasp_planner
+
+   doc/robot_interface
+
+   doc/bringup_robot
+
+   doc/handeye_calibration
 
    doc/random_pick
 
    doc/recognize_pick
 
-   doc/template
-
    doc/grasp_api
+
+   doc/template
