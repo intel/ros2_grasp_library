@@ -96,9 +96,11 @@
             
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
-<li class="toctree-l1"><a class="reference internal" href="robot_interface.html">Robot Interface</a></li>
-<li class="toctree-l1"><a class="reference internal" href="handeye_calibration.html">Hand-eye Calibration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_start.html">Getting Start</a></li>
 <li class="toctree-l1"><a class="reference internal" href="grasp_planner.html">Grasp Planner</a></li>
+<li class="toctree-l1"><a class="reference internal" href="robot_interface.html">Robot Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bringup_robot.html">Bring up a New Robot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="handeye_calibration.html">Hand-eye Calibration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="random_pick.html">Random Pick (OpenVINO Grasp Detection)</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Recognize Pick (OpenVINO Grasp Detection + OpenVINO Object Segmentation)</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#overview">Overview</a></li>
@@ -179,7 +181,10 @@
 <h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
 <p>A simple application demonstrating how to pick up recognized objects with an industrial robot arm.
 The application interact with Grasp Planner and Robot Interface from this Grasp Library.</p>
-</div>
+<p>Comparing against the <a class="reference external" href="random_pick.html">random picking</a> application, this recognition picking takes the place commands published from the <cite>place_publisher</cite> which specifying the name the object to pick and the position to place.</p>
+<p>The Grasp Detector then takes the object segmentation results from the <a class="reference external" href="https://github.com/intel/ros2_openvino_toolkit">OpenVINO Mask-rcnn</a> to identify the location of the object in the point cloud image and generates grasp poses for that specific object.</p>
+<p>Watch this <a class="reference external" href="https://www.youtube.com/embed/trIt0uKRXBs?rel=0">demo_video</a> to see the output of this application.</p>
+<iframe width="700" height="389" src="https://www.youtube.com/embed/trIt0uKRXBs?list=PLxCmGJeiLgoxq3uqcCVSYnSJ9iQk1L9yP" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
 <div class="section" id="requirement">
 <h2>Requirement<a class="headerlink" href="#requirement" title="Permalink to this headline">¶</a></h2>
 <p>Before running the code, make sure you have followed the instructions below

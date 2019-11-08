@@ -7,6 +7,16 @@ Overview
 A simple application demonstrating how to pick up recognized objects with an industrial robot arm.
 The application interact with Grasp Planner and Robot Interface from this Grasp Library.
 
+Comparing against the `random picking <random_pick.html>`_ application, this recognition picking takes the place commands published from the `place_publisher` which specifying the name the object to pick and the position to place.
+
+The Grasp Detector then takes the object segmentation results from the `OpenVINO Mask-rcnn <https://github.com/intel/ros2_openvino_toolkit>`_ to identify the location of the object in the point cloud image and generates grasp poses for that specific object.
+
+Watch this `demo_video <https://www.youtube.com/embed/trIt0uKRXBs?rel=0>`_ to see the output of this application.
+
+.. raw:: html
+
+  <iframe width="700" height="389" src="https://www.youtube.com/embed/trIt0uKRXBs?list=PLxCmGJeiLgoxq3uqcCVSYnSJ9iQk1L9yP" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
 Requirement
 -----------
 
