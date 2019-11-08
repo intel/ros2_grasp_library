@@ -1,0 +1,49 @@
+\hypertarget{control__base_8hpp}{}\section{include/robot\+\_\+interface/control\+\_\+base.hpp File Reference}
+\label{control__base_8hpp}\index{include/robot\+\_\+interface/control\+\_\+base.\+hpp@{include/robot\+\_\+interface/control\+\_\+base.\+hpp}}
+
+
+Native robot control interface for visual manipulation.  
+
+
+{\ttfamily \#include $<$mutex$>$}\newline
+{\ttfamily \#include $<$thread$>$}\newline
+{\ttfamily \#include $<$Eigen/\+Geometry$>$}\newline
+{\ttfamily \#include $<$rclcpp/rclcpp.\+hpp$>$}\newline
+{\ttfamily \#include $<$tf2\+\_\+eigen/tf2\+\_\+eigen.\+h$>$}\newline
+{\ttfamily \#include $<$sensor\+\_\+msgs/msg/joint\+\_\+state.\+hpp$>$}\newline
+{\ttfamily \#include $<$geometry\+\_\+msgs/msg/pose\+\_\+stamped.\+hpp$>$}\newline
+{\ttfamily \#include $<$tf2\+\_\+ros/static\+\_\+transform\+\_\+broadcaster.\+h$>$}\newline
+Include dependency graph for control\+\_\+base.\+hpp\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{control__base_8hpp__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=195pt]{control__base_8hpp__dep__incl}
+\end{center}
+\end{figure}
+\subsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \hyperlink{structTcpPose}{Tcp\+Pose}
+\begin{DoxyCompactList}\small\item\em Data type to represent robot arm\textquotesingle{}s end-\/effector pose in 3D cartesian space. \end{DoxyCompactList}\item 
+class \hyperlink{classArmControlBase}{Arm\+Control\+Base}
+\begin{DoxyCompactList}\small\item\em Robot arm control interface. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Native robot control interface for visual manipulation. 
+
+\begin{DoxyAuthor}{Author}
+Yu Yan 
+\end{DoxyAuthor}
+\begin{DoxyDate}{Date}
+29 Sep 2019 This file contains the control interface template to make the visual grasping. The interface is used for the control between a PC and an industrial robot controller. Collision detection is not considered in this interface. The specific behaviors are supposed to be filled with the communication protocal of an industrial robot, which are usually specified by the robot manufacturors. 
+\end{DoxyDate}

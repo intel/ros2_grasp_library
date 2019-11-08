@@ -1,0 +1,3 @@
+<map id="ArmControlBase" name="ArmControlBase">
+<area shape="rect" id="node3" href="$structTcpPose.html" title="Data type to represent robot arm&#39;s end&#45;effector pose in 3D cartesian space. " alt="" coords="125,5,200,32"/>
+</map>

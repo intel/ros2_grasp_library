@@ -17,34 +17,46 @@
   
 
   
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../',
+              VERSION:'0.5.0',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
   <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Recognize Pick (OpenVINO Grasp Detection + OpenVINO Object Segmentation)" href="recognize_pick.html" />
     <link rel="prev" title="Grasp Planner" href="grasp_planner.html" /> 
-
-  
-  <script src="../_static/js/modernizr.min.js"></script>
-
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -95,8 +107,8 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="recognize_pick.html">Recognize Pick (OpenVINO Grasp Detection + OpenVINO Object Segmentation)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="template.html">[App Tutorial Template]</a></li>
 <li class="toctree-l1"><a class="reference internal" href="grasp_api.html">ROS2 Grasp Library APIs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="template.html">[App Tutorial Template]</a></li>
 </ul>
 
             
@@ -169,7 +181,7 @@
 The application interact with Grasp Planner and Robot Interface from this Grasp Library.</p>
 <p>The Grasp Planner takes grasp detection results from <a class="reference external" href="https://github.com/sharronliu/gpd">OpenVINO GPD</a>,
 transforms the grasp pose from camera view
-to the robot view with the <a href="#id1"><span class="problematic" id="id2">`Hand-Eye Calibration`_</span></a>,
+to the robot view with the <a class="reference external" href="handeye_calibration.html">Hand-Eye Calibration</a>,
 translates the Grasp Pose into <a class="reference external" href="http://docs.ros.org/api/moveit_msgs/html/msg/Grasp.html">moveit_msgs Grasp</a>.</p>
 <p>The Robot Interface takes the grasp poses and place poses, to pick and place the object.
 Watch this <a class="reference external" href="https://www.youtube.com/embed/b4EPvHdidOA?rel=0">demo_video</a> to see the output of this application.</p>
@@ -183,14 +195,14 @@ to setup the environment.</p>
 <li>Host running ROS2</li>
 <li>RGBD sensor</li>
 <li><a class="reference external" href="https://www.universal-robots.com/products/ur5-robot">Robot Arm</a></li>
-<li><a href="#id3"><span class="problematic" id="id4">`Robot Gripper`_</span></a></li>
+<li><a href="#id1"><span class="problematic" id="id2">`Robot Gripper`_</span></a></li>
 </ul>
 </li>
 <li>Software<ul>
 <li><a class="reference external" href="https://index.ros.org/doc/ros2/Installation/Dashing/Linux-Install-Debians">ROS2</a></li>
-<li><a class="reference external" href="https://github.com/sharronliu/ros2_grasp_library/tree/master/grasp_ros2">Grasp Planner</a></li>
-<li><a class="reference external" href="https://github.com/intel/ros2_grasp_library/tree/master/grasp_utils/robot_interface">Robot Interface</a></li>
-<li>Hand-Eye Calibration</li>
+<li><a class="reference external" href="grasp_planner.html">Grasp Planner</a></li>
+<li><a class="reference external" href="robot_interface.html">Robot Interface</a></li>
+<li><a class="reference external" href="handeye_calibration.html">Hand-Eye Calibration</a></li>
 <li>RGBD Sensor<ul>
 <li><a class="reference external" href="https://github.com/intel/ros2_intel_realsense/tree/refactor">realsense</a></li>
 </ul>
@@ -222,12 +234,7 @@ Switch on/off building of this application</li>
 <div class="section" id="launch-the-application-with-real-robot-and-camera">
 <h2>Launch the Application with Real Robot and Camera<a class="headerlink" href="#launch-the-application-with-real-robot-and-camera" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li>Publish handeye transform, refer to handeye</li>
-</ul>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">ros2</span> <span class="n">run</span> <span class="n">tf2_ros</span> <span class="n">static_transform_publisher</span> <span class="mf">0.029308663357415252</span><span class="p">,</span> <span class="mf">0.8351437768013816</span><span class="p">,</span> <span class="mf">0.4887928298268225</span> <span class="o">-</span><span class="mf">0.002101048177610369</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.9758220841680959</span><span class="p">,</span> <span class="mf">0.2178663901368447</span> <span class="mf">0.01735170582767297</span> <span class="n">base_link</span> <span class="n">camera_color_optical_frame</span>
-</pre></div>
-</div>
-<ul class="simple">
+<li>Publish handeye transform, refer to <a class="reference external" href="handeye_calibration.html">Hand-Eye Calibration</a></li>
 <li>Launch UR description</li>
 </ul>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">ros2</span> <span class="n">launch</span> <span class="n">ur_description</span> <span class="n">view_ur5_ros2</span><span class="o">.</span><span class="n">launch</span><span class="o">.</span><span class="n">py</span>
@@ -267,7 +274,7 @@ Switch on/off building of this application</li>
         <a href="recognize_pick.html" class="btn btn-neutral float-right" title="Recognize Pick (OpenVINO Grasp Detection + OpenVINO Object Segmentation)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="grasp_planner.html" class="btn btn-neutral" title="Grasp Planner" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="grasp_planner.html" class="btn btn-neutral float-left" title="Grasp Planner" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -293,36 +300,16 @@ Switch on/off building of this application</li>
   
 
 
-  
-
-    
-    
-      <script type="text/javascript">
-          var DOCUMENTATION_OPTIONS = {
-              URL_ROOT:'../',
-              VERSION:'0.5.0',
-              LANGUAGE:'None',
-              COLLAPSE_INDEX:false,
-              FILE_SUFFIX:'.html',
-              HAS_SOURCE:  true,
-              SOURCELINK_SUFFIX: '.txt'
-          };
-      </script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    
-
-  
-
-  <script type="text/javascript" src="../_static/js/theme.js"></script>
-
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+
+  
+  
+    
+   
 
 </body>
 </html>

@@ -17,34 +17,46 @@
   
 
   
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../',
+              VERSION:'0.5.0',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
   <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Robot Interface" href="robot_interface.html" />
     <link rel="prev" title="Welcome to ROS2 Grasp Library Tutorial" href="../index.html" /> 
-
-  
-  <script src="../_static/js/modernizr.min.js"></script>
-
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -89,8 +101,8 @@
 <li class="toctree-l1"><a class="reference internal" href="grasp_planner.html">Grasp Planner</a></li>
 <li class="toctree-l1"><a class="reference internal" href="random_pick.html">Random Pick (OpenVINO Grasp Detection)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="recognize_pick.html">Recognize Pick (OpenVINO Grasp Detection + OpenVINO Object Segmentation)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="template.html">[App Tutorial Template]</a></li>
 <li class="toctree-l1"><a class="reference internal" href="grasp_api.html">ROS2 Grasp Library APIs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="template.html">[App Tutorial Template]</a></li>
 </ul>
 
             
@@ -158,14 +170,13 @@
   <div class="section" id="overview">
 <h1>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h1>
 <p>ROS2 Grasp Library consists of</p>
-<ul class="simple">
-<li>A ROS2 Grasp Planner providing grasp planning service, as an extensible capability of MoveIt (moveit_msgs::srv::<a class="reference external" href="http://docs.ros.org/api/moveit_msgs/html/srv/GraspPlanning.html">GraspPlanning</a>)</li>
-<li>A ROS2 Grasp Detector interface, enabled with the specific back-end algorithm <a class="reference external" href="https://github.com/atenpas/gpd">GPD</a> with Intel® <a class="reference external" href="https://software.intel.com/en-us/openvino-toolkit">OpenVINO™</a> technology</li>
-<li>Hand-eye calibration generating transformation from camera frame to a specified target frame; Grasp translation to the MoveIt Interfaces (moveit_msgs::msg::<a class="reference external" href="http://docs.ros.org/api/moveit_msgs/html/msg/Grasp.html">Grasp</a>)</li>
-<li>Robot interfaces controlling the phsical robot to move, pick, place, as well as to feedback robot states</li>
-<li>Grasp applications demonstrating the grasp planning capabilities, and telling how to put all the above software components together for intelligent visual manipulation tasks</li>
-</ul>
 <a class="reference internal image-reference" href="../_images/ros2_grasp_library.png"><img alt="../_images/ros2_grasp_library.png" class="align-center" src="../_images/ros2_grasp_library.png" style="width: 523px; height: 311px;" /></a>
+<ul class="simple">
+<li>A ROS2 Grasp Planner providing grasp planning service, as an extensible capability of MoveIt (moveit_msgs::srv::<a class="reference external" href="http://docs.ros.org/api/moveit_msgs/html/srv/GraspPlanning.html">GraspPlanning</a>), translating grasp detection results into MoveIt Interfaces (moveit_msgs::msg::<a class="reference external" href="http://docs.ros.org/api/moveit_msgs/html/msg/Grasp.html">Grasp</a>). A ROS2 Grasp Detctor abstracting interfaces for grasp detection results</li>
+<li>A ROS2 hand-eye calibration module generating transformation from camera frame to robot frame</li>
+<li>Robot interfaces controlling the phsical robot to move, pick, place, as well as to feedback robot states</li>
+<li>ROS2 example applications demonstrating how to use this ROS2 Grasp Library in advanced industrial usages for intelligent visual grasp</li>
+</ul>
 </div>
 
 
@@ -179,7 +190,7 @@
         <a href="robot_interface.html" class="btn btn-neutral float-right" title="Robot Interface" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="../index.html" class="btn btn-neutral" title="Welcome to ROS2 Grasp Library Tutorial" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="../index.html" class="btn btn-neutral float-left" title="Welcome to ROS2 Grasp Library Tutorial" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -205,36 +216,16 @@
   
 
 
-  
-
-    
-    
-      <script type="text/javascript">
-          var DOCUMENTATION_OPTIONS = {
-              URL_ROOT:'../',
-              VERSION:'0.5.0',
-              LANGUAGE:'None',
-              COLLAPSE_INDEX:false,
-              FILE_SUFFIX:'.html',
-              HAS_SOURCE:  true,
-              SOURCELINK_SUFFIX: '.txt'
-          };
-      </script>
-        <script type="text/javascript" src="../_static/jquery.js"></script>
-        <script type="text/javascript" src="../_static/underscore.js"></script>
-        <script type="text/javascript" src="../_static/doctools.js"></script>
-        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    
-
-  
-
-  <script type="text/javascript" src="../_static/js/theme.js"></script>
-
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+
+  
+  
+    
+   
 
 </body>
 </html>

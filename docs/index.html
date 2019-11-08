@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
@@ -15,33 +17,45 @@
   
 
   
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'./',
+              VERSION:'0.5.0',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: '.txt'
+          };
+      </script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Overview" href="doc/overview.html" /> 
-
-  
-  <script src="_static/js/modernizr.min.js"></script>
-
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -81,13 +95,15 @@
             
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="doc/overview.html">Overview</a></li>
-<li class="toctree-l1"><a class="reference internal" href="doc/robot_interface.html">Robot Interface</a></li>
-<li class="toctree-l1"><a class="reference internal" href="doc/handeye_calibration.html">Hand-eye Calibration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="doc/getting_start.html">Getting Start</a></li>
 <li class="toctree-l1"><a class="reference internal" href="doc/grasp_planner.html">Grasp Planner</a></li>
+<li class="toctree-l1"><a class="reference internal" href="doc/robot_interface.html">Robot Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="doc/bringup_robot.html">Bring up a New Robot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="doc/handeye_calibration.html">Hand-eye Calibration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="doc/random_pick.html">Random Pick (OpenVINO Grasp Detection)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="doc/recognize_pick.html">Recognize Pick (OpenVINO Grasp Detection + OpenVINO Object Segmentation)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="doc/template.html">[App Tutorial Template]</a></li>
 <li class="toctree-l1"><a class="reference internal" href="doc/grasp_api.html">ROS2 Grasp Library APIs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="doc/template.html">[App Tutorial Template]</a></li>
 </ul>
 
             
@@ -154,16 +170,16 @@
             
   <div class="section" id="welcome-to-ros2-grasp-library-tutorial">
 <h1>Welcome to ROS2 Grasp Library Tutorial<a class="headerlink" href="#welcome-to-ros2-grasp-library-tutorial" title="Permalink to this headline">¶</a></h1>
-<p>ROS2 Grasp Library enables state-of-the-art CNN based deep learning grasp detection algorithms on ROS2 for visual manipulation of industrial robot. This package provide ROS2 interfaces compliant with the <a class="reference external" href="http://moveit.ros.org">MoveIt</a> motion planning framework which is supported by most of the <a class="reference external" href="https://moveit.ros.org/robots">robot models</a> in ROS industrial.</p>
-<div class="section" id="build-this-tutorial">
-<h2>Build This Tutorial<a class="headerlink" href="#build-this-tutorial" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="n">grasp_tutorials</span>
+<p>This is a ROS2 intelligent visual grasp solution for advanced industrial usages, with OpenVINO™ grasp detection and MoveIt Grasp Planning.</p>
+<div class="section" id="build-and-test-this-tutorial">
+<h2>Build and test this tutorial<a class="headerlink" href="#build-and-test-this-tutorial" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="n">ros2_grasp_library</span><span class="o">/</span><span class="n">grasp_tutorials</span>
 
-<span class="n">sphinx</span><span class="o">-</span><span class="n">build</span> <span class="o">.</span> <span class="n">build</span>
+<span class="n">sphinx</span><span class="o">-</span><span class="n">build</span> <span class="o">.</span> <span class="n">build</span> <span class="c1"># check the outputs in the ./build/ folder</span>
 
-<span class="n">cd</span> <span class="n">grasp_utils</span><span class="o">/</span><span class="n">robot_interface</span>
+<span class="n">cd</span> <span class="n">ros2_grasp_library</span><span class="o">/</span><span class="n">grasp_utils</span><span class="o">/</span><span class="n">robot_interface</span>
 
-<span class="n">doxygen</span> <span class="n">Doxyfile</span>
+<span class="n">doxygen</span> <span class="n">Doxyfile</span> <span class="c1"># check the outputs in the ./build/ folder</span>
 </pre></div>
 </div>
 </div>
@@ -172,15 +188,31 @@
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="doc/overview.html">Overview</a></li>
-<li class="toctree-l1"><a class="reference internal" href="doc/robot_interface.html">Robot Interface</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="doc/robot_interface.html#robot-control-apps">Robot Control Apps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="doc/getting_start.html">Getting Start</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="doc/getting_start.html#ros2-grasp-planner-and-detector">ROS2 Grasp Planner and Detector</a></li>
+<li class="toctree-l2"><a class="reference internal" href="doc/getting_start.html#use-launch-options-for-customization">Use Launch Options for Customization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="doc/getting_start.html#robot-interface">Robot Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="doc/getting_start.html#hand-eye-calibration">Hand-eye Calibration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="doc/getting_start.html#launch-intelligent-visual-grasp-applications">Launch Intelligent Visual Grasp Applications</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="doc/handeye_calibration.html">Hand-eye Calibration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="doc/grasp_planner.html">Grasp Planner</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="doc/grasp_planner.html#tutorials">Tutorials</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="doc/robot_interface.html">Robot Interface</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="doc/robot_interface.html#robot-control-apps">Robot Control Apps</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="doc/bringup_robot.html">Bring up a New Robot</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="doc/bringup_robot.html#minimum-apis-to-implement">Minimum APIs to Implement</a></li>
+<li class="toctree-l2"><a class="reference internal" href="doc/bringup_robot.html#optional-implementation-and-possible-extentions">Optional implementation and possible extentions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="doc/bringup_robot.html#example-ur5-implementation">Example UR5 Implementation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="doc/bringup_robot.html#test-your-implementation">Test Your Implementation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="doc/bringup_robot.html#bring-up-robot-control-applications">Bring up Robot Control Applications</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="doc/handeye_calibration.html">Hand-eye Calibration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="doc/random_pick.html">Random Pick (OpenVINO Grasp Detection)</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="doc/random_pick.html#overview">Overview</a></li>
 <li class="toctree-l2"><a class="reference internal" href="doc/random_pick.html#requirement">Requirement</a></li>
@@ -195,6 +227,12 @@
 <li class="toctree-l2"><a class="reference internal" href="doc/recognize_pick.html#launch-the-application-with-real-robot-and-camera">Launch the Application with Real Robot and Camera</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="doc/grasp_api.html">ROS2 Grasp Library APIs</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="doc/grasp_api.html#grasp-planning-ros2-interfaces">Grasp Planning ROS2 Interfaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="doc/grasp_api.html#hand-eye-calibration-ros2-interfaces">Hand-Eye Calibration ROS2 Interfaces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="doc/grasp_api.html#robot-interface-api">Robot Interface API</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="doc/template.html">[App Tutorial Template]</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="doc/template.html#overview">Overview</a></li>
 <li class="toctree-l2"><a class="reference internal" href="doc/template.html#requirements">Requirements</a></li>
@@ -202,12 +240,6 @@
 <li class="toctree-l2"><a class="reference internal" href="doc/template.html#launch-the-application">Launch the Application</a></li>
 <li class="toctree-l2"><a class="reference internal" href="doc/template.html#expected-outputs">Expected Outputs</a></li>
 <li class="toctree-l2"><a class="reference internal" href="doc/template.html#customization-notes">Customization Notes</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="doc/grasp_api.html">ROS2 Grasp Library APIs</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="doc/grasp_api.html#grasp-planning-ros2-interfaces">Grasp Planning ROS2 Interfaces</a></li>
-<li class="toctree-l2"><a class="reference internal" href="doc/grasp_api.html#hand-eye-calibration-ros2-interfaces">Hand-Eye Calibration ROS2 Interfaces</a></li>
-<li class="toctree-l2"><a class="reference internal" href="doc/grasp_api.html#robot-interface-api">Robot Interface API</a></li>
 </ul>
 </li>
 </ul>
@@ -250,36 +282,16 @@
   
 
 
-  
-
-    
-    
-      <script type="text/javascript">
-          var DOCUMENTATION_OPTIONS = {
-              URL_ROOT:'./',
-              VERSION:'0.5.0',
-              LANGUAGE:'None',
-              COLLAPSE_INDEX:false,
-              FILE_SUFFIX:'.html',
-              HAS_SOURCE:  true,
-              SOURCELINK_SUFFIX: '.txt'
-          };
-      </script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    
-
-  
-
-  <script type="text/javascript" src="_static/js/theme.js"></script>
-
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+
+  
+  
+    
+   
 
 </body>
 </html>
