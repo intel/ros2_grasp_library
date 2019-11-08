@@ -13,6 +13,7 @@ to the robot view with the `Hand-Eye Calibration`_,
 translates the Grasp Pose into `moveit_msgs Grasp <http://docs.ros.org/api/moveit_msgs/html/msg/Grasp.html>`_.
 
 The Robot Interface takes the grasp poses and place poses, to pick and place the object.
+
 Watch this `demo_video <https://www.youtube.com/embed/b4EPvHdidOA?rel=0>`_ to see the output of this application.
 
 .. raw:: html

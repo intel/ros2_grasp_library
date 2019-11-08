@@ -23,6 +23,16 @@ Refer to ROS2 Grasp Library [Tutorials](http://intel.github.io/ros2_grasp_librar
 * Do hand-eye calibration for a new camera setup
 * Launch the example applications
 
+## Example Applications
+
+### Random Picking (OpenVINO Grasp Detection)
+
+[<img src="grasp_tutorials/_static/images/random_pick.png" width = 50% height = 50% alt="Random Pick with OpenVINO Grasp Detection - Link to Youtube video demo" align=center>](https://www.youtube.com/embed/b4EPvHdidOA)
+
+### Recognition Picking (OpenVINO Grasp Detection + OpenVINO Mask-rcnn Object Segmentation)
+
+[<img src="grasp_tutorials/_static/images/recognize_pick.png" width = 50% height = 50% alt="Recognition Pick with OpenVINO Grasp Detection - Link to Youtube video demo" align=center>](https://www.youtube.com/embed/trIt0uKRXBs)
+
 ## Known Issues
   * Cloud camera failed at "Invalid sizes when resizing a matrix or array" when dealing with XYZRGBA pointcloud from ROS2 Realsenes, tracked as [#6](https://github.com/atenpas/gpg/issues/6) of gpg, [patch](https://github.com/atenpas/gpg/pull/7) under review.
   * 'colcon test' sometimes failed with test suite "tgrasp_ros2", due to ROS2 service request failure issue (reported ros2 examples issue [#228](https://github.com/ros2/examples/issues/228) and detailed discussed in ros2 demo issue [#304](https://github.com/ros2/demos/issues/304))

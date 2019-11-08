@@ -1,20 +1,19 @@
-Welcome to ROS2 Grasp Library Tutorial
-======================================
+Welcome to ROS2 Grasp Library Tutorials
+=======================================
 
-This is a ROS2 intelligent visual grasp solution for advanced industrial usages, with OpenVINO™ grasp detection and MoveIt Grasp Planning.
+ROS2 Grasp Library is a ROS2 intelligent visual grasp solution for advanced industrial usages, with OpenVINO™ grasp detection and MoveIt Grasp Planning. These tutorials aim to help quickly bringup the solution in a new working environment.
 
-Build and test this tutorial
-----------------------------
+The tutorials introduce how to
 
-::
+- Install, build, and launch the ROS2 Grasp Planner and Detector
 
-  cd ros2_grasp_library/grasp_tutorials
+- Use launch options to customize in a new workspace
 
-  sphinx-build . build # check the outputs in the ./build/ folder
+- Bring up the intelligent visual grasp solution on a new robot
 
-  cd ros2_grasp_library/grasp_utils/robot_interface
+- Do hand-eye calibration for a new camera setup
 
-  doxygen Doxyfile # check the outputs in the ./build/ folder
+- Launch the example applications
 
 Contents:
 ---------
