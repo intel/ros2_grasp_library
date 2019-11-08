@@ -8,17 +8,15 @@ Overview
 
 ROS2 Grasp Library consists of
 
-- A ROS2 Grasp Planner providing grasp planning service, as an extensible capability of MoveIt (moveit_msgs::srv::`GraspPlanning`_)
-
-- A ROS2 Grasp Detector interface, enabled with the specific back-end algorithm `GPD`_ with Intel® `OpenVINO™`_ technology
-
-- Hand-eye calibration generating transformation from camera frame to a specified target frame; Grasp translation to the MoveIt Interfaces (moveit_msgs::msg::`Grasp`_)
-
-- Robot interfaces controlling the phsical robot to move, pick, place, as well as to feedback robot states
-
-- Grasp applications demonstrating the grasp planning capabilities, and telling how to put all the above software components together for intelligent visual manipulation tasks
-
 .. image:: ../_static/images/ros2_grasp_library.png
    :width: 523 px
    :height: 311 px
    :align: center
+
+- A ROS2 Grasp Planner providing grasp planning service, as an extensible capability of MoveIt (moveit_msgs::srv::`GraspPlanning`_), translating grasp detection results into MoveIt Interfaces (moveit_msgs::msg::`Grasp`_). A ROS2 Grasp Detctor abstracting interfaces for grasp detection results
+
+- A ROS2 hand-eye calibration module generating transformation from camera frame to robot frame
+
+- Robot interfaces controlling the phsical robot to move, pick, place, as well as to feedback robot states
+
+- ROS2 example applications demonstrating how to use this ROS2 Grasp Library in advanced industrial usages for intelligent visual grasp

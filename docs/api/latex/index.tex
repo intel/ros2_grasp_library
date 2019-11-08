@@ -1,0 +1,66 @@
+R\+O\+S2 package to use robot native interface
+
+\subsection*{Install}
+
+Install dependency {\bfseries ur\+\_\+modern\+\_\+driver}\+:
+
+
+\begin{DoxyCode}
+git clone -b libur\_modern\_driver https://github.com/RoboticsYY/ur\_modern\_driver.git
+cd ur\_modern\_driver/libur\_modern\_driver
+mkdir build && cd build
+cmake .. && sudo make install
+\end{DoxyCode}
+
+
+Install dependency {\bfseries ros2\+\_\+ur\+\_\+description}\+:
+
+
+\begin{DoxyCode}
+mkdir -p ~/ros2\_ws/src && cd ~/ros2\_ws/src
+git clone https://github.com/RoboticsYY/ros2\_ur\_description.git
+cd .. && colcon build
+\end{DoxyCode}
+
+
+Install {\bfseries robot\+\_\+interface}\+:
+
+The installation should refer to the installation of {\bfseries ros2\+\_\+grasp\+\_\+library}.
+
+\begin{quote}
+Note\+: If error \char`\"{}fatal error\+: Eigen/\+Geometry\+: No such file or directory\char`\"{} persists during the compilation, please check the file path of \char`\"{}\+Eigen/\+Geometry\char`\"{}, if it locates at \char`\"{}/usr/include/eigen3/\+Eigen\char`\"{}, a work around is creating a soft link to \char`\"{}/usr/include/\+Eigen\char`\"{} as below\+: \end{quote}
+
+
+
+\begin{DoxyCode}
+ln -s /usr/include/eigen3/Eigen /usr/include/Eigen
+\end{DoxyCode}
+
+
+\subsection*{Launch}
+
+Launch the UR robot control test executable\+:
+
+
+\begin{DoxyCode}
+ros2 launch robot\_interface ur\_test.launch.py move:=true
+\end{DoxyCode}
+
+
+Launch the Rivz2 display\+:
+
+
+\begin{DoxyCode}
+ros2 launch ur\_description view\_ur5\_ros2.launch.py
+\end{DoxyCode}
+
+
+\subsection*{Generate Document}
+
+
+\begin{DoxyCode}
+cd <path to root of ros2\_grasp\_library>/grasp\_utils/robot\_interface
+
+doxygen Doxyfile
+\end{DoxyCode}
+ 

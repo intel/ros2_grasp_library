@@ -27,11 +27,11 @@ to setup the environment.
 
   - `ROS2 <https://index.ros.org/doc/ros2/Installation/Dashing/Linux-Install-Debians>`_
 
-  - `Grasp Planner <https://github.com/sharronliu/ros2_grasp_library/tree/master/grasp_ros2>`_
+  - `Grasp Planner <grasp_planner.html>`_
 
-  - `Robot Interface <https://github.com/sharronliu/ros2_grasp_library/tree/master/grasp_utils/robot_interface>`_
+  - `Robot Interface <robot_interface.html>`_
 
-  - Hand-Eye Calibration
+  - `Hand-Eye Calibration <handeye_calibration.html>`_
 
   - `ROS2 OpenVINO <https://github.com/intel/ros2_openvino_toolkit>`_
 
@@ -63,11 +63,7 @@ Within your catkin workspace, download and compile the example code
 Launch the Application with Real Robot and Camera
 -------------------------------------------------
 
-- Publish handeye transform, refer to handeye
-
-::
-
-  ros2 run tf2_ros static_transform_publisher 0.029308663357415252, 0.8351437768013816, 0.4887928298268225 -0.002101048177610369, -0.9758220841680959, 0.2178663901368447 0.01735170582767297 base_link camera_color_optical_frame
+- Publish handeye transform, refer to `Hand-Eye Calibration`_
 
 - Publish place object
 
