@@ -114,6 +114,7 @@ int main(int argc, char **argv)
       robot_->moveToJointValues(joint_values_place, vel_, acc_);
       robot_->place(place_[0], place_[1], place_[2], place_[3], place_[4], place_[5], vel_, acc_, vscale_, appr_);
 #endif
+    rclcpp::spin_some(node_);
     place_pose_ = nullptr;
   }
 

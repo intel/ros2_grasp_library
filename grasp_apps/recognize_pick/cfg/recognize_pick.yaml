@@ -24,10 +24,10 @@ GraspPlanner:
     grasp_score_threshold: 1
     grasp_frame_id: "base"
     grasp_approach: [0.0, 0.0, -1.0] # expect approaching in -z axis
-    grasp_approach_angle: 0.785 # 1.047=PI/3 # 0.785=PI/4 # 0.523=PI/6 # 0.345=PI/9 # acceptable approaching angle
-    grasp_offset: [0.000, -0.004, 0.000]
+    grasp_approach_angle: 0.7 # 1.047=PI/3 # 0.785=PI/4 # 0.523=PI/6 # 0.345=PI/9 # acceptable approaching angle
+    grasp_offset: [0.006, -0.003, 0.000]
     # grasp boundry in grasp_frame_id
-    grasp_boundry: [-0.25, 0.25, -0.73, -0.27, -0.15, 0.15]
-    eef_offset: 0.16
-    eef_yaw_offset: -0.7854 # M_PI/4
+    grasp_boundry: [-0.2, 0.2, -0.65, -0.30, -0.15, 0.15]
+    eef_offset: 0.154
+    eef_yaw_offset: 0.7854 # M_PI/4
     finger_joint_names: ["panda_finger_joint1", "panda_finger_joint2"]

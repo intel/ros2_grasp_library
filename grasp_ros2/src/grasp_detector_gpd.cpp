@@ -123,9 +123,6 @@ std::vector<Grasp> GraspDetectorGPD::detectGraspPosesInTopic()
   std::vector<Grasp> grasps;
 
   {
-    if (object_sub_) {
-      cloud_camera_->filterWorkspace(grasp_ws_);
-    }
     // preprocess the point cloud
     grasp_detector_->preprocessPointCloud(*cloud_camera_);
     // detect grasps in the point cloud
@@ -240,7 +237,7 @@ void GraspDetectorGPD::cloud_callback(const sensor_msgs::msg::PointCloud2::Share
               xyz.row(1).minCoeff(), xyz.row(1).maxCoeff(),
               xyz.row(2).minCoeff(), xyz.row(2).maxCoeff()};
             found = true;
-            filter1 = filter2;
+            cloud = filter2;
             break;
           }
         }
@@ -248,7 +245,7 @@ void GraspDetectorGPD::cloud_callback(const sensor_msgs::msg::PointCloud2::Share
       }
       if (filtered_pub_) {
         sensor_msgs::msg::PointCloud2 msg2;
-        pcl::toROSMsg(*filter1, msg2);
+        pcl::toROSMsg(*cloud, msg2);
         // workaround rviz rgba
         msg2.fields[3].name = "rgb";
         msg2.fields[3].datatype = 7;
