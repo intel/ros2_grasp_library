@@ -9,6 +9,9 @@ from geometry_msgs.msg import TransformStamped
 from handeye_tf_service.srv import HandeyeTF
 from ament_index_python.resources import get_resource
 
+from rcl_interfaces.msg import Parameter, ParameterType, ParameterValue
+from rcl_interfaces.srv import SetParameters
+
 # Rqt widgets
 from rqt_gui_py.plugin import Plugin
 from python_qt_binding import QtCore
@@ -70,6 +73,11 @@ class HandEyeCalibration(Plugin):
     self.widget = QWidget()
     self.widget.setObjectName(self.PLUGIN_TITLE)
     self.widget.setWindowTitle(self.PLUGIN_TITLE)
+
+    # parameter
+    self.cli_param = self.node.create_client(SetParameters, '/grasp_modbus_server/set_parameters')
+    while not self.cli_param.wait_for_service(timeout_sec=1.0):
+      self.node.get_logger().info('service not available, waiting again...')
 
     # Data
     self.Tsamples = []
@@ -313,6 +321,18 @@ class HandEyeCalibration(Plugin):
       self.textedit.append("Failed to solve the hand-eye calibration.")
 
   def execution(self):
+    # Set calibration state to success
+    req = SetParameters.Request()
+
+    param = Parameter()
+    param.name = "calibration_state"
+    param.value.type = ParameterType.PARAMETER_INTEGER
+    param.value.integer_value = 4
+    req.parameters.append(param)
+
+    future = self.cli_param.call_async(req)
+    rclpy.spin_until_future_complete(self.node, future)
+
     # >>> Publish the camera-robot transform
     self.textedit.append('Publishing the camera TF ...')
     file_input = '/tmp/' + 'camera-robot.json'
