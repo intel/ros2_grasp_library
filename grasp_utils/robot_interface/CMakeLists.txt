@@ -69,7 +69,7 @@ set(${PROJECT_NAME}_SOURCES
   src/control_base.cpp
   src/control_ur.cpp
 ) 
-add_library(${PROJECT_NAME} ${${PROJECT_NAME}_SOURCES})
+add_library(${PROJECT_NAME} SHARED ${${PROJECT_NAME}_SOURCES})
 ament_target_dependencies(${PROJECT_NAME} rclcpp sensor_msgs geometry_msgs tf2_ros)
 target_link_libraries(${PROJECT_NAME} ${ur_modern_driver_LIBRARIES})
 
