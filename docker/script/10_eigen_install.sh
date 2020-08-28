@@ -20,3 +20,6 @@ cd eigen-3.2 &&mkdir -p build && cd build
 cmake -DCMAKE_BUILD_TYPE=Release ..
 make -j4
 $SUDO make install
+$SUDO rm -rf eigen3/
+$SUDO ln -sf /usr/local/include/eigen3 /usr/include/
+$SUDO make install

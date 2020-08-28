@@ -18,7 +18,8 @@ git clone --depth 1 https://github.com/RoboticsYY/ros2_ur_description.git
 git clone --depth 1 https://github.com/RoboticsYY/handeye
 git clone --depth 1 https://github.com/RoboticsYY/criutils.git
 git clone --depth 1 https://github.com/RoboticsYY/baldor.git
-git clone --depth 1 https://github.com/intel/ros2_openvino_toolkit.git
+git clone --depth 1 https://github.com/intel/ros2_intel_realsense.git
+git clone --depth 1 https://github.com/intel/ros2_grasp_library.git
 
 cd $WORK_DIR
 source /opt/ros/dashing/setup.sh
