@@ -1,12 +1,14 @@
 GraspDetectorGPD:
   ros__parameters:
-    cloud_topic: /camera/pointcloud
+    #cloud_topic: /camera/pointcloud
+    cloud_topic: /mechmind/color_point_cloud
     rviz: true
-    device: 1 # 0:CPU, 1:GPU, 2:VPU
+    device: 0 # 0:CPU, 1:GPU, 2:VPU
     auto_mode: true
     plane_remove: true
     # grasp workspace in camera frames
-    workspace: [-0.35, 0.35, -0.6, 0.1, 0.0, 1.0]
+    #workspace: [-0.21, 0.29, -0.22, 0.15, 0.0, 1.0] # Realsense
+    workspace: [-0.16, 0.34, -0.26, 0.14, 1.4, 1.8] # Mechmind
     # gripper geometry parameters in metre
     # finger_width: the finger thickness
     # hand_outer_diameter: the maximum robot hand aperture 
@@ -19,7 +21,8 @@ GraspDetectorGPD:
 GraspPlanner:
   ros__parameters:
     grasp_score_threshold: 20
-    grasp_frame_id: "camera_color_optical_frame"
+    #grasp_frame_id: "camera_color_optical_frame" # Realsense
+    grasp_frame_id: "mechmind_camera" # Mechmind
     grasp_offset: [0.000, 0.000, 0.0]
     eef_offset: 0.174
     eef_yaw_offset: 0.7854 # M_PI/4
