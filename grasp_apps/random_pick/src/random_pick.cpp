@@ -13,12 +13,12 @@ using GraspPlanning = moveit_msgs::srv::GraspPlanning;
 /* pick position in [x, y, z, R, P, Y]*/
 static std::vector<double> pick_ = {0.0, -0.54, 0.145, 3.14, 0.0, 1.956};
 /* place position in [x, y, z, R, P, Y]*/
-static std::vector<double> place_ = {-0.45, -0.30, 0.125, 3.14, 0.0, 1.956};
+static std::vector<double> place_ = {-0.50, -0.30, 0.20, 3.14, 0.0, 1.956};
 /* pre-pick position in joint values*/
 static std::vector<double> joint_values_pick = {1.065, -1.470, 1.477, -1.577, -1.556, 0};
 /* place position in joint values*/
 static std::vector<double> joint_values_place = {0.385, -1.470, 1.477, -1.577, -1.556, 0};
-static double vel_ = 0.4, acc_ = 0.4, vscale_ = 0.5, appr_ = 0.1;
+static double vel_ = 0.9, acc_ = 0.9, vscale_ = 0.9, appr_ = 0.1;
 static std::shared_ptr<URControl> robot_ = nullptr;
 static rclcpp::Node::SharedPtr node_ = nullptr;
 static std::shared_ptr<GraspPlanning::Response> result_ = nullptr;

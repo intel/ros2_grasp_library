@@ -38,7 +38,6 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(moveit_msgs REQUIRED)
-find_package(people_msgs REQUIRED)
 find_package(robot_interface REQUIRED)
 find_package(tf2_ros REQUIRED)
 
@@ -46,7 +45,6 @@ include_directories(
   include
   ${rclcpp_INCLUDE_DIRS}
   ${moveit_msgs_INCLUDE_DIRS}
-  ${people_msgs_INCLUDE_DIRS}
   ${robot_interface_INCLUDE_DIRS}
   ${tf2_ros_INCLUDE_DIRS}
 )
@@ -59,7 +57,6 @@ add_executable(${PROJECT_NAME}
 ament_target_dependencies(${PROJECT_NAME}
   "rclcpp"
   "moveit_msgs"
-  "people_msgs"
   "robot_interface"
   "tf2_ros"
 )

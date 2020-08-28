@@ -101,5 +101,5 @@ Launch the Application with Real Robot and Camera
 
 ::
 
-  ros2 run grasp_ros2 grasp_ros2 __params:=src/ros2_grasp_library/grasp_apps/random_pick/cfg/random_pick.yaml
+  ros2 run grasp_ros2 grasp_ros2 __params:=src/ros2_grasp_library/grasp_ros2/cfg/random_pick.yaml
 
