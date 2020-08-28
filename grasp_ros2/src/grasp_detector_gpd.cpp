@@ -30,7 +30,10 @@ namespace grasp_ros2
 GraspDetectorGPD::GraspDetectorGPD(const rclcpp::NodeOptions & options)
 : Node("GraspDetectorGPD", options),
   GraspDetectorBase(), cloud_camera_(NULL), has_cloud_(false), frame_(""),
-  object_msg_(nullptr), object_sub_(nullptr), filtered_pub_(nullptr), grasps_rviz_pub_(nullptr)
+#ifdef RECOGNIZE_PICK
+  object_msg_(nullptr), object_sub_(nullptr),
+#endif
+  filtered_pub_(nullptr), grasps_rviz_pub_(nullptr)
 {
   std::vector<double> camera_position;
   this->get_parameter_or("camera_position", camera_position,
@@ -65,6 +68,7 @@ GraspDetectorGPD::GraspDetectorGPD(const rclcpp::NodeOptions & options)
     filtered_pub_ = this->create_publisher<sensor_msgs::msg::PointCloud2>(
       Consts::kTopicTabletop, 10);
   }
+#ifdef RECOGNIZE_PICK
   if (object_detect) {
     callback_group_subscriber2_ = this->create_callback_group(
       rclcpp::callback_group::CallbackGroupType::MutuallyExclusive);
@@ -80,10 +84,10 @@ GraspDetectorGPD::GraspDetectorGPD(const rclcpp::NodeOptions & options)
       this->create_subscription<people_msgs::msg::ObjectsInMasks>(object_topic,
         rclcpp::QoS(10), callback, sub2_opt);
   }
-
-  GraspDetector::GraspDetectionParameters detection_param;
-  ROSParameters::getDetectionParams(this, detection_param);
-  grasp_detector_ = std::make_shared<GraspDetector>(detection_param);
+#endif
+  // GraspDetector::GraspDetectionParameters detection_param;
+  ROSParameters::getDetectionParams(this, detection_param_);
+  grasp_detector_ = std::make_shared<GraspDetector>(detection_param_);
   RCLCPP_INFO(logger_, "ROS2 Grasp Library node up...");
 
   detector_thread_ = new std::thread(&GraspDetectorGPD::onInit, this);
@@ -143,10 +147,9 @@ std::vector<Grasp> GraspDetectorGPD::detectGraspPosesInTopic()
 
 void GraspDetectorGPD::cloud_callback(const sensor_msgs::msg::PointCloud2::SharedPtr msg)
 {
-  people_msgs::msg::ObjectsInMasks::SharedPtr object_msg;
-
   if (!auto_mode_ && !started_) {return;}
-
+#ifdef RECOGNIZE_PICK
+  people_msgs::msg::ObjectsInMasks::SharedPtr object_msg;
   if (object_sub_) {
     if (object_name_.empty()) {
       RCLCPP_INFO(logger_, "Waiting for object name...");
@@ -159,7 +162,7 @@ void GraspDetectorGPD::cloud_callback(const sensor_msgs::msg::PointCloud2::Share
       return;
     }
   }
-
+#endif
   RCLCPP_DEBUG(logger_, "PCD callback...");
   if (!has_cloud_) {
     delete cloud_camera_;
@@ -176,32 +179,40 @@ void GraspDetectorGPD::cloud_callback(const sensor_msgs::msg::PointCloud2::Share
       cloud_camera_ = new CloudCamera(cloud, 0, view_points);
       cloud_camera_header_ = msg->header;
     } else {
-      PointCloudRGBA::Ptr cloud(new PointCloudRGBA), filter1(new PointCloudRGBA), filter2(
-        new PointCloudRGBA);
+      PointCloudRGBA::Ptr cloud(new PointCloudRGBA);
+      pcl::fromROSMsg(*msg, *cloud);
+
+      // filter workspace
+      for (uint32_t i = 0; i < cloud->size(); i++) {
+        if (cloud->points[i].x > detection_param_.workspace_[0] && cloud->points[i].x < detection_param_.workspace_[1] &&
+            cloud->points[i].y > detection_param_.workspace_[2] && cloud->points[i].y < detection_param_.workspace_[3] &&
+            cloud->points[i].z > detection_param_.workspace_[4] && cloud->points[i].z < detection_param_.workspace_[5]) {
+          continue;
+        } else {
+          cloud->points[i].x = std::numeric_limits<float>::quiet_NaN();
+          cloud->points[i].y = std::numeric_limits<float>::quiet_NaN();
+          cloud->points[i].z = std::numeric_limits<float>::quiet_NaN();
+        }
+      }
+
       // remove table plane
-      if (plane_remove_ || object_sub_) {
-        pcl::fromROSMsg(*msg, *filter1);
+      if (plane_remove_) {
         pcl::ModelCoefficients::Ptr coefficients(new pcl::ModelCoefficients);
         pcl::PointIndices::Ptr inliers(new pcl::PointIndices);
         pcl::SACSegmentation<pcl::PointXYZRGBA> seg;
         seg.setOptimizeCoefficients(true);
         seg.setModelType(pcl::SACMODEL_PLANE);
         seg.setMethodType(pcl::SAC_RANSAC);
-        seg.setDistanceThreshold(0.015);
-        seg.setInputCloud(filter1);
+        seg.setDistanceThreshold(0.025);
+        seg.setInputCloud(cloud);
         seg.segment(*inliers, *coefficients);
         for (size_t i = 0; i < inliers->indices.size(); ++i) {
-          filter1->points[inliers->indices[i]].x = std::numeric_limits<float>::quiet_NaN();
-          filter1->points[inliers->indices[i]].y = std::numeric_limits<float>::quiet_NaN();
-          filter1->points[inliers->indices[i]].z = std::numeric_limits<float>::quiet_NaN();
+          cloud->points[inliers->indices[i]].x = std::numeric_limits<float>::quiet_NaN();
+          cloud->points[inliers->indices[i]].y = std::numeric_limits<float>::quiet_NaN();
+          cloud->points[inliers->indices[i]].z = std::numeric_limits<float>::quiet_NaN();
         }
       }
-      if (plane_remove_) {
-        cloud = filter1;
-      } else {
-        pcl::fromROSMsg(*msg, *cloud);
-      }
-
+#ifdef RECOGNIZE_PICK
       // filter object location
       if (object_sub_) {
         bool found = false;
@@ -215,20 +226,20 @@ void GraspDetectorGPD::cloud_callback(const sensor_msgs::msg::PointCloud2::Share
               int idx = (i + obj.roi.y_offset) * msg->width + obj.roi.x_offset;
               for (size_t j = 0; j < obj.roi.width; j++) {  // columns
                 // todo use mask_array from from object msg
-                if (!isnan(filter1->points[idx + j].x) &&
-                  !isnan(filter1->points[idx + j].y) &&
-                  !isnan(filter1->points[idx + j].z))
+                if (!isnan(cloud->points[idx + j].x) &&
+                  !isnan(cloud->points[idx + j].y) &&
+                  !isnan(cloud->points[idx + j].z))
                 {
                   indices.push_back(idx + j);
                 }
               }
             }
             pcl::ExtractIndices<pcl::PointXYZRGBA> filter;
-            filter.setInputCloud(filter1);
+            filter.setInputCloud(cloud);
             filter.setIndices(boost::make_shared<std::vector<int>>(indices));
-            filter.filter(*filter2);
+            filter.filter(*cloud);
             Eigen::Matrix3Xf xyz =
-              filter2->getMatrixXfMap(3, sizeof(pcl::PointXYZRGBA) / sizeof(float), 0);
+              cloud->getMatrixXfMap(3, sizeof(pcl::PointXYZRGBA) / sizeof(float), 0);
             RCLCPP_INFO(logger_, "*************** %f %f, %f %f, %f %f",
               xyz.row(0).minCoeff(), xyz.row(0).maxCoeff(),
               xyz.row(1).minCoeff(), xyz.row(1).maxCoeff(),
@@ -237,12 +248,12 @@ void GraspDetectorGPD::cloud_callback(const sensor_msgs::msg::PointCloud2::Share
               xyz.row(1).minCoeff(), xyz.row(1).maxCoeff(),
               xyz.row(2).minCoeff(), xyz.row(2).maxCoeff()};
             found = true;
-            cloud = filter2;
             break;
           }
         }
         if (!found) {return;}
       }
+#endif
       if (filtered_pub_) {
         sensor_msgs::msg::PointCloud2 msg2;
         pcl::toROSMsg(*cloud, msg2);
@@ -261,7 +272,7 @@ void GraspDetectorGPD::cloud_callback(const sensor_msgs::msg::PointCloud2::Share
     frame_ = msg->header.frame_id;
   }
 }
-
+#ifdef RECOGNIZE_PICK
 void GraspDetectorGPD::object_callback(const people_msgs::msg::ObjectsInMasks::SharedPtr msg)
 {
   RCLCPP_INFO(logger_, "Object callback *************************[%d]", msg->objects_vector.size());
@@ -283,7 +294,7 @@ void GraspDetectorGPD::object_callback(const people_msgs::msg::ObjectsInMasks::S
     object_msg_ = msg;
   }
 }
-
+#endif
 grasp_msgs::msg::GraspConfigList GraspDetectorGPD::createGraspListMsg(
   const std::vector<Grasp> & hands)
 {
