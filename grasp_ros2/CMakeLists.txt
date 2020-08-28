@@ -30,6 +30,9 @@ else()
   message(STATUS "Create Debug Build.")
 endif()
 
+if(BUILD_RECOGNIZE_PICK EQUAL "ON")
+  add_definitions("-DRECOGNIZE_PICK")
+endif()
 find_package(ament_cmake REQUIRED)
 find_package(builtin_interfaces REQUIRED)
 find_package(rclcpp REQUIRED)
@@ -37,7 +40,9 @@ find_package(rclcpp_components REQUIRED)
 find_package(grasp_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(moveit_msgs)
+if(BUILD_RECOGNIZE_PICK STREQUAL "ON")
 find_package(people_msgs)
+endif()
 find_package(visualization_msgs)
 find_package(tf2)
 find_package(tf2_ros REQUIRED)
@@ -45,7 +50,6 @@ find_package(tf2_geometry_msgs REQUIRED)
 find_package(trajectory_msgs REQUIRED)
 find_package(pcl_conversions REQUIRED)
 find_package(Eigen3 REQUIRED)
-find_package(InferenceEngine)
 
 # GPG
 find_library(gpg_LIBRARIES grasp_candidates_generator)
@@ -55,7 +59,7 @@ find_library(gpd_LIBRARIES grasp_pose_detection)
 find_path(gpd_INCLUDE_DIRS gpd/grasp_detector.h)
 
 # PCL
-find_package(PCL REQUIRED)
+find_package(PCL 1.8.1 EXACT)
 include_directories(${PCL_INCLUDE_DIRS})
 link_directories(${PCL_LIBRARY_DIRS})
 add_definitions(${PCL_DEFINITIONS})
@@ -67,7 +71,9 @@ include_directories(
   ${grasp_msgs_INCLUDE_DIRS}
   ${sensor_msgs_INCLUDE_DIRS}
   ${moveit_msgs_INCLUDE_DIRS}
+if(BUILD_RECOGNIZE_PICK STREQUAL "ON")
   ${people_msgs_INCLUDE_DIRS}
+endif
   ${tf2_geometry_msgs_INCLUDE_DIRS}
   ${trajectory_msgs_INCLUDE_DIRS}
   ${visualization_msgs_INCLUDE_DIRS}
@@ -95,13 +101,14 @@ ament_target_dependencies(${libgrasp_detect}
   "grasp_msgs"
   "sensor_msgs"
   "moveit_msgs"
+if(BUILD_RECOGNIZE_PICK STREQUAL "ON")
   "people_msgs"
+endif()
   "visualization_msgs")
 target_link_libraries(${libgrasp_detect}
   ${gpg_LIBRARIES}
   ${gpd_LIBRARIES}
   ${PCL_LIBRARIES}
-  ${InferenceEngine_LIBRARIES}
 )
 rclcpp_components_register_nodes(${libgrasp_detect} "grasp_ros2::GraspDetectorGPD")
 set(node_plugins "${node_plugins}grasp_ros2::GraspDetectorGPD;$<TARGET_FILE:${libgrasp_detect}>\n")
@@ -152,7 +159,6 @@ target_link_libraries(${PROJECT_NAME}
   ${gpg_LIBRARIES}
   ${gpd_LIBRARIES}
   ${PCL_LIBRARIES}
-  ${InferenceEngine_LIBRARIES}
   ${libgrasp_detect}
   ${libgrasp_plan}
 )

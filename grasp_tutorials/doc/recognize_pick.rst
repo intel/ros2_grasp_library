@@ -113,5 +113,5 @@ Launch the Application with Real Robot and Camera
 
 ::
 
-  ros2 run grasp_ros2 grasp_ros2 __params:=src/ros2_grasp_library/grasp_apps/recognize_pick/cfg/recognize_pick.yaml
+  ros2 run grasp_ros2 grasp_ros2 __params:=src/ros2_grasp_library/grasp_ros2/cfg/recognize_pick.yaml
 

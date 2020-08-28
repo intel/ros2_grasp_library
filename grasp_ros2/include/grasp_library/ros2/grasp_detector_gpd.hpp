@@ -18,7 +18,9 @@
 // ROS2
 #include <geometry_msgs/msg/point.hpp>
 #include <geometry_msgs/msg/vector3.hpp>
+#ifdef RECOGNIZE_PICK
 #include <people_msgs/msg/objects_in_masks.hpp>
+#endif
 #include <rclcpp/logger.hpp>
 #include <rclcpp/rclcpp.hpp>
 #include <sensor_msgs/msg/point_cloud2.hpp>
@@ -100,13 +102,13 @@ private:
    * \param msg the incoming ROS message
    */
   void cloud_callback(const sensor_msgs::msg::PointCloud2::SharedPtr msg);
-
+#ifdef RECOGNIZE_PICK
   /**
    * \brief Callback function for the ROS topic that contains the detected and segmented objects
    * \param msg The detected objects message
    */
   void object_callback(const people_msgs::msg::ObjectsInMasks::SharedPtr msg);
-
+#endif
   /**
    * \brief Create a ROS message that contains a list of grasp poses from a list of handles.
    * \param hands the list of grasps
@@ -171,16 +173,20 @@ private:
   std::string frame_; /**< point cloud frame*/
   bool auto_mode_; /**< grasp detection mode*/
   bool plane_remove_; /**< whether enable object detection>*/
+#ifdef RECOGNIZE_PICK
   /** the latest message on detected objects*/
   people_msgs::msg::ObjectsInMasks::SharedPtr object_msg_;
+#endif
   std::vector<double> grasp_ws_;
 
   rclcpp::callback_group::CallbackGroup::SharedPtr callback_group_subscriber1_;
   rclcpp::callback_group::CallbackGroup::SharedPtr callback_group_subscriber2_;
   /** ROS2 subscriber for point cloud messages*/
   rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr cloud_sub_;
+#ifdef RECOGNIZE_PICK
   /** ROS2 subscriber for object  messages*/
   rclcpp::Subscription<people_msgs::msg::ObjectsInMasks>::SharedPtr object_sub_;
+#endif
   /** ROS2 publisher for grasp list messages*/
   rclcpp::Publisher<grasp_msgs::msg::GraspConfigList>::SharedPtr grasps_pub_;
   /** ROS2 publisher for filtered point clouds*/
@@ -189,6 +195,7 @@ private:
   rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr grasps_rviz_pub_;
 
   std::shared_ptr<GraspDetector> grasp_detector_; /**< used to run the grasp pose detection*/
+  GraspDetector::GraspDetectionParameters detection_param_; /**< grasp detector parameters*/
   rclcpp::Logger logger_ = rclcpp::get_logger("GraspDetectorGPD");
   std::thread * detector_thread_; /**< thread for grasp detection*/
 };
