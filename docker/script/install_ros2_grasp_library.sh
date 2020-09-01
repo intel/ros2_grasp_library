@@ -44,7 +44,7 @@ bash ${CURRENT_DIR}/30_gpg_install.sh $@
 bash ${CURRENT_DIR}/31_gpd_install.sh $@
 
 # install ur_modern_driver
-bash ${CURRENT_DIR}/32_ur_modern_driver_install.sh $2
+bash ${CURRENT_DIR}/32_ur_modern_driver_install.sh $@
 
 # build ros2 other deps
 bash ${CURRENT_DIR}/50_ros2_deps.sh $@

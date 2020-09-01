@@ -65,3 +65,4 @@ $SUDO mkdir -p /usr/share/InferenceEngine &&\
   $SUDO cp targets.cmake /usr/share/InferenceEngine &&\
   echo `pwd`/../bin/intel64/Release/lib | $SUDO tee -a /etc/ld.so.conf.d/openvino.conf &&\
   $SUDO ldconfig
+$SUDO ln -sf $DEPS_DIR/openvino /opt/openvino_toolkit/openvino
