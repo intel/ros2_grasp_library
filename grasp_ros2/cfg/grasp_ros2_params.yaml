@@ -1,29 +1,30 @@
-GraspDetectorGPD:
+GraspDetectorOPD:
   ros__parameters:
-    cloud_topic: /camera/pointcloud
-    #cloud_topic: /mechmind/color_point_cloud
+    #cloud_topic: /camera/pointcloud
+    cloud_topic: /mechmind/color_point_cloud
     rviz: true
     device: 0 # 0:CPU, 1:GPU, 2:VPU
     auto_mode: true
-    plane_remove: true
+    plane_remove: false
     # grasp workspace in camera frames
-    workspace: [-0.21, 0.29, -0.22, 0.15, 0.0, 1.0] # Realsense
-    #workspace: [-0.16, 0.34, -0.26, 0.14, 1.4, 1.8] # Mechmind
+    #workspace: [-0.21, 0.29, -0.22, 0.15, 0.0, 1.0] # Realsense
+    workspace: [-0.16, 0.3, -0.26, 0.12, 1.4, 1.8] # Mechmind
     # gripper geometry parameters in metre
     # finger_width: the finger thickness
     # hand_outer_diameter: the maximum robot hand aperture 
     # hand_depth: the hand depth (the finger length)
     # hand_height: the finger breadth
-    finger_width: 0.005
-    hand_outer_diameter: 0.100
-    hand_depth: 0.038
-    hand_height: 0.020
+    finger_width: 0.002
+    hand_outer_diameter: 0.014
+    hand_depth: 0.06
+    hand_height: 0.005
 GraspPlanner:
   ros__parameters:
-    grasp_score_threshold: 20
-    grasp_frame_id: "camera_color_optical_frame" # Realsense
+    grasp_score_threshold: 0
+    #grasp_frame_id: "camera_color_optical_frame" # Realsense
     #grasp_frame_id: "mechmind_camera" # Mechmind
+    grasp_frame_id: "base"
     grasp_offset: [0.000, 0.000, 0.0]
-    eef_offset: 0.174
-    eef_yaw_offset: 0.7854 # M_PI/4
-    finger_joint_names: ["panda_finger_joint1", "panda_finger_joint2"]
+    eef_offset: 0.0
+    eef_yaw_offset: 0.0 # 0.7854 # M_PI/4
+    grasp_boundry: [-1.0, 1.0, -1.0, 1.0, -1.0, 1.0]
