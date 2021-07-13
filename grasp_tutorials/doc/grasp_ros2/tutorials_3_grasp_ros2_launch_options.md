@@ -1,3 +1,5 @@
+* **plane_remove** [**false**|true]: Configure whether or not remove the planes (like the table plane) from point cloud input. Enabling this helps to avoid generating grasp poses across the table.
+* **workspace** [**[-1.0, 1.0, -1.0, 1.0, -1.0, 1,0]**|[1*6 double]]: Configure a boundry cube in camera frame for grasp generation and detection. *This need to be customized according to user's setup.*
 # Grasp Library Launch Options and Customization Notes
 This tutorial documents the launch options which are used for customization. Each option will be introduced in the following format:
 * **option_name** [**default_value**|other_values]: Description of this option. Customization Notes.

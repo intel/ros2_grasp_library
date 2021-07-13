@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef GRASP_LIBRARY__ROS2__GRASP_DETECTOR_GPD_HPP_
-#define GRASP_LIBRARY__ROS2__GRASP_DETECTOR_GPD_HPP_
+#ifndef GRASP_LIBRARY__ROS2__GRASP_DETECTOR_OPD_HPP_
+#define GRASP_LIBRARY__ROS2__GRASP_DETECTOR_OPD_HPP_
 
 // ROS2
 #include <geometry_msgs/msg/point.hpp>
@@ -58,27 +58,28 @@ namespace grasp_ros2
 
 typedef pcl::PointCloud<pcl::PointXYZRGBA> PointCloudRGBA;
 typedef pcl::PointCloud<pcl::PointNormal> PointCloudPointNormal;
+typedef pcl::PointCloud<pcl::Normal> pointnormal;
+typedef pcl::PointCloud<pcl::FPFHSignature33> fpfhFeature;
 
-
-/** GraspDetectorGPD class
+/** GraspDetectorOPD class
  *
  * \brief A ROS node that can detect grasp poses in a point cloud.
  *
  * This class is a ROS node that handles all the ROS topics.
  *
 */
-class GraspDetectorGPD : public rclcpp::Node, public GraspDetectorBase
+class GraspDetectorOPD : public rclcpp::Node, public GraspDetectorBase
 {
 public:
   /**
    * \brief Constructor.
   */
-  explicit GraspDetectorGPD(const rclcpp::NodeOptions & options);
+  explicit GraspDetectorOPD(const rclcpp::NodeOptions & options);
 
   /**
    * \brief Destructor.
   */
-  ~GraspDetectorGPD()
+  ~GraspDetectorOPD()
   {
     delete cloud_camera_;
 
@@ -191,15 +192,22 @@ private:
   rclcpp::Publisher<grasp_msgs::msg::GraspConfigList>::SharedPtr grasps_pub_;
   /** ROS2 publisher for filtered point clouds*/
   rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr filtered_pub_;
+  rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr reg_pub_;
   /** ROS2 publisher for grasps in rviz (visualization)*/
   rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr grasps_rviz_pub_;
+  /** Transformation matrix of the object, as a result of PCL registration*/
+  Eigen::Matrix3f obj_rot_;
+  Eigen::Vector3f obj_tran_;
+  double err_tran_sum_, err_tran_mean_;
+  int opd_count_;
+  tf2_ros::StaticTransformBroadcaster tfb_;
 
   std::shared_ptr<GraspDetector> grasp_detector_; /**< used to run the grasp pose detection*/
   GraspDetector::GraspDetectionParameters detection_param_; /**< grasp detector parameters*/
-  rclcpp::Logger logger_ = rclcpp::get_logger("GraspDetectorGPD");
+  rclcpp::Logger logger_ = rclcpp::get_logger("GraspDetectorOPD");
   std::thread * detector_thread_; /**< thread for grasp detection*/
 };
 
 }  // namespace grasp_ros2
 
-#endif  // GRASP_LIBRARY__ROS2__GRASP_DETECTOR_GPD_HPP_
+#endif  // GRASP_LIBRARY__ROS2__GRASP_DETECTOR_OPD_HPP_

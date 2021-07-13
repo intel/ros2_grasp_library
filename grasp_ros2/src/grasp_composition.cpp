@@ -16,10 +16,10 @@
 
 #include <memory>
 
-#include "grasp_library/ros2/grasp_detector_gpd.hpp"
+#include "grasp_library/ros2/grasp_detector_opd.hpp"
 #include "grasp_library/ros2/grasp_planner.hpp"
 
-using GraspDetectorGPD = grasp_ros2::GraspDetectorGPD;
+using GraspDetectorOPD = grasp_ros2::GraspDetectorOPD;
 using GraspDetectorBase = grasp_ros2::GraspDetectorBase;
 using GraspPlanner = grasp_ros2::GraspPlanner;
 
@@ -28,7 +28,7 @@ int main(int argc, char ** argv)
   rclcpp::init(argc, argv);
   rclcpp::executors::MultiThreadedExecutor exec;
 
-  auto detect_node = std::make_shared<GraspDetectorGPD>(
+  auto detect_node = std::make_shared<GraspDetectorOPD>(
     rclcpp::NodeOptions().automatically_declare_parameters_from_overrides(true));
   exec.add_node(detect_node);
   GraspDetectorBase * grasp_detector = dynamic_cast<GraspDetectorBase *>(detect_node.get());

@@ -111,6 +111,8 @@ bool GraspPlanner::transform(
   grasp_msgs::msg::GraspConfig & from, grasp_msgs::msg::GraspConfig & to,
   const std_msgs::msg::Header & header)
 {
+  printf("t is \n%f %f %f\n%f %f %f\n%f %f %f\n", from.approach.x, from.binormal.x, from.axis.x, from.approach.y, from.binormal.y, from.axis.y, from.approach.z, from.binormal.z, from.axis.z);
+
   geometry_msgs::msg::PointStamped from_top, to_top, from_surface, to_surface,
     from_bottom, to_bottom;
   geometry_msgs::msg::Vector3Stamped from_approach, to_approach, from_binormal, to_binormal,
@@ -158,6 +160,7 @@ bool GraspPlanner::transform(
 bool GraspPlanner::check_boundry(const geometry_msgs::msg::Point & p)
 {
   RCLCPP_INFO(logger_, "point [%f %f %f]", p.x, p.y, p.z);
+  //return true;
   return p.x >= param_.grasp_boundry_[0] && p.x <= param_.grasp_boundry_[1] &&
          p.y >= param_.grasp_boundry_[2] && p.y <= param_.grasp_boundry_[3] &&
          p.z >= param_.grasp_boundry_[4] && p.z <= param_.grasp_boundry_[5];
@@ -171,17 +174,29 @@ moveit_msgs::msg::Grasp GraspPlanner::toMoveIt(
   msg.grasp_pose.header = header;
   msg.grasp_quality = grasp.score.data;
 
-  double offset = param_.eef_offset;
+  double offset = 0;//param_.eef_offset;
   // set grasp position, translation from hand-base to the parent-link of EEF
   msg.grasp_pose.pose.position.x = grasp.bottom.x - grasp.approach.x * offset;
   msg.grasp_pose.pose.position.y = grasp.bottom.y - grasp.approach.y * offset;
   msg.grasp_pose.pose.position.z = grasp.bottom.z - grasp.approach.z * offset;
-
+#if 0
   // rotation matrix https://github.com/atenpas/gpd/blob/master/tutorials/hand_frame.png
   tf2::Matrix3x3 r(
-    grasp.binormal.x, grasp.axis.x, grasp.approach.x,
-    grasp.binormal.y, grasp.axis.y, grasp.approach.y,
-    grasp.binormal.z, grasp.axis.z, grasp.approach.z);
+    grasp.approach.x, grasp.binormal.x, grasp.axis.x,
+    grasp.approach.y, grasp.binormal.y, grasp.axis.y,
+    grasp.approach.z, grasp.binormal.z, grasp.axis.z);
+#else
+  // adjust binormal
+  Eigen::Vector3d axis0(grasp.approach.x, grasp.approach.y, 0);
+  Eigen::Vector3d binormal0 = Eigen::AngleAxisd(M_PI/2, Eigen::Vector3d(0, 0, 1)).toRotationMatrix() * axis0;
+  Eigen::Vector3d approach0 =
+	  Eigen::AngleAxisd(-M_PI/2, Eigen::Vector3d(grasp.approach.x, grasp.approach.y, grasp.approach.z)).toRotationMatrix() * binormal0;
+  tf2::Matrix3x3 r(
+    binormal0[0], grasp.approach.x, approach0[0],
+    binormal0[1], grasp.approach.y, approach0[1],
+    binormal0[2], grasp.approach.z, approach0[2]);
+
+#endif
   tf2::Quaternion quat;
   r.getRotation(quat);
   // EEF yaw-offset to its parent-link (last link of arm)
@@ -193,6 +208,16 @@ moveit_msgs::msg::Grasp GraspPlanner::toMoveIt(
     msg.grasp_pose.pose.orientation.x, msg.grasp_pose.pose.orientation.y,
     msg.grasp_pose.pose.orientation.z, msg.grasp_pose.pose.orientation.w);
 
+#if 0
+      geometry_msgs::msg::TransformStamped tf_msg;
+      tf_msg.header = header;
+      tf_msg.child_frame_id = "grasp_pose_planner";
+      tf_msg.transform.translation.x = msg.grasp_pose.pose.position.x;
+      tf_msg.transform.translation.y = msg.grasp_pose.pose.position.y;
+      tf_msg.transform.translation.z = msg.grasp_pose.pose.position.z;
+      tf_msg.transform.rotation = msg.grasp_pose.pose.orientation;
+      tfBroadcaster_.sendTransform(tf_msg);
+#endif
   // set pre-grasp approach
   msg.pre_grasp_approach.direction.header = header;
   msg.pre_grasp_approach.direction.vector = grasp.approach;
