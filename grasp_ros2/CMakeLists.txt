@@ -50,6 +50,7 @@ find_package(tf2_geometry_msgs REQUIRED)
 find_package(trajectory_msgs REQUIRED)
 find_package(pcl_conversions REQUIRED)
 find_package(Eigen3 REQUIRED)
+find_package(OpenCV REQUIRED)
 
 # GPG
 find_library(gpg_LIBRARIES grasp_candidates_generator)
@@ -91,7 +92,7 @@ set(libgrasp_detect "grasp_detect")
 add_library(${libgrasp_detect} SHARED
   src/consts.cpp
   src/ros_params.cpp
-  src/grasp_detector_gpd.cpp)
+  src/grasp_detector_opd.cpp)
 target_compile_definitions(${libgrasp_detect}
   PRIVATE "GRASP_ROS2_BUILDING_DLL")
 ament_target_dependencies(${libgrasp_detect}
@@ -109,9 +110,10 @@ target_link_libraries(${libgrasp_detect}
   ${gpg_LIBRARIES}
   ${gpd_LIBRARIES}
   ${PCL_LIBRARIES}
+  ${OpenCV_LIBRARIES}
 )
-rclcpp_components_register_nodes(${libgrasp_detect} "grasp_ros2::GraspDetectorGPD")
-set(node_plugins "${node_plugins}grasp_ros2::GraspDetectorGPD;$<TARGET_FILE:${libgrasp_detect}>\n")
+rclcpp_components_register_nodes(${libgrasp_detect} "grasp_ros2::GraspDetectorOPD")
+set(node_plugins "${node_plugins}grasp_ros2::GraspDetectorOPD;$<TARGET_FILE:${libgrasp_detect}>\n")
 
 # grasp plan
 set(libgrasp_plan "grasp_plan")
