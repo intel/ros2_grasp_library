@@ -9,15 +9,17 @@ from geometry_msgs.msg import TransformStamped
 from handeye_tf_service.srv import HandeyeTF
 from ament_index_python.resources import get_resource
 
+from rcl_interfaces.msg import Parameter, ParameterType, ParameterValue
+from rcl_interfaces.srv import SetParameters
+
 # Rqt widgets
 from rqt_gui_py.plugin import Plugin
 from python_qt_binding import QtCore
 from python_qt_binding.QtGui import QIcon, QImage, QPixmap, QStandardItem, \
-                                                QIntValidator, QStandardItemModel
+                                      QPen, QBrush, QPainter, QIntValidator, QStandardItemModel
 from python_qt_binding.QtWidgets import (QComboBox, QAction, QToolBar, QStatusBar,
-                                                 QLineEdit, QWidget, QVBoxLayout,
-                                                       QLabel, QTextEdit, QFrame,
-                                                          QHBoxLayout, QTreeView)
+                                          QLineEdit, QWidget, QVBoxLayout, QLabel,
+                                            QTextEdit, QFrame, QHBoxLayout, QTreeView)
 
 class bcolors:
   HEADER = '\033[95m'
@@ -87,12 +89,27 @@ class HandEyeCalibration(Plugin):
                               'Clear the record data.', self.widget)
     path = path_pkg + '/share/handeye_dashboard/images/UR5.png'
     self.execut_action = QAction(QIcon(QPixmap.fromImage(QImage(path))),
-                                          'EStart the publishing the TF.', self.widget)
+                                          'Start the publishing the TF.', self.widget)
+    self.path_red_icon = path_pkg + '/share/handeye_dashboard/images/red_circle_icon.png'
+    self.path_green_icon = path_pkg + '/share/handeye_dashboard/images/green_circle_icon.png'
+    self.parameter_action = QAction(QIcon(QPixmap.fromImage(QImage(self.path_red_icon))),
+                                    'Connect to parameter service.', self.widget)
+    self.tf_action = QAction(QIcon(QPixmap.fromImage(QImage(self.path_red_icon))),
+                                  'Connect to tf service.', self.widget)
+    
     self.toolbar = QToolBar()
     self.toolbar.addAction(self.snapshot_action)
     self.toolbar.addAction(self.calibrate_action)
     self.toolbar.addAction(self.clear_action)
     self.toolbar.addAction(self.execut_action)
+    self.parameter_label = QLabel(self.widget)
+    self.parameter_label.setText("Parameter service: ")
+    self.toolbar.addWidget(self.parameter_label)
+    self.toolbar.addAction(self.parameter_action)
+    self.tf_label = QLabel(self.widget)
+    self.tf_label.setText("tf service: ")
+    self.toolbar.addWidget(self.tf_label)
+    self.toolbar.addAction(self.tf_action)
 
     # Toolbar0
     self.l0 = QLabel(self.widget)
@@ -199,15 +216,36 @@ class HandEyeCalibration(Plugin):
     self.calibrate_action.triggered.connect(self.calibration)
     self.clear_action.triggered.connect(self.clear)
     self.execut_action.triggered.connect(self.execution)
+    self.parameter_action.triggered.connect(self.parameter_connect)
+    self.tf_action.triggered.connect(self.tf_connect)
 
     # Package path
     self.path_pkg = path_pkg
 
-    # Set up TF
-    self.cli = self.node.create_client(HandeyeTF, 'handeye_tf_service')
-    while not self.cli.wait_for_service(timeout_sec=1.0):
-        self.node.get_logger().info('service not available, waiting again...')
+    # Set up TF service client
+    self.client_tf = self.node.create_client(HandeyeTF, 'handeye_tf_service')
+    self.tf_action.setIcon(QIcon(QPixmap.fromImage(QImage(self.path_red_icon))) \
+                           if not self.client_tf.wait_for_service(timeout_sec=0.5) \
+                           else QIcon(QPixmap.fromImage(QImage(self.path_green_icon))))
     self.req = HandeyeTF.Request()
+
+    # Set up parameter service client
+    self.client_param = self.node.create_client(SetParameters, '/grasp_modbus_server/set_parameters')
+    self.parameter_action.setIcon(QIcon(QPixmap.fromImage(QImage(self.path_red_icon))) \
+                                  if not self.client_param.wait_for_service(timeout_sec=0.5) \
+                                  else QIcon(QPixmap.fromImage(QImage(self.path_green_icon))))
+
+  def tf_connect(self):
+    self.client_tf = self.node.create_client(HandeyeTF, 'handeye_tf_service')
+    self.tf_action.setIcon(QIcon(QPixmap.fromImage(QImage(self.path_red_icon))) \
+                           if not self.client_tf.wait_for_service(timeout_sec=0.5) \
+                           else QIcon(QPixmap.fromImage(QImage(self.path_green_icon))))    
+
+  def parameter_connect(self):
+    self.client_param = self.node.create_client(SetParameters, '/grasp_modbus_server/set_parameters')
+    self.parameter_action.setIcon(QIcon(QPixmap.fromImage(QImage(self.path_red_icon))) \
+                                  if not self.client_param.wait_for_service(timeout_sec=0.5) \
+                                  else QIcon(QPixmap.fromImage(QImage(self.path_green_icon))))
 
   def clear(self):
     # >>> Clear the recorded samples
@@ -221,7 +259,7 @@ class HandEyeCalibration(Plugin):
     self.req.transform.child_frame_id = child_frame_id
     self.req.publish.data = False
 
-    future = self.cli.call_async(self.req)
+    future = self.client_tf.call_async(self.req)
     rclpy.spin_until_future_complete(self.node, future)
 
     transform = TransformStamped()
@@ -239,7 +277,7 @@ class HandEyeCalibration(Plugin):
     self.req.publish.data = True
     self.req.transform = transform_to_publish
 
-    future = self.cli.call_async(self.req)
+    future = self.client_tf.call_async(self.req)
     rclpy.spin_until_future_complete(self.node, future)
 
     try:
@@ -313,6 +351,18 @@ class HandEyeCalibration(Plugin):
       self.textedit.append("Failed to solve the hand-eye calibration.")
 
   def execution(self):
+    # Set calibration state to success
+    req = SetParameters.Request()
+
+    param = Parameter()
+    param.name = "calibration_state"
+    param.value.type = ParameterType.PARAMETER_INTEGER
+    param.value.integer_value = 4
+    req.parameters.append(param)
+
+    future = self.client_param.call_async(req)
+    rclpy.spin_until_future_complete(self.node, future)
+
     # >>> Publish the camera-robot transform
     self.textedit.append('Publishing the camera TF ...')
     file_input = '/tmp/' + 'camera-robot.json'
