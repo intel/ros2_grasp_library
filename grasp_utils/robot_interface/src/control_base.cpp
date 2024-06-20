@@ -86,22 +86,30 @@ void ArmControlBase::toTcpPose(const Eigen::Isometry3d& pose, TcpPose& tcp_pose)
   tcp_pose.gamma = euler_angles[2]; 
 }
 
-Eigen::Vector3d ArmControlBase::getUnitApproachVector(const double& alpha, const double& beta, const double& gamma)
+std::vector<Eigen::Vector3d> ArmControlBase::getUnitApproachVectors(const double& alpha, const double& beta, const double& gamma)
 {
   tf2::Quaternion q;
   q.setRPY(alpha, beta, gamma);
   tf2::Matrix3x3 r(q);
 
-  tf2::Vector3 approach_vector = r * tf2::Vector3(0, 0, 1);
-  approach_vector = approach_vector.normalize();
-  return Eigen::Vector3d(approach_vector[0], approach_vector[1], approach_vector[2]);
+  // get approach_vectors along x, y, z axes
+  std::vector<Eigen::Vector3d> approach_vectors;
+  for (size_t i = 0; i < 3; i++)
+  {
+    tf2::Vector3 pre_rotation_vector(0, 0, 0);
+    pre_rotation_vector[i] = 1;
+    tf2::Vector3 post_rotation_vector = r * pre_rotation_vector;
+    post_rotation_vector = post_rotation_vector.normalize();
+    approach_vectors.push_back(Eigen::Vector3d(post_rotation_vector[0], post_rotation_vector[1], post_rotation_vector[2]));
+  }
+  return approach_vectors;
 }
 
 bool ArmControlBase::pick(double x, double y, double z, 
                           double alpha, double beta, double gamma, 
                           double vel, double acc, double vel_scale, double approach)
 {
-  Eigen::Vector3d pre_grasp_origin = Eigen::Vector3d(x, y, z) - getUnitApproachVector(alpha, beta, gamma) * approach;
+  Eigen::Vector3d pre_grasp_origin = Eigen::Vector3d(x, y, z) - getUnitApproachVectors(alpha, beta, gamma)[2] * approach;
 
   Eigen::Isometry3d grasp, orientation, pre_grasp;
   orientation = Eigen::AngleAxisd(alpha, Eigen::Vector3d::UnitX())
@@ -146,7 +154,7 @@ bool ArmControlBase::place(double x, double y, double z,
                            double alpha, double beta, double gamma,
                            double vel, double acc, double vel_scale, double retract)
 {
-  Eigen::Vector3d pre_place_origin = Eigen::Vector3d(x, y, z) - getUnitApproachVector(alpha, beta, gamma) * retract;
+  Eigen::Vector3d pre_place_origin = Eigen::Vector3d(x, y, z) - getUnitApproachVectors(alpha, beta, gamma)[2] * retract;
 
   Eigen::Isometry3d place, orientation, pre_place;
   orientation = Eigen::AngleAxisd(alpha, Eigen::Vector3d::UnitX())
